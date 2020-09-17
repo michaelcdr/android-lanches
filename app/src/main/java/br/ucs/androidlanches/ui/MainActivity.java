@@ -1,4 +1,4 @@
-package br.ucs.aula1.androidlanches;
+package br.ucs.androidlanches.ui;
 
 import android.os.Bundle;
 
@@ -7,22 +7,52 @@ import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.View;
 
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.List;
+
+
+import br.ucs.androidlanches.data.DataAccessHelper;
+import br.ucs.androidlanches.recycleview.adapter.PedidosAdapter;
+import br.ucs.androidlanches.ui.R;
+import br.ucs.androidlanches.models.Pedido;
+
+public class MainActivity extends AppCompatActivity
+{
+    private List<Pedido> pedidos = new ArrayList<>();
+
+    private DataAccessHelper db = new DataAccessHelper(this);
+    private RecyclerView recyclerViewPedidos;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         FloatingActionButton fab = findViewById(R.id.fab);
+
+
+        recyclerViewPedidos = findViewById(R.id.recycleViewPedidos);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerViewPedidos.setLayoutManager(layoutManager);
+
+        pedidos = db.obterTodosPedidosSemPagamentoEfetuado();
+
+
+        PedidosAdapter adapter = new PedidosAdapter(pedidos);
+        recyclerViewPedidos.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

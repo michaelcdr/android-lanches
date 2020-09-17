@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:layout_marginTop="0dp"
     android:layout_marginBottom="8dp"
-    android:background="@color/colorPrimary">
+    android:background="#66ee33">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,7 +14,7 @@
         android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/lblNumero"
+            android:id="@+id/txtNumeroPedido"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -23,35 +23,24 @@
             android:text="Nº" />
 
         <TextView
-            android:id="@+id/txtFase"
+            android:id="@+id/txtNumeroMesa"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textColor="#fff"
             android:textSize="26dp"
-            android:text="Fase" />
-
-        <TextView
-            android:id="@+id/txtAno"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:textAlignment="viewEnd"
-            android:layout_gravity="end"
-            android:textColor="#ffffff"
-            android:textSize="26dp"
-            android:text="Ano" />
+            android:text="Mesa" />
 
         <Button
             android:id="@+id/btnVerPedido"
-            android:layout_width="wrap_content"
+            android:layout_width="15dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Ver" />
 
         <Button
             android:id="@+id/btnPagarPedido"
-            android:layout_width="wrap_content"
+            android:layout_width="15dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Pagar" />

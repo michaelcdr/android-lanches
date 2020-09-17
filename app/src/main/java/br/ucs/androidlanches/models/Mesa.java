@@ -1,4 +1,4 @@
-package models;
+package br.ucs.androidlanches.models;
 
 import java.io.Serializable;
 

@@ -1,4 +1,4 @@
-package Data;
+package br.ucs.androidlanches.data;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -7,11 +7,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import models.Mesa;
-import models.Produto;
+import br.ucs.androidlanches.models.Mesa;
+import br.ucs.androidlanches.models.Pedido;
+import br.ucs.androidlanches.models.Produto;
 
-public class BDSQLiteHelper extends SQLiteOpenHelper
+public class DataAccessHelper extends SQLiteOpenHelper
 {
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "AndroidLanchesDB";
@@ -27,13 +29,19 @@ public class BDSQLiteHelper extends SQLiteOpenHelper
     private static final String[] COLUNAS_PRODUTO = {PRODUTOID, NOME, DESCRICAO, PRECO,FOTO};
 
     // PEDIDO ...
+    private static final String TABELA_PEDIDOS = "Pedidos";
+    private static final String NUMERO_PEDIDO = "numero";
+    private static final String PAGO_PEDIDO = "pago";
+    private static final String MESAID_PEDIDO = "mesaId";
+    private static final String[] COLUNAS_PEDIDO = {NUMERO_PEDIDO, PAGO_PEDIDO, MESAID_PEDIDO};
 
     // MESA ...
     private static final String TABELA_MESAS = "Mesas";
     private static final String MESAID = "produtoid";
     private static final String NUMERO_MESA = "produtoid";
     private static final String[] COLUNAS_MESA = {MESAID, NUMERO_MESA};
-    public BDSQLiteHelper(Context context)
+
+    public DataAccessHelper(Context context)
     {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -51,6 +59,13 @@ public class BDSQLiteHelper extends SQLiteOpenHelper
                 PRECO + " DOUBLE)";
 
         db.execSQL(sqlCreateTable);
+
+        db.execSQL(
+            "CREATE TABLE " + TABELA_PEDIDOS + " ("+
+            NUMERO_PEDIDO + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            PAGO_PEDIDO + " INTEGER, " +
+            MESAID_PEDIDO + " INTEGER )"
+        );
     }
 
     @Override
@@ -58,7 +73,7 @@ public class BDSQLiteHelper extends SQLiteOpenHelper
     {
         db.execSQL("DROP TABLE IF EXISTS " + TABELA_PRODUTOS);
         db.execSQL("DROP TABLE IF EXISTS "+ TABELA_MESAS);
-
+        db.execSQL("DROP TABLE IF EXISTS "+ TABELA_PEDIDOS);
         this.onCreate(db);
     }
 
@@ -101,13 +116,17 @@ public class BDSQLiteHelper extends SQLiteOpenHelper
         }
     }
 
-    public ArrayList<Mesa> obterTodasMesas()
+    public ArrayList<Mesa> obterTodasMesasDesocupadas()
     {
         ArrayList<Mesa> mesas = new ArrayList<Mesa>();
-        String query = "SELECT * FROM " + TABELA_MESAS + " ORDER BY " + NUMERO_MESA;
+
+        String query = "SELECT * FROM " + TABELA_MESAS + " WHERE  "+MESAID +
+                " NOT IN (SELECT " + MESAID + " From " + TABELA_PEDIDOS + " GROUP BY "+MESAID+") ORDER BY " + NUMERO_MESA;
+
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
-        if (cursor.moveToFirst()) {
+        if (cursor.moveToFirst())
+        {
             do {
                 Mesa mesa = cursorToMesa(cursor);
                 mesas.add(mesa);
@@ -205,5 +224,16 @@ public class BDSQLiteHelper extends SQLiteOpenHelper
         );
         db.close();
         return linhasAfetadas;
+    }
+
+    public List<Pedido> obterTodosPedidosSemPagamentoEfetuado()
+    {
+        List<Pedido> pedidos = new ArrayList<>();
+        pedidos.add(new Pedido(1,false, new Mesa(01)));
+        pedidos.add(new Pedido(2,false, new Mesa(02)));
+        pedidos.add(new Pedido(3,false, new Mesa(03)));
+        pedidos.add(new Pedido(4,false, new Mesa(04)));
+        pedidos.add(new Pedido(5,false, new Mesa(05)));
+        return pedidos;
     }
 }

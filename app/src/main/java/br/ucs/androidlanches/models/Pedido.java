@@ -1,4 +1,4 @@
-package models;
+package br.ucs.androidlanches.models;
 
 import java.io.Serializable;
 
@@ -9,9 +9,10 @@ public class Pedido implements Serializable
     private Mesa mesa;
 
 
-    public Pedido(int numero, boolean pago) {
+    public Pedido(int numero,  boolean pago, Mesa mesa) {
         this.numero = numero;
         this.pago = pago;
+        this.mesa = mesa;
     }
 
     public boolean isPago() {
