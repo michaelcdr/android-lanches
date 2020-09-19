@@ -1,33 +1,26 @@
 package br.ucs.androidlanches.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
-
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.View;
-
 import android.view.Menu;
 import android.view.MenuItem;
-
 import java.util.ArrayList;
 import java.util.List;
-
-
 import br.ucs.androidlanches.data.DataAccessHelper;
+import br.ucs.androidlanches.models.Mesa;
 import br.ucs.androidlanches.recycleview.adapter.PedidosAdapter;
-import br.ucs.androidlanches.ui.R;
 import br.ucs.androidlanches.models.Pedido;
 
 public class MainActivity extends AppCompatActivity
 {
     private List<Pedido> pedidos = new ArrayList<>();
-
     private DataAccessHelper db = new DataAccessHelper(this);
     private RecyclerView recyclerViewPedidos;
 
@@ -36,11 +29,35 @@ public class MainActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setTitle("Pedidos");
+/*
         Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        toolbar.setTitle("Pedidos");
+        setSupportActionBar(toolbar);*/
         FloatingActionButton fab = findViewById(R.id.fab);
 
+        carregarPedidos();
 
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            //Snackbar.make(view, "Nada implementado", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+            Intent intent = new Intent(getBaseContext(), EscolherMesaActivity.class);
+            startActivity(intent);
+            }
+        });
+    }
+
+    private void seed()
+    {
+        for (int i =1; i<=20; i++)
+        {
+            db.adicionarMesa(new Mesa(i));
+        }
+    }
+
+    private void carregarPedidos()
+    {
         recyclerViewPedidos = findViewById(R.id.recycleViewPedidos);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -48,18 +65,11 @@ public class MainActivity extends AppCompatActivity
 
         pedidos = db.obterTodosPedidosSemPagamentoEfetuado();
 
+        //seed();
 
         PedidosAdapter adapter = new PedidosAdapter(pedidos);
         recyclerViewPedidos.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Nada implementado", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
     }
 
     @Override

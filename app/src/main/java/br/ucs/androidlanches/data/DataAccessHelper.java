@@ -15,7 +15,7 @@ import br.ucs.androidlanches.models.Produto;
 
 public class DataAccessHelper extends SQLiteOpenHelper
 {
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION =6;
     private static final String DATABASE_NAME = "AndroidLanchesDB";
 
     // PRODUTO ...
@@ -37,8 +37,8 @@ public class DataAccessHelper extends SQLiteOpenHelper
 
     // MESA ...
     private static final String TABELA_MESAS = "Mesas";
-    private static final String MESAID = "produtoid";
-    private static final String NUMERO_MESA = "produtoid";
+    private static final String MESAID = "mesaId";
+    private static final String NUMERO_MESA = "numero";
     private static final String[] COLUNAS_MESA = {MESAID, NUMERO_MESA};
 
     public DataAccessHelper(Context context)
@@ -66,12 +66,14 @@ public class DataAccessHelper extends SQLiteOpenHelper
             PAGO_PEDIDO + " INTEGER, " +
             MESAID_PEDIDO + " INTEGER )"
         );
+
+
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
     {
-        db.execSQL("DROP TABLE IF EXISTS " + TABELA_PRODUTOS);
+        db.execSQL("DROP TABLE IF EXISTS "+ TABELA_PRODUTOS);
         db.execSQL("DROP TABLE IF EXISTS "+ TABELA_MESAS);
         db.execSQL("DROP TABLE IF EXISTS "+ TABELA_PEDIDOS);
         this.onCreate(db);
@@ -116,6 +118,8 @@ public class DataAccessHelper extends SQLiteOpenHelper
         }
     }
 
+
+
     public ArrayList<Mesa> obterTodasMesasDesocupadas()
     {
         ArrayList<Mesa> mesas = new ArrayList<Mesa>();
@@ -148,12 +152,14 @@ public class DataAccessHelper extends SQLiteOpenHelper
         db.close();
     }
 
+
+
     public Produto obterProduto(int id)
     {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(
-                TABELA_PRODUTOS, COLUNAS_PRODUTO, " " + PRODUTOID +"  = ?",  new String[] { String.valueOf(id) },
+                TABELA_PRODUTOS, COLUNAS_PRODUTO, " " + PRODUTOID + " = ?",  new String[] { String.valueOf(id) },
                 null, // e. group by
                 null, // f. having
                 null, // g. order by
@@ -179,9 +185,24 @@ public class DataAccessHelper extends SQLiteOpenHelper
         return produto;
     }
 
+    private Pedido cursorToPedido(Cursor cursor)
+    {
+        Mesa mesa = new Mesa();
+        mesa.setMesaId(Integer.parseInt(cursor.getString(2)));
+        mesa.setNumero(Integer.parseInt(cursor.getString(3)));
+
+        Pedido pedido = new Pedido(
+            Integer.parseInt(cursor.getString(0)),
+            Boolean.parseBoolean(cursor.getString(1)),
+            mesa
+        );
+
+        return pedido;
+    }
+
     public ArrayList<Produto> obterTodosProdutos()
     {
-        ArrayList<Produto> produtos = new ArrayList<Produto>();
+        ArrayList<Produto> produtos = new ArrayList<>();
         String query = "SELECT * FROM " + TABELA_PRODUTOS + " ORDER BY " + NOME;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
@@ -226,14 +247,58 @@ public class DataAccessHelper extends SQLiteOpenHelper
         return linhasAfetadas;
     }
 
+    public List<Mesa> obterTodasMesas()
+    {
+        List<Mesa> mesas = new ArrayList<>();
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM Mesas", null);
+        if (cursor.moveToFirst())
+        {
+            do {
+                Mesa mesa = cursorToMesa(cursor);
+                mesas.add(mesa);
+            } while (cursor.moveToNext());
+        }
+        return mesas;
+    }
+
     public List<Pedido> obterTodosPedidosSemPagamentoEfetuado()
     {
         List<Pedido> pedidos = new ArrayList<>();
+        /*
         pedidos.add(new Pedido(1,false, new Mesa(01)));
         pedidos.add(new Pedido(2,false, new Mesa(02)));
         pedidos.add(new Pedido(3,false, new Mesa(03)));
         pedidos.add(new Pedido(4,false, new Mesa(04)));
-        pedidos.add(new Pedido(5,false, new Mesa(05)));
+        pedidos.add(new Pedido(5,false, new Mesa(05)));*/
+
+        String query = "SELECT Pedidos.numero, Pedidos.pago, Mesas.mesaId, Mesas.numero FROM Pedidos  "+
+                       "INNER JOIN Mesas  ON Mesas.mesaId = Mesas.mesaId " +
+                       "WHERE Pedidos.pago = 1 ORDER BY  Pedidos.numero";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.moveToFirst())
+        {
+            do {
+                Pedido pedido = cursorToPedido(cursor);
+                pedidos.add(pedido);
+            } while (cursor.moveToNext());
+        }
+
         return pedidos;
+    }
+
+    private void Seed()
+    {
+        List<Mesa> mesas = obterTodasMesas();
+
+        if (mesas.size() == 0)
+        {
+            for (int i = 1; i <= 10; i++)
+            {
+                adicionarMesa(new Mesa(i));
+            }
+        }
     }
 }
