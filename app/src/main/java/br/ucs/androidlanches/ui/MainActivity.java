@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity
 
         obterTodosPedidosSemPagamentoEfetuado();
 
-        //seed();
+        executarSeedSeNomTiverMesas();
 
         //clique que ira abrir o cadastro de pedidos...
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -46,28 +46,33 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private void seed()
+    private void executarSeedSeNomTiverMesas()
     {
-        for (int i =1; i<=20; i++)
+        List<Mesa> mesas = db.obterTodasMesas();
+
+        if (mesas.size() == 0)
         {
-            db.adicionarMesa(new Mesa(i));
+            for (int i = 1; i <= 20; i++)
+            {
+                db.adicionarMesa(new Mesa(i));
+            }
+
+            //adicionando bebidas
+            db.adicionarBebida(new Bebida("Coca cola", "Zero", 8.0, "2 litros", "cocacola_zero_2l"));
+            db.adicionarBebida(new Bebida("Coca cola", "Zero", 5.0, "600 ml", "cocacola_zero_600ml"));
+            db.adicionarBebida(new Bebida("Coca cola", "Zero Lata", 3.5, "350 ml", "cocacola_zero_350ml"));
+
+            db.adicionarBebida(new Bebida("Coca cola", "Normal", 8.0, "2 litros", "cocacola_2l"));
+            db.adicionarBebida(new Bebida("Coca cola", "Normal", 5.0, "600 ml", "cocacola_600ml"));
+            db.adicionarBebida(new Bebida("Coca cola", "Normal Lata", 3.5, "350 ml", "cocacola_350ml"));
+
+            //db.adicionarBebida(new Bebida("Pepsi", "Coca cola é melhor mas quebra um galho.",5.0,"600 ml"));
+            //db.adicionarBebida(new Bebida("Cachaça 51", "cachaça da boa!",3.50,"1 lt"));
+
+            //adicionando pratos
+            db.adicionarPrato(new Prato("Xis salada", "Hamburguer, alface, queijo, presunto, tomate, milho, erviolha, salada, acompanha fritas ", 20.0, 1, "xis_salada"));
+            db.adicionarPrato(new Prato("Xis Calabresa", "Calabresa, alface, queijo, presunto, tomate, milho, erviolha, salada, acompanha fritas ", 20.0, 1, "xis_calabresa"));
         }
-
-        //adicionando bebidas
-        db.adicionarBebida(new Bebida("Coca cola", "Zero",8.0,"2 litros","cocacola_zero_2l"));
-        db.adicionarBebida(new Bebida("Coca cola", "Zero",5.0,"600 ml","cocacola_zero_600ml"));
-        db.adicionarBebida(new Bebida("Coca cola", "Zero Lata",3.5,"350 ml","cocacola_zero_350ml"));
-
-        db.adicionarBebida(new Bebida("Coca cola", "Normal",8.0,"2 litros","cocacola_2l"));
-        db.adicionarBebida(new Bebida("Coca cola", "Normal",5.0,"600 ml","cocacola_600ml"));
-        db.adicionarBebida(new Bebida("Coca cola", "Normal Lata",3.5,"350 ml","cocacola_350ml"));
-
-        //db.adicionarBebida(new Bebida("Pepsi", "Coca cola é melhor mas quebra um galho.",5.0,"600 ml"));
-        //db.adicionarBebida(new Bebida("Cachaça 51", "cachaça da boa!",3.50,"1 lt"));
-
-        //adicionando pratos
-        db.adicionarPrato(new Prato("Xis salada", "Hamburguer, alface, queijo, presunto, tomate, milho, erviolha, salada, acompanha fritas ",20.0,1,"xis_salada"));
-        db.adicionarPrato(new Prato("Xis Calabresa", "Calabresa, alface, queijo, presunto, tomate, milho, erviolha, salada, acompanha fritas ",20.0,1,"xis_calabresa"));
     }
 
     private void obterTodosPedidosSemPagamentoEfetuado()

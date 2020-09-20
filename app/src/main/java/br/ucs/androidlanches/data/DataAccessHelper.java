@@ -19,8 +19,8 @@ import br.ucs.androidlanches.models.Produto;
 
 public class DataAccessHelper extends SQLiteOpenHelper
 {
-    private static final int DATABASE_VERSION = 15;
-    private static final String DATABASE_NAME = "AndroidLanchesDB";
+    private static final int DATABASE_VERSION = 18;
+    private static final String DATABASE_NAME = "AndroidLanchesDB4";
 
     // PRODUTO ...
     private static final String PRODUTO_TABELA = "Produtos";

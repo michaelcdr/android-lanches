@@ -17,13 +17,15 @@ class ViewHolderMesas extends RecyclerView.ViewHolder implements View.OnClickLis
     private final TextView txtNumeroMesa;
     private Mesa mesaAtual;
 
-    public ViewHolderMesas(@NonNull View itemView) {
+    public ViewHolderMesas(@NonNull View itemView)
+    {
         super(itemView);
         itemView.setOnClickListener(this);
         txtNumeroMesa = itemView.findViewById(R.id.txtNumeroMesaCard);
     }
 
-    public void setData(Mesa mesa) {
+    public void setData(Mesa mesa)
+    {
         this.mesaAtual = mesa;
         txtNumeroMesa.setText("Mesa " + new Integer(mesa.getNumero()).toString());
     }
@@ -31,10 +33,7 @@ class ViewHolderMesas extends RecyclerView.ViewHolder implements View.OnClickLis
     public void onClick(View view)
     {
         Intent intent = new Intent(view.getContext(), EscolherTipoProduto.class);
-
-        Bundle b = new Bundle();
-        intent.putExtra("stringBundle",b);
-        intent.putExtra("mesaId", mesaAtual.getMesaId());
+        intent.putExtra("mesaAux", mesaAtual);
         view.getContext().startActivity(intent);
     }
 }
