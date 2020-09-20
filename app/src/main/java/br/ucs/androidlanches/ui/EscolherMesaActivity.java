@@ -25,10 +25,11 @@ public class EscolherMesaActivity extends AppCompatActivity
     private RecyclerView recyclerViewMesas;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_escolher_mesa);
-
+        setTitle("Escolha uma mesa");
         carregarMesas();
     }
 
@@ -42,6 +43,7 @@ public class EscolherMesaActivity extends AppCompatActivity
         mesas = db.obterTodasMesasDesocupadas();
         MesasAdapter adapter = new MesasAdapter(mesas);
         recyclerViewMesas.setAdapter(adapter);
+
         adapter.notifyDataSetChanged();
     }
 }

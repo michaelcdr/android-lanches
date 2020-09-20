@@ -3,7 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/cardView"
     android:layout_width="match_parent"
     android:layout_height="50dp"
     android:layout_margin="5dp">
@@ -16,8 +15,7 @@
             android:id="@+id/txtNumeroMesaCard"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:layout_marginLeft="4dp"
+            android:padding="8dp"
             android:maxLines="2"
             android:textSize="25sp"
             android:textStyle="bold"

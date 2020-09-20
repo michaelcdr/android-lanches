@@ -6,40 +6,52 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import br.ucs.androidlanches.models.Bebida;
 import br.ucs.androidlanches.models.Mesa;
 import br.ucs.androidlanches.models.Pedido;
+import br.ucs.androidlanches.models.Prato;
 import br.ucs.androidlanches.models.Produto;
 
 public class DataAccessHelper extends SQLiteOpenHelper
 {
-    private static final int DATABASE_VERSION =6;
+    private static final int DATABASE_VERSION = 12;
     private static final String DATABASE_NAME = "AndroidLanchesDB";
 
     // PRODUTO ...
-    private static final String TABELA_PRODUTOS = "Produtos";
-    private static final String PRODUTOID = "produtoid";
-    private static final String NOME = "nome";
-    private static final String DESCRICAO = "descricao";
-    private static final String PRECO = "preco";
-    private static final String FOTO = "foto";
-
-    private static final String[] COLUNAS_PRODUTO = {PRODUTOID, NOME, DESCRICAO, PRECO,FOTO};
+    private static final String PRODUTO_TABELA = "Produtos";
+    private static final String PRODUTO_ID = "produtoid";
+    private static final String PRODUTO_NOME = "nome";
+    private static final String PRODUTO_DESCRICAO = "descricao";
+    private static final String PRODUTO_PRECO = "preco";
+    private static final String PRODUTO_FOTO = "foto";
+    private static final String PRODUTO_SERVE_QUANTAS_PESSOA ="serveQuantasPessoas";
+    private static final String PRODUTO_EMBALAGEM = "embalagem";
+    private static final String PRODUTO_TIPO = "tipo";
+    private static final String[] PRODUTO_COLUNAS = {PRODUTO_ID, PRODUTO_NOME, PRODUTO_DESCRICAO, PRODUTO_PRECO, PRODUTO_FOTO, PRODUTO_EMBALAGEM, PRODUTO_SERVE_QUANTAS_PESSOA, PRODUTO_TIPO};
 
     // PEDIDO ...
-    private static final String TABELA_PEDIDOS = "Pedidos";
-    private static final String NUMERO_PEDIDO = "numero";
-    private static final String PAGO_PEDIDO = "pago";
-    private static final String MESAID_PEDIDO = "mesaId";
-    private static final String[] COLUNAS_PEDIDO = {NUMERO_PEDIDO, PAGO_PEDIDO, MESAID_PEDIDO};
+    private static final String PEDIDO_TABELA = "Pedidos";
+    private static final String PEDIDO_NUMERO = "numero";
+    private static final String PEDIDO_PAGO = "pago";
+    private static final String PEDIDO_MESAID = "mesaId";
+    private static final String[] PEDIDO_COLUNAS = {PEDIDO_NUMERO, PEDIDO_PAGO, PEDIDO_MESAID};
 
     // MESA ...
-    private static final String TABELA_MESAS = "Mesas";
-    private static final String MESAID = "mesaId";
-    private static final String NUMERO_MESA = "numero";
-    private static final String[] COLUNAS_MESA = {MESAID, NUMERO_MESA};
+    private static final String MESA_TABELA = "Mesas";
+    private static final String MESA_MESAID = "mesaId";
+    private static final String MESA_NUMERO = "numero";
+    private static final String[] MESA_COLUNAS = {MESA_MESAID, MESA_NUMERO};
+
+    //TABELA PEDIDO ITENS...
+    private static final String PEDIDO_ITEM_TABELA = "PedidosItens";
+    private static final String PEDIDO_ITEM_PEDIDO_ITEM_ID = "pedidoItemId";
+    private static final String PEDIDO_ITEM_NUMERO_PEDIDO = "numero";
+    private static final String PEDIDO_ITEM_QUANTIDADE = "quantidade";
 
     public DataAccessHelper(Context context)
     {
@@ -49,33 +61,42 @@ public class DataAccessHelper extends SQLiteOpenHelper
     @Override
     public void onCreate(SQLiteDatabase db)
     {
-        db.execSQL("CREATE TABLE "+TABELA_MESAS+" (mesaId INTEGER PRIMARY KEY AUTOINCREMENT, numero INTEGER) ");
+        String sqlCreateTableMesa    = "CREATE TABLE "+ MESA_TABELA +" (mesaId INTEGER PRIMARY KEY AUTOINCREMENT, numero INTEGER) ";
 
-        String sqlCreateTable = "CREATE TABLE "+ TABELA_PRODUTOS + " ("+
-                PRODUTOID  + " INTEGER PRIMARY KEY AUTOINCREMENT,"+
-                NOME + " TEXT,"+
-                DESCRICAO + " TEXT,"+
-                FOTO + " TEXT,"+
-                PRECO + " DOUBLE)";
+        String sqlCreateTableProduto = "CREATE TABLE "+ PRODUTO_TABELA + " (" +
+                PRODUTO_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                PRODUTO_NOME + " TEXT NOT NULL, " +
+                PRODUTO_DESCRICAO + " TEXT NOT NULL,"+
+                PRODUTO_FOTO + " TEXT,"+
+                PRODUTO_PRECO + " DOUBLE, " +
+                PRODUTO_TIPO + " TEXT, " +
+                PRODUTO_SERVE_QUANTAS_PESSOA + " INTEGER," +
+                PRODUTO_EMBALAGEM +  " TEXT)";
 
-        db.execSQL(sqlCreateTable);
+        String sqlCreatePedidos =       "CREATE TABLE " + PEDIDO_TABELA + " ("+
+                PEDIDO_NUMERO + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                PEDIDO_PAGO + " INTEGER, " +
+                PEDIDO_MESAID + " INTEGER )";
 
-        db.execSQL(
-            "CREATE TABLE " + TABELA_PEDIDOS + " ("+
-            NUMERO_PEDIDO + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            PAGO_PEDIDO + " INTEGER, " +
-            MESAID_PEDIDO + " INTEGER )"
-        );
+        String sqlCreatePedidosItens =  "CREATE TABLE " + PEDIDO_ITEM_TABELA + " ("+
+                PEDIDO_ITEM_PEDIDO_ITEM_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                PEDIDO_ITEM_NUMERO_PEDIDO  + " INTEGER NOT NULL, " +
+                PEDIDO_ITEM_QUANTIDADE + " INTEGER NOT NULL, " +
+                "FOREIGN KEY ("+ PEDIDO_ITEM_NUMERO_PEDIDO +") REFERENCES "+PEDIDO_TABELA+"("+PEDIDO_NUMERO+"))";
 
-
+        db.execSQL(sqlCreateTableMesa);
+        db.execSQL(sqlCreateTableProduto);
+        db.execSQL(sqlCreatePedidos);
+        db.execSQL(sqlCreatePedidosItens);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
     {
-        db.execSQL("DROP TABLE IF EXISTS "+ TABELA_PRODUTOS);
-        db.execSQL("DROP TABLE IF EXISTS "+ TABELA_MESAS);
-        db.execSQL("DROP TABLE IF EXISTS "+ TABELA_PEDIDOS);
+        db.execSQL("DROP TABLE IF EXISTS "+ PRODUTO_TABELA);
+        db.execSQL("DROP TABLE IF EXISTS "+ MESA_TABELA);
+        db.execSQL("DROP TABLE IF EXISTS "+ PEDIDO_ITEM_TABELA);
+        db.execSQL("DROP TABLE IF EXISTS "+ PEDIDO_TABELA);
         this.onCreate(db);
     }
 
@@ -84,8 +105,8 @@ public class DataAccessHelper extends SQLiteOpenHelper
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        values.put(NUMERO_MESA, mesa.getNumero());
-        db.insert(TABELA_MESAS, null, values);
+        values.put(MESA_NUMERO, mesa.getNumero());
+        db.insert(MESA_TABELA, null, values);
         db.close();
     }
 
@@ -102,7 +123,7 @@ public class DataAccessHelper extends SQLiteOpenHelper
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(
-                TABELA_MESAS, COLUNAS_MESA, " " + MESAID +"  = ?",  new String[] { String.valueOf(id) },
+                MESA_TABELA, MESA_COLUNAS, " " + MESA_MESAID +"  = ?",  new String[] { String.valueOf(id) },
                 null, // e. group by
                 null, // f. having
                 null, // g. order by
@@ -118,14 +139,12 @@ public class DataAccessHelper extends SQLiteOpenHelper
         }
     }
 
-
-
     public ArrayList<Mesa> obterTodasMesasDesocupadas()
     {
         ArrayList<Mesa> mesas = new ArrayList<Mesa>();
 
-        String query = "SELECT * FROM " + TABELA_MESAS + " WHERE  "+MESAID +
-                " NOT IN (SELECT " + MESAID + " From " + TABELA_PEDIDOS + " GROUP BY "+MESAID+") ORDER BY " + NUMERO_MESA;
+        String query = "SELECT * FROM " + MESA_TABELA + " WHERE  "+ MESA_MESAID +
+                " NOT IN (SELECT " + MESA_MESAID + " From " + PEDIDO_TABELA + " GROUP BY "+ MESA_MESAID +") ORDER BY " + MESA_NUMERO;
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
@@ -139,19 +158,52 @@ public class DataAccessHelper extends SQLiteOpenHelper
         return mesas;
     }
 
-    public void adicionarProduto(Produto produto)
+    public List<Mesa> obterTodasMesas()
+    {
+        List<Mesa> mesas = new ArrayList<>();
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM Mesas", null);
+        if (cursor.moveToFirst())
+        {
+            do {
+                Mesa mesa = cursorToMesa(cursor);
+                mesas.add(mesa);
+            } while (cursor.moveToNext());
+        }
+        return mesas;
+    }
+
+    public void adicionarBebida(Bebida produto)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
-        values.put(NOME, produto.getNome());
-        values.put(DESCRICAO, produto.getDescricao());
-        values.put(PRECO, produto.getPreco());
-        values.put(FOTO, produto.getFoto());
-        db.insert(TABELA_PRODUTOS, null, values);
+        values.put(PRODUTO_NOME, produto.getNome());
+        values.put(PRODUTO_DESCRICAO, produto.getDescricao());
+        values.put(PRODUTO_PRECO, produto.getPreco());
+        values.put(PRODUTO_FOTO, produto.getFoto());
+        values.put(PRODUTO_TIPO, "bebida");
+        values.put(PRODUTO_EMBALAGEM, produto.getEmbalagem());
+
+        db.insert(PRODUTO_TABELA, null, values);
         db.close();
     }
 
+    public void adicionarPrato(Prato produto)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(PRODUTO_NOME, produto.getNome());
+        values.put(PRODUTO_DESCRICAO, produto.getDescricao());
+        values.put(PRODUTO_PRECO, produto.getPreco());
+        values.put(PRODUTO_FOTO, produto.getFoto());
+        values.put(PRODUTO_TIPO, "prato");
+        values.put(PRODUTO_SERVE_QUANTAS_PESSOA, produto.getServeQuantasPessoas());
+
+        db.insert(PRODUTO_TABELA, null, values);
+        db.close();
+    }
 
 
     public Produto obterProduto(int id)
@@ -159,7 +211,7 @@ public class DataAccessHelper extends SQLiteOpenHelper
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.query(
-                TABELA_PRODUTOS, COLUNAS_PRODUTO, " " + PRODUTOID + " = ?",  new String[] { String.valueOf(id) },
+                PRODUTO_TABELA, PRODUTO_COLUNAS, " " + PRODUTO_ID + " = ?",  new String[] { String.valueOf(id) },
                 null, // e. group by
                 null, // f. having
                 null, // g. order by
@@ -185,6 +237,20 @@ public class DataAccessHelper extends SQLiteOpenHelper
         return produto;
     }
 
+    private Bebida cursorToBebida(Cursor cursor)
+    {
+        Bebida produto = new Bebida();
+        //{PRODUTO_ID, PRODUTO_NOME, PRODUTO_DESCRICAO, PRODUTO_PRECO, PRODUTO_FOTO, PRODUTO_EMBALAGEM, PRODUTO_SERVE_QUANTAS_PESSOA, PRODUTO_TIPO};
+        produto.setProdutoId(Integer.parseInt(cursor.getString(0)));
+        produto.setNome(cursor.getString(1));
+        produto.setDescricao(cursor.getString(2));
+        produto.setPreco(Double.parseDouble(cursor.getString(3)));
+        produto.setFoto(cursor.getString(4));
+        produto.setEmbalagem(cursor.getString(5));
+        produto.setTipo(cursor.getString(7));
+        return produto;
+    }
+
     private Pedido cursorToPedido(Cursor cursor)
     {
         Mesa mesa = new Mesa();
@@ -200,19 +266,22 @@ public class DataAccessHelper extends SQLiteOpenHelper
         return pedido;
     }
 
-    public ArrayList<Produto> obterTodosProdutos()
+    public ArrayList<Bebida> obterTodasBebidas()
     {
-        ArrayList<Produto> produtos = new ArrayList<>();
-        String query = "SELECT * FROM " + TABELA_PRODUTOS + " ORDER BY " + NOME;
+        ArrayList<Bebida> bebidas = new ArrayList<>();
+        String colunas = android.text.TextUtils.join(",",PRODUTO_COLUNAS);
+        String query = "SELECT "+colunas +" FROM " + PRODUTO_TABELA + " WHERE "+ PRODUTO_TIPO +" = 'bebida' ORDER BY " + PRODUTO_NOME;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
-        if (cursor.moveToFirst()) {
+
+        if (cursor.moveToFirst())
+        {
             do {
-                Produto produto = cursorToProduto(cursor);
-                produtos.add(produto);
+                Bebida bebida = cursorToBebida(cursor);
+                bebidas.add(bebida);
             } while (cursor.moveToNext());
         }
-        return produtos;
+        return bebidas;
     }
 
     public int atualizarProduto(Produto produto)
@@ -220,15 +289,15 @@ public class DataAccessHelper extends SQLiteOpenHelper
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(NOME, produto.getNome());
-        values.put(DESCRICAO, produto.getDescricao());
-        values.put(FOTO, produto.getFoto());
-        values.put(PRECO, new Double(produto.getPreco()));
+        values.put(PRODUTO_NOME, produto.getNome());
+        values.put(PRODUTO_DESCRICAO, produto.getDescricao());
+        values.put(PRODUTO_FOTO, produto.getFoto());
+        values.put(PRODUTO_PRECO, new Double(produto.getPreco()));
 
         int linhasAfetadas = db.update(
-                TABELA_PRODUTOS,
+                PRODUTO_TABELA,
                 values,
-                PRODUTOID + " = ?",  new String[] { String.valueOf(produto.getProdutoId()) }
+                PRODUTO_ID + " = ?",  new String[] { String.valueOf(produto.getProdutoId()) }
         );
 
         db.close();
@@ -240,26 +309,11 @@ public class DataAccessHelper extends SQLiteOpenHelper
     {
         SQLiteDatabase db = this.getWritableDatabase();
         int linhasAfetadas = db.delete(
-                TABELA_PRODUTOS,
-                PRODUTOID + " = ?", new String[] { String.valueOf(produto.getProdutoId()) }
+                PRODUTO_TABELA,
+                PRODUTO_ID + " = ?", new String[] { String.valueOf(produto.getProdutoId()) }
         );
         db.close();
         return linhasAfetadas;
-    }
-
-    public List<Mesa> obterTodasMesas()
-    {
-        List<Mesa> mesas = new ArrayList<>();
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM Mesas", null);
-        if (cursor.moveToFirst())
-        {
-            do {
-                Mesa mesa = cursorToMesa(cursor);
-                mesas.add(mesa);
-            } while (cursor.moveToNext());
-        }
-        return mesas;
     }
 
     public List<Pedido> obterTodosPedidosSemPagamentoEfetuado()
@@ -289,16 +343,34 @@ public class DataAccessHelper extends SQLiteOpenHelper
         return pedidos;
     }
 
-    private void Seed()
-    {
-        List<Mesa> mesas = obterTodasMesas();
+    public List<Prato> obterTodosPratos() {
+        ArrayList<Prato> pratos = new ArrayList<>();
+        String colunas = android.text.TextUtils.join(",",PRODUTO_COLUNAS);
+        String query = "SELECT "+colunas +" FROM " + PRODUTO_TABELA + " WHERE "+ PRODUTO_TIPO +" = 'prato' ORDER BY " + PRODUTO_NOME;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
 
-        if (mesas.size() == 0)
+        if (cursor.moveToFirst())
         {
-            for (int i = 1; i <= 10; i++)
-            {
-                adicionarMesa(new Mesa(i));
-            }
+            do {
+                Prato prato = cursorToPrato(cursor);
+                pratos.add(prato);
+            } while (cursor.moveToNext());
         }
+        return pratos;
+    }
+
+    private Prato cursorToPrato(Cursor cursor)
+    {
+        Prato produto = new Prato();
+        //{PRODUTO_ID, PRODUTO_NOME, PRODUTO_DESCRICAO, PRODUTO_PRECO, PRODUTO_FOTO, PRODUTO_EMBALAGEM, PRODUTO_SERVE_QUANTAS_PESSOA, PRODUTO_TIPO};
+        produto.setProdutoId(Integer.parseInt(cursor.getString(0)));
+        produto.setNome(cursor.getString(1));
+        produto.setDescricao(cursor.getString(2));
+        produto.setPreco(Double.parseDouble(cursor.getString(3)));
+        produto.setFoto(cursor.getString(4));
+        produto.setServeQuantasPessoas(Integer.parseInt(cursor.getString(6)));
+        produto.setTipo(cursor.getString(7));
+        return produto;
     }
 }

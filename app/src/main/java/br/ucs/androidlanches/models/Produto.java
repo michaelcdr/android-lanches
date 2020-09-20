@@ -9,6 +9,7 @@ public class Produto implements Serializable
     private String descricao;
     private double preco;
     private String foto;
+    private String tipo;
 
     public Produto(){}
 
@@ -56,5 +57,11 @@ public class Produto implements Serializable
 
     public void setFoto(String foto) {
         this.foto = foto;
+    }
+
+    public String getTipo() { return this.tipo; }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 }

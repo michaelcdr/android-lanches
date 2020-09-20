@@ -9,7 +9,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".EscolherTipoProduto"></activity>
+        <activity android:name=".ListaDePratosActivity"></activity>
+        <activity android:name=".ListaDeBebidas" />
+        <activity android:name=".EscolherTipoProduto" />
         <activity android:name=".EscolherMesaActivity" />
         <activity android:name=".CriarPedido" />
         <activity android:name=".MainActivity">

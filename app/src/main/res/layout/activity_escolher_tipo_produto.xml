@@ -6,4 +6,32 @@
     android:layout_height="match_parent"
     tools:context="br.ucs.androidlanches.ui.EscolherTipoProduto">
 
+    <Button
+        android:id="@+id/btn_lanches"
+        android:layout_width="180dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="204dp"
+        android:background="@color/VerdeOutro"
+        android:textColor="#fff"
+        android:text="Lanches"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.501"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btn_bebidas"
+        android:layout_width="180dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="312dp"
+        android:background="@color/VerdeOutro"
+        android:textColor="#fff"
+        android:text="Bebidas"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
