@@ -4,17 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import br.ucs.androidlanches.data.DataAccessHelper;
 import br.ucs.androidlanches.models.Mesa;
-import br.ucs.androidlanches.models.Pedido;
 
-public class EscolherTipoProduto extends AppCompatActivity
+public class EscolherTipoProdutoActivity extends AppCompatActivity
 {
     private Mesa mesa;
 
@@ -26,13 +20,13 @@ public class EscolherTipoProduto extends AppCompatActivity
         setTitle("Escolha o tipo de produto desejado");
 
         Intent dadosActivityAnterior = getIntent();
-        mesa = (Mesa)dadosActivityAnterior.getSerializableExtra("mesaAux");
+        mesa = (Mesa)dadosActivityAnterior.getSerializableExtra("mesaParaSelecaoTipo");
 
         findViewById(R.id.btn_bebidas).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intentListaBebidas = new Intent(getBaseContext(), ListaDeBebidas.class);
-          //      intentListaBebidas.putExtra("mesa",mesa);
+                Intent intentListaBebidas = new Intent(getBaseContext(), ListaDeBebidasActivity.class);
+                intentListaBebidas.putExtra("mesaAuxTeste2",mesa);
                 startActivity(intentListaBebidas);
             }
         });
@@ -41,7 +35,7 @@ public class EscolherTipoProduto extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 Intent intentListaPratos = new Intent(getBaseContext(), ListaDePratosActivity.class);
-                //intentListaPratos.putExtra("mesa",mesa);
+                intentListaPratos.putExtra("mesaAuxTeste2",mesa);
                 startActivity(intentListaPratos);
             }
         });

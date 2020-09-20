@@ -1,11 +1,14 @@
 package br.ucs.androidlanches.recycleview.adapter;
 
 import android.media.Image;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.text.DecimalFormat;
@@ -49,9 +52,10 @@ class ViewHolderBebidas extends RecyclerView.ViewHolder implements View.OnClickL
 
     public void onClick(View view)
     {
-        /*
-        Intent intent = new Intent(view.getContext(), EscolherTipoProduto.class);
-        Bundle b = new Bundle();
+        
+        //Intent intent = new Intent(view.getContext(), EscolherTipoProduto.class);
+
+        /*Bundle b = new Bundle();
         b.putString("umaString","aqaa");
         intent.putExtra("stringBundle",b);
         intent.putExtra("mensagem","lalalalalalal");

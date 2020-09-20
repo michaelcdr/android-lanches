@@ -1,7 +1,6 @@
 package br.ucs.androidlanches.recycleview.adapter;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 import br.ucs.androidlanches.models.Mesa;
-import br.ucs.androidlanches.ui.EscolherTipoProduto;
+import br.ucs.androidlanches.ui.EscolherTipoProdutoActivity;
 import br.ucs.androidlanches.ui.R;
 
 class ViewHolderMesas extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -32,8 +31,8 @@ class ViewHolderMesas extends RecyclerView.ViewHolder implements View.OnClickLis
 
     public void onClick(View view)
     {
-        Intent intent = new Intent(view.getContext(), EscolherTipoProduto.class);
-        intent.putExtra("mesaAux", mesaAtual);
+        Intent intent = new Intent(view.getContext(), EscolherTipoProdutoActivity.class);
+        intent.putExtra("mesaParaSelecaoTipo", mesaAtual);
         view.getContext().startActivity(intent);
     }
 }

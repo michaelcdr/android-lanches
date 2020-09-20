@@ -10,10 +10,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".ListaDePratosActivity"></activity>
-        <activity android:name=".ListaDeBebidas" />
-        <activity android:name=".EscolherTipoProduto" />
+        <activity android:name=".ListaDeBebidasActivity" />
+        <activity android:name=".EscolherTipoProdutoActivity" />
         <activity android:name=".EscolherMesaActivity" />
-        <activity android:name=".CriarPedido" />
+        <activity android:name=".CriarPedidoActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

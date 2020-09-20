@@ -10,7 +10,7 @@ import br.ucs.androidlanches.data.DataAccessHelper;
 import br.ucs.androidlanches.models.Bebida;
 import br.ucs.androidlanches.recycleview.adapter.BebidasAdapter;
 
-public class ListaDeBebidas extends AppCompatActivity
+public class ListaDeBebidasActivity extends AppCompatActivity
 {
     private List<Bebida> bebidas = new ArrayList<>();
     private DataAccessHelper db = new DataAccessHelper(this);

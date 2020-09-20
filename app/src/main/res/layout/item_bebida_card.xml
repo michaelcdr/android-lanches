@@ -71,6 +71,7 @@
                 tools:text="R$ 99,99" />
 
             <Button
+                android:id="@+id/btnEscolherBebida"
                 android:layout_width="100dp"
                 android:background="@color/VerdeOutro"
                 android:layout_height="50dp"
