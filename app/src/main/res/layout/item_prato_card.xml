@@ -5,16 +5,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp">
+    android:layout_marginTop="5dp"
+    android:layout_marginBottom="15dp"
+    android:layout_marginStart="15dp"
+    android:layout_marginEnd="15dp">
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
         <LinearLayout
-            android:layout_width="120dp"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="15dp" >
             <ImageView
                 android:id="@+id/imgPratoCard"
                 android:layout_width="wrap_content"
@@ -22,6 +26,7 @@
                 android:contentDescription="Img teste"
                 android:src="@drawable/xis_calabresa" />
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -30,7 +35,7 @@
                 android:id="@+id/txtNomePratoCard"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
+                android:layout_marginBottom="5dp"
                 android:textSize="30sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
@@ -41,7 +46,7 @@
                 android:id="@+id/txtDescricaoPratoCard"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
+                android:layout_marginBottom="5dp"
                 android:maxLines="3"
                 android:textSize="18sp"
                 tools:text="Lorem ipsum dolor, lorem ipsum dolor, lorem ipsum dolor, lorem ipsum dolor, lorem ipsum dolor, lorem ipsum dolor" />
@@ -50,12 +55,20 @@
                 android:id="@+id/txtPrecoPratoCard"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
+                android:layout_marginBottom="5dp"
                 android:maxLines="1"
                 android:textSize="28sp"
                 tools:text="R$ 99,99" />
 
+            <Button
+                android:layout_width="100dp"
+                android:background="@color/VerdeOutro"
+                android:layout_height="50dp"
+                android:layout_gravity="start"
+                android:textColor="#fff"
+                android:text="Escolher"></Button>
         </LinearLayout>
     </LinearLayout>
+
 </androidx.cardview.widget.CardView>
 

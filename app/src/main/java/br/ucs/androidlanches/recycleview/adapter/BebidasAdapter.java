@@ -1,5 +1,6 @@
 package br.ucs.androidlanches.recycleview.adapter;
 
+import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ class ViewHolderBebidas extends RecyclerView.ViewHolder implements View.OnClickL
     private final TextView txtDescricaoBebida;
     private final TextView txtPrecoBebida;
     private final ImageView imgProdutoCard;
+    private final TextView txtEmbalagemCard;
 
     private Bebida bebidaAtual;
 
@@ -29,6 +31,7 @@ class ViewHolderBebidas extends RecyclerView.ViewHolder implements View.OnClickL
         txtNomeBebida = itemView.findViewById(R.id.txtNomeBebidaCard);
         txtDescricaoBebida = itemView.findViewById(R.id.txtDescricaoBebidaCard);
         txtPrecoBebida = itemView.findViewById(R.id.txtPrecoBebidaCard);
+        txtEmbalagemCard =itemView.findViewById(R.id.txtEmbalagemBebidaCard);
         imgProdutoCard = itemView.findViewById(R.id.imgProdutoCard);
     }
 
@@ -36,7 +39,7 @@ class ViewHolderBebidas extends RecyclerView.ViewHolder implements View.OnClickL
         this.bebidaAtual = bebida;
         txtNomeBebida.setText(bebida.getNome());
         txtDescricaoBebida.setText(bebida.getDescricao());
-
+        txtEmbalagemCard.setText(bebida.getEmbalagem());
         NumberFormat nf = new DecimalFormat ("#,##0.00", new DecimalFormatSymbols(new Locale("pt", "BR")));
         String precoFormatado =  nf.format(bebida.getPreco());
         txtPrecoBebida.setText("R$ " + precoFormatado);

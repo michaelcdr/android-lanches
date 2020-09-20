@@ -33,10 +33,8 @@ class ViewHolderMesas extends RecyclerView.ViewHolder implements View.OnClickLis
         Intent intent = new Intent(view.getContext(), EscolherTipoProduto.class);
 
         Bundle b = new Bundle();
-        b.putString("umaString","aqaa");
         intent.putExtra("stringBundle",b);
-        intent.putExtra("mensagem","lalalalalalal");
-        intent.putExtra("mesaId",mesaAtual.getMesaId());
+        intent.putExtra("mesaId", mesaAtual.getMesaId());
         view.getContext().startActivity(intent);
     }
 }

@@ -16,8 +16,7 @@ import br.ucs.androidlanches.models.Pedido;
 public class EscolherTipoProduto extends AppCompatActivity
 {
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_escolher_tipo_produto);
         setTitle("Escolha o tipo de produto desejado");
