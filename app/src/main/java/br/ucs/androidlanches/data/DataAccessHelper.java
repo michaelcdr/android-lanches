@@ -14,13 +14,14 @@ import java.util.List;
 import br.ucs.androidlanches.models.Bebida;
 import br.ucs.androidlanches.models.Mesa;
 import br.ucs.androidlanches.models.Pedido;
+import br.ucs.androidlanches.models.PedidoItem;
 import br.ucs.androidlanches.models.Prato;
 import br.ucs.androidlanches.models.Produto;
 
 public class DataAccessHelper extends SQLiteOpenHelper
 {
-    private static final int DATABASE_VERSION = 19;
-    private static final String DATABASE_NAME = "AndroidLanchesDB4";
+    private static final int DATABASE_VERSION = 20;
+    private static final String DATABASE_NAME = "AndroidLanchesDB";
 
     // PRODUTO ...
     private static final String PRODUTO_TABELA = "Produtos";
@@ -258,20 +259,7 @@ public class DataAccessHelper extends SQLiteOpenHelper
         return produto;
     }
 
-    private Pedido cursorToPedido(Cursor cursor)
-    {
-        Mesa mesa = new Mesa();
-        mesa.setMesaId(Integer.parseInt(cursor.getString(2)));
-        mesa.setNumero(Integer.parseInt(cursor.getString(3)));
 
-        Pedido pedido = new Pedido(
-            Integer.parseInt(cursor.getString(0)),
-            Boolean.parseBoolean(cursor.getString(1)),
-            mesa
-        );
-
-        return pedido;
-    }
 
     public ArrayList<Bebida> obterTodasBebidas()
     {
@@ -323,32 +311,6 @@ public class DataAccessHelper extends SQLiteOpenHelper
         return linhasAfetadas;
     }
 
-    public List<Pedido> obterTodosPedidosSemPagamentoEfetuado()
-    {
-        List<Pedido> pedidos = new ArrayList<>();
-        /*
-        pedidos.add(new Pedido(1,false, new Mesa(01)));
-        pedidos.add(new Pedido(2,false, new Mesa(02)));
-        pedidos.add(new Pedido(3,false, new Mesa(03)));
-        pedidos.add(new Pedido(4,false, new Mesa(04)));
-        pedidos.add(new Pedido(5,false, new Mesa(05)));*/
-
-        String query = "SELECT Pedidos.numero, Pedidos.pago, Mesas.mesaId, Mesas.numero FROM Pedidos  "+
-                       "INNER JOIN Mesas  ON Pedidos.mesaId = Mesas.mesaId " +
-                       "WHERE Pedidos.pago = 0 ORDER BY  Pedidos.numero";
-
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(query, null);
-        if (cursor.moveToFirst())
-        {
-            do {
-                Pedido pedido = cursorToPedido(cursor);
-                pedidos.add(pedido);
-            } while (cursor.moveToNext());
-        }
-
-        return pedidos;
-    }
 
     public List<Prato> obterTodosPratos() {
         ArrayList<Prato> pratos = new ArrayList<>();
@@ -462,10 +424,6 @@ public class DataAccessHelper extends SQLiteOpenHelper
             }
 
             return false;
-
-
-
-
         }
     }
 
@@ -499,5 +457,107 @@ public class DataAccessHelper extends SQLiteOpenHelper
 
         db.close();
         return linhasAfetadas;
+    }
+
+
+    private Pedido cursorToPedido(Cursor cursor)
+    {
+        Mesa mesa = new Mesa();
+        mesa.setMesaId(Integer.parseInt(cursor.getString(2)));
+        mesa.setNumero(Integer.parseInt(cursor.getString(3)));
+
+        Pedido pedido = new Pedido(
+                Integer.parseInt(cursor.getString(0)),
+                Boolean.parseBoolean(cursor.getString(1)),
+                mesa
+        );
+
+        return pedido;
+    }
+
+    public List<Pedido> obterTodosPedidosSemPagamentoEfetuado()
+    {
+        List<Pedido> pedidos = new ArrayList<>();
+
+        String query = "SELECT Pedidos.numero, Pedidos.pago, Mesas.mesaId, Mesas.numero FROM Pedidos  "+
+                "INNER JOIN Mesas  ON Pedidos.mesaId = Mesas.mesaId " +
+                "WHERE Pedidos.pago = 0 ORDER BY  Pedidos.numero";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor.moveToFirst())
+        {
+            do {
+                Pedido pedido = cursorToPedido(cursor);
+                pedidos.add(pedido);
+            } while (cursor.moveToNext());
+        }
+
+        return pedidos;
+    }
+
+    public Pedido obterPedido(int numeroPedido)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String query = "SELECT Pedidos.numero, Pedidos.pago, Mesas.mesaId, Mesas.numero FROM Pedidos  "+
+                "INNER JOIN Mesas  ON Pedidos.mesaId = Mesas.mesaId " +
+                "WHERE Pedidos.numero = ? ";
+
+        Cursor cursor = db.rawQuery(query, new String[] { String.valueOf(numeroPedido) });
+
+        if (cursor == null) {
+            return null;
+        } else {
+            cursor.moveToFirst();
+            Pedido pedido = cursorToPedido(cursor);
+
+            List<PedidoItem> itens = obterItensPedido(numeroPedido);
+            pedido.setItens(itens);
+            return pedido;
+        }
+    }
+
+    private List<PedidoItem> obterItensPedido(int numeroPedido)
+    {
+        ArrayList<PedidoItem> itens = new ArrayList<>();
+
+        String query = "SELECT " + PEDIDO_ITEM_TABELA + "." + PEDIDO_ITEM_PEDIDO_ITEM_ID + ","+
+                PEDIDO_ITEM_TABELA + "." + PEDIDO_ITEM_QUANTIDADE  + ","+
+                PEDIDO_ITEM_TABELA + "." + PEDIDO_ITEM_PRODUTO_ID  + ","+
+                PRODUTO_TABELA + "." + PRODUTO_NOME + "," +
+                PRODUTO_TABELA + "." + PRODUTO_FOTO + "," +
+                PRODUTO_TABELA + "." + PRODUTO_PRECO +
+                " FROM " + PEDIDO_ITEM_TABELA +
+                " INNER JOIN " + PRODUTO_TABELA + " ON " + PRODUTO_TABELA + "." + PRODUTO_ID + " = " + PEDIDO_ITEM_TABELA + "." + PEDIDO_ITEM_PRODUTO_ID +" "+
+                " WHERE "+PEDIDO_ITEM_TABELA+"." + PEDIDO_ITEM_NUMERO_PEDIDO + " = ?";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(numeroPedido)});
+
+        if (cursor.moveToFirst())
+        {
+            do {
+                PedidoItem pedidoItem = cursorToPedidoItem(cursor);
+                itens.add(pedidoItem);
+            } while (cursor.moveToNext());
+        }
+        return itens;
+    }
+
+    private PedidoItem cursorToPedidoItem(Cursor cursor)
+    {
+        PedidoItem pedidoItem = new PedidoItem();
+        pedidoItem.setPedidoItemId(Integer.parseInt(cursor.getString(0)));
+        pedidoItem.setQuantidade(Integer.parseInt(cursor.getString(1)));
+
+        Produto produto = new Produto();
+        produto.setProdutoId(Integer.parseInt(cursor.getString(2)));
+        produto.setNome(cursor.getString(3));
+        produto.setFoto(cursor.getString(4));
+        produto.setPreco(Double.parseDouble(cursor.getString(5)));
+
+        pedidoItem.setProduto(produto);
+        return pedidoItem;
     }
 }

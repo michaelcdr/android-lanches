@@ -6,14 +6,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.widget.Toast;
+
 import java.util.ArrayList;
 import java.util.List;
 import br.ucs.androidlanches.data.DataAccessHelper;
 import br.ucs.androidlanches.models.Bebida;
 import br.ucs.androidlanches.models.Mesa;
 import br.ucs.androidlanches.models.Prato;
+import br.ucs.androidlanches.recycleview.adapter.IOnItemClickBtnPagarPedidoListener;
+import br.ucs.androidlanches.recycleview.adapter.IOnItemClickBtnVerPedidoListener;
 import br.ucs.androidlanches.recycleview.adapter.PedidosAdapter;
 import br.ucs.androidlanches.models.Pedido;
 
@@ -44,6 +46,13 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        obterTodosPedidosSemPagamentoEfetuado();
     }
 
     private void executarSeedSeNomTiverMesas()
@@ -83,31 +92,28 @@ public class MainActivity extends AppCompatActivity
         recyclerViewPedidos.setLayoutManager(layoutManager);
 
         pedidos = db.obterTodosPedidosSemPagamentoEfetuado();
+        configurarAdapter(pedidos,recyclerViewPedidos);
+    }
 
-        PedidosAdapter adapter = new PedidosAdapter(pedidos);
-        recyclerViewPedidos.setAdapter(adapter);
+    private void configurarAdapter(List<Pedido> pedidos, RecyclerView recyclerView)
+    {
+        PedidosAdapter adapter = new PedidosAdapter(this, pedidos);
+        recyclerView.setAdapter(adapter);
+        adapter.setOnItemClickVerPedidoListener(new IOnItemClickBtnVerPedidoListener() {
+            @Override
+            public void onItemClick(Pedido pedido) {
+                Intent irParaDetalhesPedido = new Intent(MainActivity.this, DetalhesDoPedidoActivity.class);
+                irParaDetalhesPedido.putExtra("numeroPedido",pedido.getNumero());
+                startActivityForResult(irParaDetalhesPedido, 1);
+            }
+        });
+        adapter.setOnItemClickBtnPagarListener(new IOnItemClickBtnPagarPedidoListener() {
+            @Override
+            public void onItemClick(Pedido pedido) {
+                Toast.makeText(getBaseContext(),"Você clicou pagar pedido " , Toast.LENGTH_SHORT ).show();
+            }
+        });
+
         adapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }

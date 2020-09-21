@@ -1,6 +1,7 @@
 package br.ucs.androidlanches.models;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Pedido implements Serializable
 {
@@ -8,8 +9,9 @@ public class Pedido implements Serializable
     private boolean pago;
     private Mesa mesa;
     private double gorjeta;
+    private List<PedidoItem> itens;
 
-    public Pedido(int numero,  boolean pago, Mesa mesa) {
+    public Pedido(int numero, boolean pago, Mesa mesa) {
         this.numero = numero;
         this.pago = pago;
         this.mesa = mesa;
@@ -40,4 +42,14 @@ public class Pedido implements Serializable
     }
     public double getGorjeta(){ return this.gorjeta; }
     public void setGorjeta(double gorjeta){  this.gorjeta = gorjeta; }
+
+    public void setItens(List<PedidoItem> itens)
+    {
+        this.itens = itens;
+    }
+
+    public List<PedidoItem> getItens()
+    {
+        return this.itens;
+    }
 }
