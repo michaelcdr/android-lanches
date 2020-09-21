@@ -10,7 +10,7 @@ import br.ucs.androidlanches.models.Mesa;
 
 public class EscolherTipoProdutoActivity extends AppCompatActivity
 {
-    private Mesa mesa;
+    private int mesaId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -20,23 +20,23 @@ public class EscolherTipoProdutoActivity extends AppCompatActivity
         setTitle("Escolha o tipo de produto desejado");
 
         Intent dadosActivityAnterior = getIntent();
-        mesa = (Mesa)dadosActivityAnterior.getSerializableExtra("mesaParaSelecaoTipo");
+        mesaId = dadosActivityAnterior.getIntExtra("mesaId",0);
 
         findViewById(R.id.btn_bebidas).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intentListaBebidas = new Intent(getBaseContext(), ListaDeBebidasActivity.class);
-                intentListaBebidas.putExtra("mesaAuxTeste2",mesa);
-                startActivity(intentListaBebidas);
+                Intent abrirSelecaoBebidas = new Intent(getBaseContext(), ListaDeBebidasActivity.class);
+                abrirSelecaoBebidas.putExtra("mesaId", mesaId);
+                startActivityForResult(abrirSelecaoBebidas, 1);
             }
         });
 
         findViewById(R.id.btn_lanches).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intentListaPratos = new Intent(getBaseContext(), ListaDePratosActivity.class);
-                intentListaPratos.putExtra("mesaAuxTeste2",mesa);
-                startActivity(intentListaPratos);
+                Intent abrirSelecaoPratos = new Intent(getBaseContext(), ListaDePratosActivity.class);
+                abrirSelecaoPratos.putExtra("mesaId",mesaId);
+                startActivityForResult(abrirSelecaoPratos,1);
             }
         });
     }

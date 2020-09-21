@@ -1,22 +1,19 @@
 package br.ucs.androidlanches.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import br.ucs.androidlanches.data.DataAccessHelper;
 import br.ucs.androidlanches.models.Mesa;
-import br.ucs.androidlanches.models.Pedido;
-import br.ucs.androidlanches.recycleview.adapter.MesasAdapter;
-import br.ucs.androidlanches.recycleview.adapter.PedidosAdapter;
+import br.ucs.androidlanches.recycleview.adapter.IOnItemClickMesaListener;
+import br.ucs.androidlanches.recycleview.adapter.MesaAdapter;
 
 public class EscolherMesaActivity extends AppCompatActivity
 {
@@ -33,6 +30,13 @@ public class EscolherMesaActivity extends AppCompatActivity
         carregarMesas();
     }
 
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        carregarMesas();
+    }
+
     private void carregarMesas()
     {
         recyclerViewMesas = findViewById(R.id.recycleViewMesas);
@@ -41,9 +45,23 @@ public class EscolherMesaActivity extends AppCompatActivity
         recyclerViewMesas.setLayoutManager(layoutManager);
 
         mesas = db.obterTodasMesasDesocupadas();
-        MesasAdapter adapter = new MesasAdapter(mesas);
+        configurarAdapter(mesas,recyclerViewMesas);
+    }
+
+    private void configurarAdapter(List<Mesa> mesas, RecyclerView recyclerView)
+    {
+        MesaAdapter adapter = new MesaAdapter(this, mesas);
         recyclerViewMesas.setAdapter(adapter);
 
+        adapter.setOnItemClickListener(new IOnItemClickMesaListener() {
+            @Override
+            public void onItemClick(Mesa mesaObtida) {
+                //Toast.makeText(getApplicationContext(), mesaObtida.obterNumeroParaView(), Toast.LENGTH_SHORT).show();
+                Intent abrirSelecaoPedidoComMesaSelecionada = new Intent(EscolherMesaActivity.this, EscolherTipoProdutoActivity.class);
+                abrirSelecaoPedidoComMesaSelecionada.putExtra("mesaId", mesaObtida.getMesaId());
+                startActivityForResult(abrirSelecaoPedidoComMesaSelecionada,1);
+            }
+        });
         adapter.notifyDataSetChanged();
     }
 }

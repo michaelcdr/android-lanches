@@ -52,7 +52,7 @@ class ViewHolderBebidas extends RecyclerView.ViewHolder implements View.OnClickL
 
     public void onClick(View view)
     {
-        
+
         //Intent intent = new Intent(view.getContext(), EscolherTipoProduto.class);
 
         /*Bundle b = new Bundle();

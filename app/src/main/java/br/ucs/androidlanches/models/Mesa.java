@@ -24,4 +24,12 @@ public class Mesa implements Serializable {
     public void setMesaId(int mesaId) {
         this.mesaId = mesaId;
     }
+
+    public String obterNumeroParaView()
+    {
+        if (this.getNumero() <= 9 && this.getNumero() > 0)
+            return "Mesa 0" + new Integer(this.getNumero()).toString();
+
+        return "Mesa " + new Integer(this.getNumero()).toString();
+    }
 }
