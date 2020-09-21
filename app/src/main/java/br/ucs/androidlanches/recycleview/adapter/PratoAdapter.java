@@ -71,7 +71,6 @@ public class PratoAdapter extends RecyclerView.Adapter<PratoAdapter.PratoViewHol
             txtPrecoPrato = itemView.findViewById(R.id.txtPrecoPratoCard);
             imgPratoCard = itemView.findViewById(R.id.imgPratoCard);
 
-
             itemView.findViewById(R.id.btnEscolherPrato).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
