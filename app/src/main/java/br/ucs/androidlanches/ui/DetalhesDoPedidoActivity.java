@@ -2,6 +2,7 @@ package br.ucs.androidlanches.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,18 +12,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import br.ucs.androidlanches.data.DataAccessHelper;
 import br.ucs.androidlanches.models.Pedido;
 import br.ucs.androidlanches.models.PedidoItem;
-import br.ucs.androidlanches.models.Prato;
-import br.ucs.androidlanches.recycleview.adapter.IOnItemClickBtnDecrementarQtdItemPedido;
-import br.ucs.androidlanches.recycleview.adapter.IOnItemClickBtnIncrementarQtdItemPedido;
-import br.ucs.androidlanches.recycleview.adapter.IOnItemClickPratoListener;
+import br.ucs.androidlanches.recycleview.adapter.IOnItemClickBtnDecrementarQtdItemPedidoListener;
+import br.ucs.androidlanches.recycleview.adapter.IOnItemClickBtnIncrementarQtdItemPedidoListener;
 import br.ucs.androidlanches.recycleview.adapter.PedidoItensAdapter;
-import br.ucs.androidlanches.recycleview.adapter.PratoAdapter;
 
 public class DetalhesDoPedidoActivity extends AppCompatActivity
 {
     private int numeroPedido;
     private DataAccessHelper db = new DataAccessHelper(this);
     private RecyclerView recyclerViewItensDoPedido;
+    private Pedido pedido;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -30,21 +29,31 @@ public class DetalhesDoPedidoActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detalhes_do_pedido);
         setTitle("Detalhes do pedido");
-        obterPedidoAtual();
+        pedido = obterPedidoAtual();
+        configurarReciclerView();
+        configurarAdapter(pedido);
+        findViewById(R.id.btnAdicionarItemPedido).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(DetalhesDoPedidoActivity.this, "adicionar item no pedido " , Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    private void obterPedidoAtual()
+    private Pedido obterPedidoAtual()
     {
         Intent dadosActivityAnterior = getIntent();
         numeroPedido = dadosActivityAnterior.getIntExtra("numeroPedido",0);
+        Pedido pedido = db.obterPedido(numeroPedido);
+        return pedido;
+    }
 
+    public void configurarReciclerView()
+    {
         recyclerViewItensDoPedido = findViewById(R.id.recycleDetalhesDoPedido);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerViewItensDoPedido.setLayoutManager(layoutManager);
-
-        Pedido pedido = db.obterPedido(numeroPedido);
-        configurarAdapter(pedido);
     }
 
     public void configurarAdapter(Pedido pedido){
@@ -52,14 +61,14 @@ public class DetalhesDoPedidoActivity extends AppCompatActivity
         recyclerViewItensDoPedido.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
-        adapter.setOnItemClickBtnIncrementarQtdItemPedido(new IOnItemClickBtnIncrementarQtdItemPedido() {
+        adapter.setOnItemClickBtnIncrementarQtdItemPedido(new IOnItemClickBtnIncrementarQtdItemPedidoListener() {
             @Override
             public void onItemClick(PedidoItem pedidoItem) {
                 Toast.makeText(DetalhesDoPedidoActivity.this, "incrementar " , Toast.LENGTH_SHORT).show();
             }
         });
 
-        adapter.setOnItemClickBtnDecrementarQtdItemPedido(new IOnItemClickBtnDecrementarQtdItemPedido() {
+        adapter.setOnItemClickBtnDecrementarQtdItemPedido(new IOnItemClickBtnDecrementarQtdItemPedidoListener() {
             @Override
             public void onItemClick(PedidoItem pedidoItem) {
                 Toast.makeText(DetalhesDoPedidoActivity.this, "decrementar " , Toast.LENGTH_SHORT).show();

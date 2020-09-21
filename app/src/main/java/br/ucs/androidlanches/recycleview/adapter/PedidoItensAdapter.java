@@ -4,29 +4,21 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.util.List;
-import java.util.Locale;
-
 import br.ucs.androidlanches.models.Pedido;
 import br.ucs.androidlanches.models.PedidoItem;
-import br.ucs.androidlanches.models.Prato;
 import br.ucs.androidlanches.ui.R;
 
 public class PedidoItensAdapter extends RecyclerView.Adapter<PedidoItensAdapter.PedidoItensViewHolder>
 {
     private Pedido pedido;
     private final Context context;
-    private IOnItemClickBtnDecrementarQtdItemPedido onItemClickBtnDecrementarQtdItemPedido;
-    private IOnItemClickBtnIncrementarQtdItemPedido onItemClickBtnIncrementarQtdItemPedido;
+    private IOnItemClickBtnDecrementarQtdItemPedidoListener onItemClickBtnDecrementarQtdItemPedido;
+    private IOnItemClickBtnIncrementarQtdItemPedidoListener onItemClickBtnIncrementarQtdItemPedido;
 
     public PedidoItensAdapter(Context context,  Pedido pedido)
     {
@@ -34,12 +26,12 @@ public class PedidoItensAdapter extends RecyclerView.Adapter<PedidoItensAdapter.
         this.pedido = pedido;
     }
 
-    public void setOnItemClickBtnDecrementarQtdItemPedido(IOnItemClickBtnDecrementarQtdItemPedido onItemClickBtnDecrementarQtdItemPedido)
+    public void setOnItemClickBtnDecrementarQtdItemPedido(IOnItemClickBtnDecrementarQtdItemPedidoListener onItemClickBtnDecrementarQtdItemPedido)
     {
         this.onItemClickBtnDecrementarQtdItemPedido = onItemClickBtnDecrementarQtdItemPedido;
     }
 
-    public void setOnItemClickBtnIncrementarQtdItemPedido(IOnItemClickBtnIncrementarQtdItemPedido onItemClickBtnIncrementarQtdItemPedido)
+    public void setOnItemClickBtnIncrementarQtdItemPedido(IOnItemClickBtnIncrementarQtdItemPedidoListener onItemClickBtnIncrementarQtdItemPedido)
     {
         this.onItemClickBtnIncrementarQtdItemPedido = onItemClickBtnIncrementarQtdItemPedido;
     }
