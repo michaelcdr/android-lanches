@@ -19,7 +19,7 @@ import br.ucs.androidlanches.models.Produto;
 
 public class DataAccessHelper extends SQLiteOpenHelper
 {
-    private static final int DATABASE_VERSION = 18;
+    private static final int DATABASE_VERSION = 19;
     private static final String DATABASE_NAME = "AndroidLanchesDB4";
 
     // PRODUTO ...
@@ -39,6 +39,7 @@ public class DataAccessHelper extends SQLiteOpenHelper
     private static final String PEDIDO_NUMERO = "numero";
     private static final String PEDIDO_PAGO = "pago";
     private static final String PEDIDO_MESAID = "mesaId";
+    private static final String PEDIDO_GORJETA = "gorjeta";
     private static final String[] PEDIDO_COLUNAS = {PEDIDO_NUMERO, PEDIDO_PAGO, PEDIDO_MESAID};
 
     // MESA ...
@@ -52,6 +53,7 @@ public class DataAccessHelper extends SQLiteOpenHelper
     private static final String PEDIDO_ITEM_PEDIDO_ITEM_ID = "pedidoItemId";
     private static final String PEDIDO_ITEM_NUMERO_PEDIDO = "numero";
     private static final String PEDIDO_ITEM_QUANTIDADE = "quantidade";
+    private static final String PEDIDO_ITEM_PRODUTO_ID = "produtoId";
 
     public DataAccessHelper(Context context)
     {
@@ -76,13 +78,17 @@ public class DataAccessHelper extends SQLiteOpenHelper
         String sqlCreatePedidos =       "CREATE TABLE " + PEDIDO_TABELA + " ("+
                 PEDIDO_NUMERO + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 PEDIDO_PAGO + " INTEGER, " +
+                PEDIDO_GORJETA + " DOUBLE, " +
                 PEDIDO_MESAID + " INTEGER )";
 
         String sqlCreatePedidosItens =  "CREATE TABLE " + PEDIDO_ITEM_TABELA + " ("+
                 PEDIDO_ITEM_PEDIDO_ITEM_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 PEDIDO_ITEM_NUMERO_PEDIDO  + " INTEGER NOT NULL, " +
                 PEDIDO_ITEM_QUANTIDADE + " INTEGER NOT NULL, " +
-                "FOREIGN KEY ("+ PEDIDO_ITEM_NUMERO_PEDIDO +") REFERENCES "+PEDIDO_TABELA+"("+PEDIDO_NUMERO+"))";
+                PEDIDO_ITEM_PRODUTO_ID + " INTEGER NOT NULL, " +
+                "FOREIGN KEY ("+ PEDIDO_ITEM_NUMERO_PEDIDO +") REFERENCES "+PEDIDO_TABELA+"("+PEDIDO_NUMERO+"), " +
+                "FOREIGN KEY ("+ PEDIDO_ITEM_PRODUTO_ID +") REFERENCES "+PRODUTO_TABELA+"("+PRODUTO_ID+")" +
+                ")";
 
         db.execSQL(sqlCreateTableMesa);
         db.execSQL(sqlCreateTableProduto);
@@ -327,8 +333,8 @@ public class DataAccessHelper extends SQLiteOpenHelper
         pedidos.add(new Pedido(5,false, new Mesa(05)));*/
 
         String query = "SELECT Pedidos.numero, Pedidos.pago, Mesas.mesaId, Mesas.numero FROM Pedidos  "+
-                       "INNER JOIN Mesas  ON Mesas.mesaId = Mesas.mesaId " +
-                       "WHERE Pedidos.pago = 1 ORDER BY  Pedidos.numero";
+                       "INNER JOIN Mesas  ON Pedidos.mesaId = Mesas.mesaId " +
+                       "WHERE Pedidos.pago = 0 ORDER BY  Pedidos.numero";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
@@ -363,7 +369,6 @@ public class DataAccessHelper extends SQLiteOpenHelper
     private Prato cursorToPrato(Cursor cursor)
     {
         Prato produto = new Prato();
-        //{PRODUTO_ID, PRODUTO_NOME, PRODUTO_DESCRICAO, PRODUTO_PRECO, PRODUTO_FOTO, PRODUTO_EMBALAGEM, PRODUTO_SERVE_QUANTAS_PESSOA, PRODUTO_TIPO};
         produto.setProdutoId(Integer.parseInt(cursor.getString(0)));
         produto.setNome(cursor.getString(1));
         produto.setDescricao(cursor.getString(2));
@@ -372,5 +377,115 @@ public class DataAccessHelper extends SQLiteOpenHelper
         produto.setServeQuantasPessoas(Integer.parseInt(cursor.getString(6)));
         produto.setTipo(cursor.getString(7));
         return produto;
+    }
+
+    public int criarPedido(int mesaId, Produto produto)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(PEDIDO_MESAID, mesaId);
+        values.put(PEDIDO_PAGO, 0);
+        db.insert(PEDIDO_TABELA, null, values);
+
+        int numeroPedido = obterUltimoNumeroPedidoDaMesa(mesaId);
+        db.close();
+
+        adicionarPedidoItem(numeroPedido, produto.getProdutoId());
+        return numeroPedido;
+    }
+
+    public void adicionarPedidoItem(int numeroPedido, int produtoId)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        if (temPedidoItem(numeroPedido, produtoId)) {
+            incrementarQuantidadeProdutoItem(numeroPedido,produtoId);
+        }  else {
+            values.put(PEDIDO_ITEM_NUMERO_PEDIDO, numeroPedido);
+            values.put(PEDIDO_ITEM_QUANTIDADE, 1);
+            values.put(PEDIDO_ITEM_PRODUTO_ID, produtoId);
+            db.insert(PEDIDO_ITEM_TABELA, null, values);
+            db.close();
+        }
+    }
+
+    private void incrementarQuantidadeProdutoItem(int numeroPedido, int produtoId)
+    {
+        String query = "SELECT "+PEDIDO_ITEM_QUANTIDADE+" FROM " + PEDIDO_ITEM_TABELA + " WHERE " + PEDIDO_ITEM_NUMERO_PEDIDO + " = ? AND " + PEDIDO_ITEM_PRODUTO_ID + " = ? ";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, new String[] { String.valueOf(numeroPedido), String.valueOf(produtoId) });
+
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                int qtd = Integer.parseInt(cursor.getString(0));
+                qtd = qtd + 1;
+
+                atualizarQuantidadePedidoItem(numeroPedido,produtoId, qtd);
+            }
+        }
+    }
+
+    private int atualizarQuantidadePedidoItem(int numeroPedido, int produtoId, int qtd)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(PEDIDO_ITEM_QUANTIDADE, qtd);
+
+        int linhasAfetadas = db.update(
+                PEDIDO_ITEM_TABELA,
+                values,
+                PEDIDO_ITEM_NUMERO_PEDIDO + " = ? , " + PEDIDO_ITEM_PRODUTO_ID + " = ? ",  new String[] { String.valueOf(numeroPedido), String.valueOf(produtoId) }
+        );
+
+        db.close();
+
+        return linhasAfetadas;
+    }
+
+    private boolean temPedidoItem(int numeroPedido, int produtoId)
+    {
+        String query = "SELECT "+PEDIDO_ITEM_QUANTIDADE+" FROM " + PEDIDO_ITEM_TABELA + " WHERE " + PEDIDO_ITEM_NUMERO_PEDIDO + " = ? AND " + PEDIDO_ITEM_PRODUTO_ID + " = ? ";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, new String[] { String.valueOf(numeroPedido), String.valueOf(produtoId) });
+
+        if (cursor == null)
+            return false;
+        else
+            return true;
+    }
+
+    private int obterUltimoNumeroPedidoDaMesa(int mesaId)
+    {
+        String query = "SELECT "+PEDIDO_COLUNAS +" FROM " + PEDIDO_TABELA + " WHERE mesaId = ? ORDER BY numero desc";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(query, new String[] { String.valueOf(mesaId) });
+
+        int numero = 0;
+        if (cursor.moveToFirst())
+        {
+            Pedido pedido = cursorToPedido(cursor);
+            numero = pedido.getNumero();
+        }
+        return numero;
+    }
+
+    public int pagarPedido(Pedido pedido){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(PEDIDO_GORJETA, pedido.getGorjeta());
+        values.put(PEDIDO_PAGO, 1);
+
+        int linhasAfetadas = db.update(
+                PEDIDO_TABELA,
+                values,
+                PEDIDO_NUMERO + " = ? ",  new String[] { String.valueOf(pedido.getNumero()) }
+        );
+
+        db.close();
+        return linhasAfetadas;
     }
 }

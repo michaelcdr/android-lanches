@@ -55,7 +55,7 @@ public class PedidosAdapter extends RecyclerView.Adapter<ViewHolderPedidos>
     public ViewHolderPedidos onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType)
     {
         View view = LayoutInflater.from(viewGroup.getContext())
-                                  .inflate(R.layout.item_pedido_card, viewGroup,false);
+                .inflate(R.layout.item_pedido_card, viewGroup,false);
 
         return new ViewHolderPedidos(view);
     }

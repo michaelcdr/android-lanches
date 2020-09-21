@@ -7,7 +7,7 @@ public class Pedido implements Serializable
     private int numero;
     private boolean pago;
     private Mesa mesa;
-
+    private double gorjeta;
 
     public Pedido(int numero,  boolean pago, Mesa mesa) {
         this.numero = numero;
@@ -38,4 +38,6 @@ public class Pedido implements Serializable
     public void setMesa(Mesa mesa) {
         this.mesa = mesa;
     }
+    public double getGorjeta(){ return this.gorjeta; }
+    public void setGorjeta(double gorjeta){  this.gorjeta = gorjeta; }
 }
