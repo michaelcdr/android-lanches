@@ -40,7 +40,8 @@ public class DataAccessHelper extends SQLiteOpenHelper
     private static final String PEDIDO_PAGO = "pago";
     private static final String PEDIDO_MESAID = "mesaId";
     private static final String PEDIDO_GORJETA = "gorjeta";
-    private static final String[] PEDIDO_COLUNAS = {PEDIDO_NUMERO, PEDIDO_PAGO, PEDIDO_MESAID};
+    private static final String PEDIDO_MESA_NUMERO = "numero";
+    private static final String[] PEDIDO_COLUNAS = {PEDIDO_NUMERO, PEDIDO_PAGO, PEDIDO_MESAID,PEDIDO_MESA_NUMERO};
 
     // MESA ...
     private static final String MESA_TABELA = "Mesas";
@@ -451,23 +452,34 @@ public class DataAccessHelper extends SQLiteOpenHelper
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, new String[] { String.valueOf(numeroPedido), String.valueOf(produtoId) });
 
-        if (cursor == null)
+        if (cursor == null )
             return false;
-        else
-            return true;
+        else {
+            if(cursor.moveToFirst()){
+
+                int qtd = cursor.getInt(0);
+                return true;
+            }
+
+            return false;
+
+
+
+
+        }
     }
 
     private int obterUltimoNumeroPedidoDaMesa(int mesaId)
     {
-        String query = "SELECT "+PEDIDO_COLUNAS +" FROM " + PEDIDO_TABELA + " WHERE mesaId = ? ORDER BY numero desc";
+        String query = "SELECT "+ PEDIDO_NUMERO+" FROM " + PEDIDO_TABELA + " WHERE mesaId = ? ORDER BY numero desc";
+
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, new String[] { String.valueOf(mesaId) });
 
         int numero = 0;
         if (cursor.moveToFirst())
         {
-            Pedido pedido = cursorToPedido(cursor);
-            numero = pedido.getNumero();
+            numero = cursor.getInt(0);
         }
         return numero;
     }

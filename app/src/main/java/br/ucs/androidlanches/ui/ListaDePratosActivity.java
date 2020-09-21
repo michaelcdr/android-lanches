@@ -63,11 +63,13 @@ public class ListaDePratosActivity extends AppCompatActivity
                 numeroPedido = dadosActivityAnterior.getIntExtra("numeroPedido",0);
 
                 //Toast.makeText(ListaDePratosActivity.this, "clico botom, mesa " + mesaId, Toast.LENGTH_SHORT).show();
-                //Intent adicionarPratoNoPedido = new Intent(ListaDePratosActivity.this, DetalhesDoPedidoActivity);
-                if (numeroPedido == 0){
-                    Toast.makeText(ListaDePratosActivity.this, "clico botom,vai cria pedido mesa " + mesaId, Toast.LENGTH_SHORT).show();
 
+                if (numeroPedido == 0){
+                    //Toast.makeText(ListaDePratosActivity.this, "clico botom,vai cria pedido mesa " + mesaId, Toast.LENGTH_SHORT).show();
                     int numeroPedido = db.criarPedido(mesaId, prato);
+                    Intent detalhesDoPedido = new Intent(ListaDePratosActivity.this, DetalhesDoPedidoActivity.class);
+                    detalhesDoPedido.putExtra("numeroPedido", numeroPedido);
+                    startActivityForResult(detalhesDoPedido, 1);
                 } else{
                     Toast.makeText(ListaDePratosActivity.this, "clico botom, ja tem  pedido mesa " + mesaId, Toast.LENGTH_SHORT).show();
                     db.adicionarPedidoItem(numeroPedido, prato.getProdutoId());

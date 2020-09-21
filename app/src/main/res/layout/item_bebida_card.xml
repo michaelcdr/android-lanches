@@ -74,9 +74,10 @@
                 android:id="@+id/btnEscolherBebida"
                 android:layout_width="100dp"
                 android:background="@color/VerdeOutro"
+                android:textColor="#fff"
                 android:layout_height="50dp"
                 android:layout_gravity="start"
-                android:textColor="#fff"
+
                 android:text="Escolher"></Button>
 
         </LinearLayout>
