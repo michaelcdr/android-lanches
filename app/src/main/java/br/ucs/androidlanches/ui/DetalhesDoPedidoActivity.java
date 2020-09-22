@@ -35,7 +35,11 @@ public class DetalhesDoPedidoActivity extends AppCompatActivity
         findViewById(R.id.btnAdicionarItemPedido).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(DetalhesDoPedidoActivity.this, "adicionar item no pedido " , Toast.LENGTH_SHORT).show();
+                //Toast.makeText(DetalhesDoPedidoActivity.this, "adicionar item no pedido " , Toast.LENGTH_SHORT).show();
+                Intent adicionarNovoProduto = new Intent(DetalhesDoPedidoActivity.this, EscolherTipoProdutoActivity.class);
+                adicionarNovoProduto.putExtra("mesaId", pedido.getMesaId());
+                adicionarNovoProduto.putExtra("numeroPedido", pedido.getNumero());
+                startActivityForResult(adicionarNovoProduto, 1);
             }
         });
     }
@@ -56,7 +60,8 @@ public class DetalhesDoPedidoActivity extends AppCompatActivity
         recyclerViewItensDoPedido.setLayoutManager(layoutManager);
     }
 
-    public void configurarAdapter(Pedido pedido){
+    public void configurarAdapter(final Pedido pedido)
+    {
         PedidoItensAdapter adapter = new PedidoItensAdapter(this, pedido);
         recyclerViewItensDoPedido.setAdapter(adapter);
         adapter.notifyDataSetChanged();
@@ -64,32 +69,24 @@ public class DetalhesDoPedidoActivity extends AppCompatActivity
         adapter.setOnItemClickBtnIncrementarQtdItemPedido(new IOnItemClickBtnIncrementarQtdItemPedidoListener() {
             @Override
             public void onItemClick(PedidoItem pedidoItem) {
-                Toast.makeText(DetalhesDoPedidoActivity.this, "incrementar " , Toast.LENGTH_SHORT).show();
+                //Toast.makeText(DetalhesDoPedidoActivity.this, "incrementar " , Toast.LENGTH_SHORT).show();
+                Intent dadosActivityAnterior = getIntent();
+                pedidoItem.incrementarQtd();
+                db.atualizarPedidoItem(pedidoItem);
+                finish();
+                startActivityForResult(getIntent(), 1);
             }
         });
 
         adapter.setOnItemClickBtnDecrementarQtdItemPedido(new IOnItemClickBtnDecrementarQtdItemPedidoListener() {
             @Override
             public void onItemClick(PedidoItem pedidoItem) {
-                Toast.makeText(DetalhesDoPedidoActivity.this, "decrementar " , Toast.LENGTH_SHORT).show();
-
-                /*
+                //Toast.makeText(DetalhesDoPedidoActivity.this, "decrementar " , Toast.LENGTH_SHORT).show();
                 Intent dadosActivityAnterior = getIntent();
-                mesaId = dadosActivityAnterior.getIntExtra("mesaId",0);
-                numeroPedido = dadosActivityAnterior.getIntExtra("numeroPedido",0);
-
-
-
-                if (numeroPedido == 0){
-                    //Toast.makeText(ListaDePratosActivity.this, "clico botom,vai cria pedido mesa " + mesaId, Toast.LENGTH_SHORT).show();
-                    int numeroPedido = db.criarPedido(mesaId, prato);
-                    Intent detalhesDoPedido = new Intent(ListaDePratosActivity.this, DetalhesDoPedidoActivity.class);
-                    detalhesDoPedido.putExtra("numeroPedido", numeroPedido);
-                    startActivityForResult(detalhesDoPedido, 1);
-                } else{
-                    Toast.makeText(ListaDePratosActivity.this, "clico botom, ja tem  pedido mesa " + mesaId, Toast.LENGTH_SHORT).show();
-                    db.adicionarPedidoItem(numeroPedido, prato.getProdutoId());
-                }*/
+                pedidoItem.decrementarQtd();
+                db.atualizarPedidoItem(pedidoItem);
+                finish();
+                startActivityForResult(getIntent(), 1);
             }
         });
     }

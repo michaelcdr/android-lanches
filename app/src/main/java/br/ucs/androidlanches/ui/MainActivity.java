@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity
 
         if (mesas.size() == 0)
         {
-            for (int i = 1; i <= 20; i++)
+            for (int i = 1; i <= 100; i++)
             {
                 db.adicionarMesa(new Mesa(i));
             }
@@ -81,6 +81,12 @@ public class MainActivity extends AppCompatActivity
             //adicionando pratos
             db.adicionarPrato(new Prato("Xis salada", "Hamburguer, alface, queijo, presunto, tomate, milho, erviolha, salada, acompanha fritas ", 20.0, 1, "xis_salada"));
             db.adicionarPrato(new Prato("Xis Calabresa", "Calabresa, alface, queijo, presunto, tomate, milho, erviolha, salada, acompanha fritas ", 20.0, 1, "xis_calabresa"));
+            db.adicionarPrato(new Prato("Pizza Calabresa", "Calabresa, alface, queijo, presunto, tomate, milho, erviolha, salada, acompanha fritas ", 50.0, 3, "pizza_calabresa"));
+            db.adicionarPrato(new Prato("Pizza Palmito", "Calabresa, alface, queijo, presunto, tomate, milho, erviolha, salada, acompanha fritas ", 50.0, 3, "pizza_calabresa"));
+            db.adicionarPrato(new Prato("Pizza Bacon", "Calabresa, alface, queijo, presunto, tomate, milho, erviolha, salada, acompanha fritas ", 50.0, 3, "pizza_calabresa"));
+            db.adicionarPrato(new Prato("Pizza 4 Queijos", "Calabresa, alface, queijo, presunto, tomate, milho, erviolha, salada, acompanha fritas ", 50.0, 3, "pizza_calabresa"));
+            db.adicionarPrato(new Prato("Pizza 5 Queijos", "Calabresa, alface, queijo, presunto, tomate, milho, erviolha, salada, acompanha fritas ", 50.0, 3, "pizza_calabresa"));
+            db.adicionarPrato(new Prato("Pizza 8 Queijos", "Calabresa, alface, queijo, presunto, tomate, milho, erviolha, salada, acompanha fritas ", 50.0, 3, "pizza_calabresa"));
         }
     }
 
@@ -110,7 +116,9 @@ public class MainActivity extends AppCompatActivity
         adapter.setOnItemClickBtnPagarListener(new IOnItemClickBtnPagarPedidoListener() {
             @Override
             public void onItemClick(Pedido pedido) {
-                Toast.makeText(getBaseContext(),"Você clicou pagar pedido " , Toast.LENGTH_SHORT ).show();
+                Intent irParaResumoPedido = new Intent(MainActivity.this, ResumoPedidoActivity.class);
+                irParaResumoPedido.putExtra("numeroPedido",pedido.getNumero());
+                startActivityForResult(irParaResumoPedido, 1);
             }
         });
 

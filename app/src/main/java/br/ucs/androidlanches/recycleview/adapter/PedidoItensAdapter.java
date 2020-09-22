@@ -90,7 +90,7 @@ public class PedidoItensAdapter extends RecyclerView.Adapter<PedidoItensAdapter.
 
         private void preencherViews(PedidoItem pedidoItem)
         {
-            txtNomeProduto.setText(pedidoItem.getNomeProduto());
+            txtNomeProduto.setText(pedidoItem.getNomeProdutoComQtd());
         }
     }
 }

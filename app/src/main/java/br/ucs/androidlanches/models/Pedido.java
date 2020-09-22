@@ -52,4 +52,20 @@ public class Pedido implements Serializable
     {
         return this.itens;
     }
+    public int getMesaId(){ return this.getMesa().getMesaId();}
+
+    public String detalharPedido()
+    {
+        String retorno = "";
+        double total =0;
+        for (int i = 0; i < this.getItens().size(); i++)
+        {
+            PedidoItem item = this.getItens().get(i);
+            total += item.getQuantidade() * item.getProduto().getPreco();
+            retorno += item.getQuantidade() + " x " + item.getProduto().getPreco()+ " »" + item.getProduto().getNome() + "\n";
+            retorno += "sub total » " + item.getQuantidade() * item.getProduto().getPreco() + "\n\n";
+        }
+        retorno += "Total = " + total;
+        return retorno;
+    }
 }

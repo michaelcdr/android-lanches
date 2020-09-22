@@ -74,8 +74,11 @@ public class ListaDeBebidasActivity extends AppCompatActivity
                     detalhesDoPedido.putExtra("numeroPedido", numeroPedido);
                     startActivityForResult(detalhesDoPedido, 1);
                 } else {
-                    Toast.makeText(ListaDeBebidasActivity.this, "clico botom, ja tem  pedido mesa " + mesaId, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(ListaDeBebidasActivity.this, "clico botom, ja tem  pedido mesa " + mesaId, Toast.LENGTH_SHORT).show();
+                    Intent detalhesDoPedido = new Intent(ListaDeBebidasActivity.this, DetalhesDoPedidoActivity.class);
+                    detalhesDoPedido.putExtra("numeroPedido", numeroPedido);
                     db.adicionarPedidoItem(numeroPedido, bebida.getProdutoId());
+                    startActivityForResult(detalhesDoPedido, 1);
                 }
             }
         });
