@@ -1,20 +1,17 @@
 package br.ucs.androidlanches.ui;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import br.ucs.androidlanches.data.DataAccessHelper;
 import br.ucs.androidlanches.models.Pedido;
 import br.ucs.androidlanches.models.PedidoItem;
 import br.ucs.androidlanches.recycleview.adapter.listeners.IOnItemClickBtnDecrementarQtdItemPedidoListener;
 import br.ucs.androidlanches.recycleview.adapter.listeners.IOnItemClickBtnIncrementarQtdItemPedidoListener;
 import br.ucs.androidlanches.recycleview.adapter.PedidoItensAdapter;
+import android.widget.Toast;
 
 public class DetalhesDoPedidoActivity extends AppCompatActivity
 {
@@ -84,7 +81,11 @@ public class DetalhesDoPedidoActivity extends AppCompatActivity
                 //Toast.makeText(DetalhesDoPedidoActivity.this, "decrementar " , Toast.LENGTH_SHORT).show();
                 Intent dadosActivityAnterior = getIntent();
                 pedidoItem.decrementarQtd();
-                db.atualizarPedidoItem(pedidoItem);
+                if (pedidoItem.getQuantidade() == 0)
+                    db.deletarPedidoItem(pedidoItem);
+                else
+                    db.atualizarPedidoItem(pedidoItem);
+
                 finish();
                 startActivityForResult(getIntent(), 1);
             }

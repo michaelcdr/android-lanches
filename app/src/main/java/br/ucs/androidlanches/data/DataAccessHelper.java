@@ -577,4 +577,11 @@ public class DataAccessHelper extends SQLiteOpenHelper
         db.close();
         return linhasAfetadas;
     }
+
+    public void deletarPedidoItem(PedidoItem pedidoItem)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(PEDIDO_ITEM_TABELA,PEDIDO_ITEM_PEDIDO_ITEM_ID+ " = ?", new String[] { String.valueOf(pedidoItem.getPedidoItemId()) });
+        db.close();
+    }
 }
