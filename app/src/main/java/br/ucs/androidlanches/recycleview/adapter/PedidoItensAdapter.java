@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import br.ucs.androidlanches.models.Pedido;
 import br.ucs.androidlanches.models.PedidoItem;
+import br.ucs.androidlanches.recycleview.adapter.listeners.IOnItemClickBtnDecrementarQtdItemPedidoListener;
+import br.ucs.androidlanches.recycleview.adapter.listeners.IOnItemClickBtnIncrementarQtdItemPedidoListener;
 import br.ucs.androidlanches.ui.R;
 
 public class PedidoItensAdapter extends RecyclerView.Adapter<PedidoItensAdapter.PedidoItensViewHolder>
@@ -90,7 +92,7 @@ public class PedidoItensAdapter extends RecyclerView.Adapter<PedidoItensAdapter.
 
         private void preencherViews(PedidoItem pedidoItem)
         {
-            txtNomeProduto.setText(pedidoItem.getNomeProduto());
+            txtNomeProduto.setText(pedidoItem.getNomeProdutoComQtd());
         }
     }
 }

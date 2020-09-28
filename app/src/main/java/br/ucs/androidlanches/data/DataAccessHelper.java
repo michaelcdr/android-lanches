@@ -152,7 +152,7 @@ public class DataAccessHelper extends SQLiteOpenHelper
         ArrayList<Mesa> mesas = new ArrayList<Mesa>();
 
         String query = "SELECT * FROM " + MESA_TABELA + " WHERE  "+ MESA_MESAID +
-                " NOT IN (SELECT " + MESA_MESAID + " From " + PEDIDO_TABELA + " GROUP BY "+ MESA_MESAID +") ORDER BY " + MESA_NUMERO;
+                " NOT IN (SELECT " + MESA_MESAID + " From " + PEDIDO_TABELA + " WHERE PAGO = 0 GROUP BY "+ MESA_MESAID +") ORDER BY " + MESA_NUMERO;
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
@@ -400,7 +400,7 @@ public class DataAccessHelper extends SQLiteOpenHelper
         int linhasAfetadas = db.update(
                 PEDIDO_ITEM_TABELA,
                 values,
-                PEDIDO_ITEM_NUMERO_PEDIDO + " = ? , " + PEDIDO_ITEM_PRODUTO_ID + " = ? ",  new String[] { String.valueOf(numeroPedido), String.valueOf(produtoId) }
+                PEDIDO_ITEM_NUMERO_PEDIDO + " = ? and " + PEDIDO_ITEM_PRODUTO_ID + " = ? ",  new String[] { String.valueOf(numeroPedido), String.valueOf(produtoId) }
         );
 
         db.close();
@@ -559,5 +559,22 @@ public class DataAccessHelper extends SQLiteOpenHelper
 
         pedidoItem.setProduto(produto);
         return pedidoItem;
+    }
+
+    public int atualizarPedidoItem(PedidoItem pedidoItem)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(PEDIDO_ITEM_QUANTIDADE, pedidoItem.getQuantidade());
+
+        int linhasAfetadas = db.update(
+                PEDIDO_ITEM_TABELA,
+                values,
+                PEDIDO_ITEM_PEDIDO_ITEM_ID + " = ? ",  new String[] { String.valueOf(pedidoItem.getPedidoItemId()) }
+        );
+
+        db.close();
+        return linhasAfetadas;
     }
 }

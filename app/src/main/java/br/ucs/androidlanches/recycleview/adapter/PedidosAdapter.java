@@ -9,6 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 import br.ucs.androidlanches.models.Pedido;
+import br.ucs.androidlanches.recycleview.adapter.listeners.IOnItemClickBtnPagarPedidoListener;
+import br.ucs.androidlanches.recycleview.adapter.listeners.IOnItemClickBtnVerPedidoListener;
 import br.ucs.androidlanches.ui.R;
 
 public class PedidosAdapter extends RecyclerView.Adapter<PedidosAdapter.ViewHolderPedidos>

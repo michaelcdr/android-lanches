@@ -13,6 +13,7 @@ import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 import br.ucs.androidlanches.models.Bebida;
+import br.ucs.androidlanches.recycleview.adapter.listeners.IOnItemClickBebidaListener;
 import br.ucs.androidlanches.ui.R;
 
 public class BebidasAdapter extends RecyclerView.Adapter<BebidasAdapter.ViewHolderBebidas>

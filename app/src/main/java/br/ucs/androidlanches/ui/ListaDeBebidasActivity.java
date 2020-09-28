@@ -11,7 +11,7 @@ import java.util.List;
 import br.ucs.androidlanches.data.DataAccessHelper;
 import br.ucs.androidlanches.models.Bebida;
 import br.ucs.androidlanches.recycleview.adapter.BebidasAdapter;
-import br.ucs.androidlanches.recycleview.adapter.IOnItemClickBebidaListener;
+import br.ucs.androidlanches.recycleview.adapter.listeners.IOnItemClickBebidaListener;
 
 
 public class ListaDeBebidasActivity extends AppCompatActivity
@@ -74,8 +74,11 @@ public class ListaDeBebidasActivity extends AppCompatActivity
                     detalhesDoPedido.putExtra("numeroPedido", numeroPedido);
                     startActivityForResult(detalhesDoPedido, 1);
                 } else {
-                    Toast.makeText(ListaDeBebidasActivity.this, "clico botom, ja tem  pedido mesa " + mesaId, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(ListaDeBebidasActivity.this, "clico botom, ja tem  pedido mesa " + mesaId, Toast.LENGTH_SHORT).show();
+                    Intent detalhesDoPedido = new Intent(ListaDeBebidasActivity.this, DetalhesDoPedidoActivity.class);
+                    detalhesDoPedido.putExtra("numeroPedido", numeroPedido);
                     db.adicionarPedidoItem(numeroPedido, bebida.getProdutoId());
+                    startActivityForResult(detalhesDoPedido, 1);
                 }
             }
         });

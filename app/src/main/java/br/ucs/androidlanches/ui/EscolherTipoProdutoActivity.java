@@ -11,6 +11,7 @@ import br.ucs.androidlanches.models.Mesa;
 public class EscolherTipoProdutoActivity extends AppCompatActivity
 {
     private int mesaId;
+    private int numeroPedido;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -21,12 +22,13 @@ public class EscolherTipoProdutoActivity extends AppCompatActivity
 
         Intent dadosActivityAnterior = getIntent();
         mesaId = dadosActivityAnterior.getIntExtra("mesaId",0);
-
+        numeroPedido = dadosActivityAnterior.getIntExtra("numeroPedido",0);
         findViewById(R.id.btn_bebidas).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent abrirSelecaoBebidas = new Intent(getBaseContext(), ListaDeBebidasActivity.class);
                 abrirSelecaoBebidas.putExtra("mesaId", mesaId);
+                abrirSelecaoBebidas.putExtra("numeroPedido", numeroPedido);
                 startActivityForResult(abrirSelecaoBebidas, 1);
             }
         });
@@ -36,6 +38,7 @@ public class EscolherTipoProdutoActivity extends AppCompatActivity
             public void onClick(View v) {
                 Intent abrirSelecaoPratos = new Intent(getBaseContext(), ListaDePratosActivity.class);
                 abrirSelecaoPratos.putExtra("mesaId",mesaId);
+                abrirSelecaoPratos.putExtra("numeroPedido", numeroPedido);
                 startActivityForResult(abrirSelecaoPratos,1);
             }
         });

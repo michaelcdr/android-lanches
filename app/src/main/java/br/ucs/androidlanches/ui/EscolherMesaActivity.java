@@ -12,7 +12,7 @@ import java.util.List;
 
 import br.ucs.androidlanches.data.DataAccessHelper;
 import br.ucs.androidlanches.models.Mesa;
-import br.ucs.androidlanches.recycleview.adapter.IOnItemClickMesaListener;
+import br.ucs.androidlanches.recycleview.adapter.listeners.IOnItemClickMesaListener;
 import br.ucs.androidlanches.recycleview.adapter.MesaAdapter;
 
 public class EscolherMesaActivity extends AppCompatActivity

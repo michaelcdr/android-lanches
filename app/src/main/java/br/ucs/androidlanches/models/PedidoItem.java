@@ -39,9 +39,19 @@ public class PedidoItem implements Serializable {
         this.pedidoItemId =  pedidoItemId;
     }
 
-    public String getNomeProduto() {
+    public String getNomeProdutoComQtd() {
         if (produto == null) return "";
 
-        return this.produto.getNome();
+        return this.produto.getNome() + " ("+this.quantidade+")";
+    }
+
+    public void incrementarQtd() {
+        this.quantidade = this.quantidade +1;
+    }
+
+    public void decrementarQtd() {
+        if (this.quantidade > 0){
+            this.quantidade = this.quantidade -1;
+        }
     }
 }
