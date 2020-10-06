@@ -1,5 +1,6 @@
 package br.ucs.androidlanches.recycleview.adapter;
 
+import android.content.Intent;
 import android.media.Image;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,6 +18,8 @@ import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 import br.ucs.androidlanches.models.Bebida;
+import br.ucs.androidlanches.ui.EscolherTipoProdutoActivity;
+import br.ucs.androidlanches.ui.ListaDeBebidasActivity;
 import br.ucs.androidlanches.ui.R;
 
 class ViewHolderBebidas extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -52,7 +55,7 @@ class ViewHolderBebidas extends RecyclerView.ViewHolder implements View.OnClickL
 
     public void onClick(View view)
     {
-        
+        Toast.makeText(view.getContext() ,"teste" , Toast.LENGTH_SHORT).show();
         //Intent intent = new Intent(view.getContext(), EscolherTipoProduto.class);
 
         /*Bundle b = new Bundle();
