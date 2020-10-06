@@ -9,7 +9,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ListaDePratosActivity"></activity>
+        <activity android:name=".PagarPedidoComGorjeta"></activity>
+        <activity android:name=".ResumoPedidoActivity" />
+        <activity android:name=".DetalhesDoPedidoActivity" />
+        <activity android:name=".ListaDePratosActivity" />
         <activity android:name=".ListaDeBebidasActivity" />
         <activity android:name=".EscolherTipoProdutoActivity" />
         <activity android:name=".EscolherMesaActivity" />

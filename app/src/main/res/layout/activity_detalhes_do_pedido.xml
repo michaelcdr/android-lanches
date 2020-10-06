@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context="br.ucs.androidlanches.ui.DetalhesDoPedidoActivity">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycleDetalhesDoPedido"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
+        android:id="@+id/btnAdicionarItemPedido"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
@@ -16,11 +23,5 @@
         app:backgroundTint="@color/colorPrimary"
         app:rippleColor="@color/cardview_dark_background"
         app:srcCompat="@android:drawable/ic_input_add" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycleViewPedidos"
-        android:layout_marginTop="5dp"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
