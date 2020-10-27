@@ -1,5 +1,6 @@
 package br.ucs.androidlanches.recycleview.adapter;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -97,9 +98,13 @@ public class BebidasAdapter extends RecyclerView.Adapter<BebidasAdapter.ViewHold
 
             NumberFormat nf = new DecimalFormat ("#,##0.00", new DecimalFormatSymbols(new Locale("pt", "BR")));
             String precoFormatado =  nf.format(bebida.getPreco());
-
             txtPrecoBebida.setText("R$ " + precoFormatado);
-            imgProdutoCard.setImageResource(R.drawable.cocacola_2l);
+
+            String uri = "@drawable/" + bebida.getFoto();
+            int imageResource = context.getResources().getIdentifier(uri, null, context.getPackageName());
+
+            Drawable res = context.getResources().getDrawable(imageResource);
+            imgProdutoCard.setImageDrawable(res);
         }
     }
 }

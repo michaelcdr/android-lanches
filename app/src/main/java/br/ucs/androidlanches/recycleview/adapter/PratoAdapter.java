@@ -1,5 +1,6 @@
 package br.ucs.androidlanches.recycleview.adapter;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -95,7 +96,11 @@ public class PratoAdapter extends RecyclerView.Adapter<PratoAdapter.PratoViewHol
             String precoFormatado =  nf.format(prato.getPreco());
             txtPrecoPrato.setText("R$ " + precoFormatado);
 
-            imgPratoCard.setImageResource(R.drawable.xis_calabresa);
+            String uri = "@drawable/" + prato.getFoto();
+            int imageResource = context.getResources().getIdentifier(uri, null, context.getPackageName());
+
+            Drawable res = context.getResources().getDrawable(imageResource);
+            imgPratoCard.setImageDrawable(res);
         }
     }
 }
