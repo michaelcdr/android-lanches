@@ -5,6 +5,8 @@ import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import br.ucs.androidlanches.data.DAO.PedidosDAO;
 import br.ucs.androidlanches.data.DataAccessHelper;
 import br.ucs.androidlanches.models.Pedido;
 import br.ucs.androidlanches.models.PedidoItem;
@@ -19,6 +21,7 @@ public class DetalhesDoPedidoActivity extends AppCompatActivity
     private DataAccessHelper db = new DataAccessHelper(this);
     private RecyclerView recyclerViewItensDoPedido;
     private Pedido pedido;
+    private PedidosDAO _pedidoDAO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -26,6 +29,7 @@ public class DetalhesDoPedidoActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detalhes_do_pedido);
         setTitle("Detalhes do pedido");
+        _pedidoDAO = new PedidosDAO(this);
         pedido = obterPedidoAtual();
         configurarReciclerView();
         configurarAdapter(pedido);
@@ -45,7 +49,7 @@ public class DetalhesDoPedidoActivity extends AppCompatActivity
     {
         Intent dadosActivityAnterior = getIntent();
         numeroPedido = dadosActivityAnterior.getIntExtra("numeroPedido",0);
-        Pedido pedido = db.obterPedido(numeroPedido);
+        Pedido pedido = _pedidoDAO.obterPedido(numeroPedido);
         return pedido;
     }
 
@@ -69,7 +73,7 @@ public class DetalhesDoPedidoActivity extends AppCompatActivity
                 //Toast.makeText(DetalhesDoPedidoActivity.this, "incrementar " , Toast.LENGTH_SHORT).show();
                 Intent dadosActivityAnterior = getIntent();
                 pedidoItem.incrementarQtd();
-                db.atualizarPedidoItem(pedidoItem);
+                _pedidoDAO.atualizarPedidoItem(pedidoItem);
                 finish();
                 startActivityForResult(getIntent(), 1);
             }
@@ -82,9 +86,9 @@ public class DetalhesDoPedidoActivity extends AppCompatActivity
                 Intent dadosActivityAnterior = getIntent();
                 pedidoItem.decrementarQtd();
                 if (pedidoItem.getQuantidade() == 0)
-                    db.deletarPedidoItem(pedidoItem);
+                    _pedidoDAO.deletarPedidoItem(pedidoItem);
                 else
-                    db.atualizarPedidoItem(pedidoItem);
+                    _pedidoDAO.atualizarPedidoItem(pedidoItem);
 
                 finish();
                 startActivityForResult(getIntent(), 1);

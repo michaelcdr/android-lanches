@@ -10,6 +10,7 @@ import android.os.Bundle;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.ucs.androidlanches.data.DAO.MesasDAO;
 import br.ucs.androidlanches.data.DataAccessHelper;
 import br.ucs.androidlanches.models.Mesa;
 import br.ucs.androidlanches.recycleview.adapter.listeners.IOnItemClickMesaListener;
@@ -19,6 +20,7 @@ public class EscolherMesaActivity extends AppCompatActivity
 {
     private List<Mesa> mesas = new ArrayList<>();
     private DataAccessHelper db = new DataAccessHelper(this);
+    private MesasDAO _mesasDAO;
     private RecyclerView recyclerViewMesas;
 
     @Override
@@ -27,6 +29,7 @@ public class EscolherMesaActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_escolher_mesa);
         setTitle("Escolha uma mesa");
+        _mesasDAO = new MesasDAO(this);
         carregarMesas();
     }
 
@@ -44,7 +47,7 @@ public class EscolherMesaActivity extends AppCompatActivity
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerViewMesas.setLayoutManager(layoutManager);
 
-        mesas = db.obterTodasMesasDesocupadas();
+        mesas = _mesasDAO.obterTodasMesasDesocupadas();
         configurarAdapter(mesas,recyclerViewMesas);
     }
 

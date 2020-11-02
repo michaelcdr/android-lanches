@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import java.util.ArrayList;
 import java.util.List;
+
+import br.ucs.androidlanches.data.DAO.PedidosDAO;
 import br.ucs.androidlanches.data.DataAccessHelper;
 import br.ucs.androidlanches.models.Bebida;
 import br.ucs.androidlanches.recycleview.adapter.BebidasAdapter;
@@ -17,6 +19,7 @@ public class ListaDeBebidasActivity extends AppCompatActivity
     private List<Bebida> bebidas = new ArrayList<>();
     private DataAccessHelper db = new DataAccessHelper(this);
     private RecyclerView recycleViewListaDeBebidas;
+    private PedidosDAO _pedidosDAO;
     private int mesaId;
     private int numeroPedido;
 
@@ -32,6 +35,7 @@ public class ListaDeBebidasActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista_de_bebidas);
         setTitle("Lista de bebidas");
+        _pedidosDAO = new PedidosDAO(this);
         configurarRecicleView();
         obterBebidas();
     }
@@ -65,7 +69,7 @@ public class ListaDeBebidasActivity extends AppCompatActivity
 
                 if (numeroPedido == 0)
                 {
-                    int numeroPedido = db.criarPedido(mesaId, bebida);
+                    int numeroPedido = _pedidosDAO.criarPedido(mesaId, bebida);
                     Intent detalhesDoPedido = new Intent(ListaDeBebidasActivity.this, DetalhesDoPedidoActivity.class);
                     detalhesDoPedido.putExtra("numeroPedido", numeroPedido);
                     startActivityForResult(detalhesDoPedido, 1);
@@ -74,7 +78,7 @@ public class ListaDeBebidasActivity extends AppCompatActivity
                 {
                     Intent detalhesDoPedido = new Intent(ListaDeBebidasActivity.this, DetalhesDoPedidoActivity.class);
                     detalhesDoPedido.putExtra("numeroPedido", numeroPedido);
-                    db.adicionarPedidoItem(numeroPedido, bebida.getProdutoId());
+                    _pedidosDAO.adicionarPedidoItem(numeroPedido, bebida.getProdutoId());
                     startActivityForResult(detalhesDoPedido, 1);
                 }
             }

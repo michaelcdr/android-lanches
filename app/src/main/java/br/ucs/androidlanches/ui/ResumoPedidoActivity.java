@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
+import br.ucs.androidlanches.data.DAO.PedidosDAO;
 import br.ucs.androidlanches.data.DataAccessHelper;
 import br.ucs.androidlanches.models.Pedido;
 
@@ -16,6 +17,8 @@ public class ResumoPedidoActivity extends AppCompatActivity
 {
     private Pedido pedido;
     private DataAccessHelper db = new DataAccessHelper(this);
+    private PedidosDAO _pedidosDao;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -25,7 +28,9 @@ public class ResumoPedidoActivity extends AppCompatActivity
 
         Intent dadosActivityAnterior = getIntent();
         int numeroPedido = dadosActivityAnterior.getIntExtra("numeroPedido",0);
-        pedido = db.obterPedido(numeroPedido);
+
+        _pedidosDao = new PedidosDAO(this);
+        pedido = _pedidosDao.obterPedido(numeroPedido);
 
         TextView textView = findViewById(R.id.txtDetalhesItens);
         textView.setText(pedido.detalharPedido());
@@ -46,7 +51,7 @@ public class ResumoPedidoActivity extends AppCompatActivity
         findViewById(R.id.btnPagarPedidoSemGorjeta).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                db.pagarPedido(pedido);
+                _pedidosDao.pagarPedido(pedido);
                 Intent irParaListaDePedidos = new Intent(ResumoPedidoActivity.this, MainActivity.class);
                 startActivityForResult(irParaListaDePedidos, 1);
             }

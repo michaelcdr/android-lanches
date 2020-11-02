@@ -2,9 +2,11 @@ package br.ucs.androidlanches.models;
 
 import java.io.Serializable;
 
-public class Mesa implements Serializable {
+public class Mesa implements Serializable
+{
     private int numero;
     private int mesaId;
+
     public int getNumero() {
         return numero;
     }
