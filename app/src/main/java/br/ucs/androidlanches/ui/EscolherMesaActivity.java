@@ -99,6 +99,6 @@ public class EscolherMesaActivity extends AppCompatActivity
                 startActivityForResult(abrirSelecaoPedidoComMesaSelecionada,1);
             }
         });
-        adapter.notifyDataSetChanged();
+        //adapter.notifyDataSetChanged();
     }
 }

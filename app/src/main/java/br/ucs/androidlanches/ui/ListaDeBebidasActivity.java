@@ -1,28 +1,24 @@
 package br.ucs.androidlanches.ui;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
-
 import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
 import br.ucs.androidlanches.data.DAO.PedidosDAO;
 import br.ucs.androidlanches.data.DAO.ProdutosDAO;
 import br.ucs.androidlanches.models.Bebida;
-import br.ucs.androidlanches.models.Mesa;
-import br.ucs.androidlanches.models.Pedido;
 import br.ucs.androidlanches.recycleview.adapter.BebidasAdapter;
 import br.ucs.androidlanches.recycleview.adapter.listeners.IOnItemClickBebidaListener;
 import br.ucs.androidlanches.rest.RetrofitApiClient;
-import br.ucs.androidlanches.rest.services.IMesaApiService;
 import br.ucs.androidlanches.rest.services.IProdutoApiService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-
 
 public class ListaDeBebidasActivity extends AppCompatActivity
 {
@@ -45,8 +41,10 @@ public class ListaDeBebidasActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista_de_bebidas);
         setTitle("Lista de bebidas");
+
         _pedidosDAO = new PedidosDAO(this);
         _produtosDAO = new ProdutosDAO(this);
+
         configurarRecicleView();
         obterBebidas();
     }
@@ -82,7 +80,6 @@ public class ListaDeBebidasActivity extends AppCompatActivity
                 }
             }
         });
-
     }
 
     private void configurarAdapter(List<Bebida> bebidas)

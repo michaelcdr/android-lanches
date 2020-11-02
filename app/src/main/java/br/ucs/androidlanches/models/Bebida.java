@@ -1,9 +1,14 @@
 package br.ucs.androidlanches.models;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 
 public class Bebida extends Produto implements Serializable
 {
+    @SerializedName("embalagem")
+    @Expose
     private String embalagem;
 
     public String getEmbalagem() {
@@ -13,7 +18,9 @@ public class Bebida extends Produto implements Serializable
     public void setEmbalagem(String embalagem) {
         this.embalagem = embalagem;
     }
+
     public Bebida(){};
+
     public Bebida(String nome,String descricao, double preco, String embalagem,String foto)
     {
         this.setTipo("bebida");

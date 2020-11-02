@@ -5,13 +5,21 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
+
+import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
-
 import br.ucs.androidlanches.data.DAO.*;
+import br.ucs.androidlanches.models.Bebida;
 import br.ucs.androidlanches.models.Prato;
 import br.ucs.androidlanches.recycleview.adapter.listeners.IOnItemClickPratoListener;
 import br.ucs.androidlanches.recycleview.adapter.PratoAdapter;
+import br.ucs.androidlanches.rest.RetrofitApiClient;
+import br.ucs.androidlanches.rest.services.IProdutoApiService;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class ListaDePratosActivity extends AppCompatActivity
 {
@@ -21,7 +29,6 @@ public class ListaDePratosActivity extends AppCompatActivity
     private RecyclerView recycleViewListaDePratos;
     private int mesaId;
     private int numeroPedido;
-
 
     @Override
     protected void onStart()
@@ -35,8 +42,10 @@ public class ListaDePratosActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista_de_pratos);
         setTitle("Lista de lanches");
+
         _pedidosDAO = new PedidosDAO(this);
         _produtosDAO = new ProdutosDAO(this);
+
         configurarRecicleView();
         obterPratos();
     }
@@ -51,11 +60,32 @@ public class ListaDePratosActivity extends AppCompatActivity
 
     private void obterPratos()
     {
-        pratos = _produtosDAO.obterTodosPratos();
-        configurarAdpter(pratos);
+        Retrofit retrofit = RetrofitApiClient.getClient();
+        IProdutoApiService produtosService = retrofit.create(IProdutoApiService.class);
+        Call<List<Prato>> callPratos = produtosService.obterPratos();
+
+        callPratos.enqueue(new Callback<List<Prato>>() {
+            @Override
+            public void onResponse(Call<List<Prato>> call, Response<List<Prato>> response) {
+                if (response.isSuccessful())
+                {
+                    pratos = response.body();
+                    configurarAdapter(pratos);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Prato>> call, Throwable exception) {
+                if (exception instanceof ConnectException)
+                {
+                    pratos = _produtosDAO.obterTodosPratos();
+                    configurarAdapter(pratos);
+                }
+            }
+        });
     }
 
-    private void configurarAdpter(List<Prato> pratos)
+    private void configurarAdapter(List<Prato> pratos)
     {
         PratoAdapter adapter = new PratoAdapter(this, pratos);
         recycleViewListaDePratos.setAdapter(adapter);
