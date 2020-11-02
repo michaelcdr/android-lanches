@@ -6,17 +6,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
-
 import br.ucs.androidlanches.data.DAO.PedidosDAO;
-import br.ucs.androidlanches.data.DataAccessHelper;
+import br.ucs.androidlanches.data.DAO.ProdutosDAO;
 import br.ucs.androidlanches.models.Pedido;
 
 public class ResumoPedidoActivity extends AppCompatActivity
 {
     private Pedido pedido;
-    private DataAccessHelper db = new DataAccessHelper(this);
+    private ProdutosDAO _produtosDAO;
     private PedidosDAO _pedidosDao;
 
     @Override
@@ -30,6 +27,7 @@ public class ResumoPedidoActivity extends AppCompatActivity
         int numeroPedido = dadosActivityAnterior.getIntExtra("numeroPedido",0);
 
         _pedidosDao = new PedidosDAO(this);
+        _produtosDAO = new ProdutosDAO(this);
         pedido = _pedidosDao.obterPedido(numeroPedido);
 
         TextView textView = findViewById(R.id.txtDetalhesItens);

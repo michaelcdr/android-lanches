@@ -5,20 +5,16 @@ import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import br.ucs.androidlanches.data.DAO.PedidosDAO;
-import br.ucs.androidlanches.data.DataAccessHelper;
 import br.ucs.androidlanches.models.Pedido;
 import br.ucs.androidlanches.models.PedidoItem;
 import br.ucs.androidlanches.recycleview.adapter.listeners.IOnItemClickBtnDecrementarQtdItemPedidoListener;
 import br.ucs.androidlanches.recycleview.adapter.listeners.IOnItemClickBtnIncrementarQtdItemPedidoListener;
 import br.ucs.androidlanches.recycleview.adapter.PedidoItensAdapter;
-import android.widget.Toast;
 
 public class DetalhesDoPedidoActivity extends AppCompatActivity
 {
     private int numeroPedido;
-    private DataAccessHelper db = new DataAccessHelper(this);
     private RecyclerView recyclerViewItensDoPedido;
     private Pedido pedido;
     private PedidosDAO _pedidoDAO;
@@ -29,10 +25,12 @@ public class DetalhesDoPedidoActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detalhes_do_pedido);
         setTitle("Detalhes do pedido");
+
         _pedidoDAO = new PedidosDAO(this);
         pedido = obterPedidoAtual();
         configurarReciclerView();
         configurarAdapter(pedido);
+
         findViewById(R.id.btnAdicionarItemPedido).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -4,20 +4,30 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
+
+import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
-
 import br.ucs.androidlanches.data.DAO.PedidosDAO;
-import br.ucs.androidlanches.data.DataAccessHelper;
+import br.ucs.androidlanches.data.DAO.ProdutosDAO;
 import br.ucs.androidlanches.models.Bebida;
+import br.ucs.androidlanches.models.Mesa;
+import br.ucs.androidlanches.models.Pedido;
 import br.ucs.androidlanches.recycleview.adapter.BebidasAdapter;
 import br.ucs.androidlanches.recycleview.adapter.listeners.IOnItemClickBebidaListener;
+import br.ucs.androidlanches.rest.RetrofitApiClient;
+import br.ucs.androidlanches.rest.services.IMesaApiService;
+import br.ucs.androidlanches.rest.services.IProdutoApiService;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 
 public class ListaDeBebidasActivity extends AppCompatActivity
 {
     private List<Bebida> bebidas = new ArrayList<>();
-    private DataAccessHelper db = new DataAccessHelper(this);
+    private ProdutosDAO _produtosDAO;
     private RecyclerView recycleViewListaDeBebidas;
     private PedidosDAO _pedidosDAO;
     private int mesaId;
@@ -36,6 +46,7 @@ public class ListaDeBebidasActivity extends AppCompatActivity
         setContentView(R.layout.activity_lista_de_bebidas);
         setTitle("Lista de bebidas");
         _pedidosDAO = new PedidosDAO(this);
+        _produtosDAO = new ProdutosDAO(this);
         configurarRecicleView();
         obterBebidas();
     }
@@ -50,8 +61,28 @@ public class ListaDeBebidasActivity extends AppCompatActivity
 
     private void obterBebidas()
     {
-        bebidas = db.obterTodasBebidas();
-        configurarAdapter(bebidas);
+        Retrofit retrofit = RetrofitApiClient.getClient();
+        IProdutoApiService produtosService = retrofit.create(IProdutoApiService.class);
+        Call<List<Bebida>> callBebidas = produtosService.obterBebidas();
+
+        callBebidas.enqueue(new Callback<List<Bebida>>() {
+            @Override
+            public void onResponse(Call<List<Bebida>> call, Response<List<Bebida>> response) {
+                if(response.isSuccessful()){
+                    bebidas = response.body();
+                    configurarAdapter(bebidas);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Bebida>> call, Throwable exception) {
+                if (exception instanceof ConnectException){
+                    bebidas = _produtosDAO.obterTodasBebidas();
+                    configurarAdapter(bebidas);
+                }
+            }
+        });
+
     }
 
     private void configurarAdapter(List<Bebida> bebidas)
