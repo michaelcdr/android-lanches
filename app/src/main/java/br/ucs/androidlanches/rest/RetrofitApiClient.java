@@ -13,8 +13,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitApiClient
 {
-    //public static final String BASE_URL = "https://10.0.2.2:4567/";
-    public static final String BASE_URL = "https://10.0.2.2:5001/";
+    private static final String BASE_URL = "https://10.0.2.2:5001/";
     private static Retrofit retrofit = null;
 
     public static Retrofit getClient()
@@ -22,10 +21,10 @@ public class RetrofitApiClient
         if (retrofit == null)
         {
             retrofit = new Retrofit.Builder()
-                                    .baseUrl(BASE_URL)
-                                    .addConverterFactory(GsonConverterFactory.create())
-                                    .client(getUnsafeOkHttpClient().build())
-                                    .build();
+                                   .baseUrl(BASE_URL)
+                                   .addConverterFactory(GsonConverterFactory.create())
+                                   .client(getUnsafeOkHttpClient().build())
+                                   .build();
         }
         return retrofit;
     }
