@@ -99,7 +99,6 @@ public class ProdutosDAO implements IProdutosDAO
         values.put("preco", new Double(produto.getPreco()));
 
         int linhasAfetadas = db.update("produtos", values,  "produtoId = ?",  new String[] { String.valueOf(produto.getProdutoId()) } );
-
         db.close();
 
         return linhasAfetadas;

@@ -3,6 +3,8 @@ package br.ucs.androidlanches.ui;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -29,6 +31,7 @@ public class ListaDePratosActivity extends AppCompatActivity
     private RecyclerView recycleViewListaDePratos;
     private int mesaId;
     private int numeroPedido;
+    private SwipeRefreshLayout swipe;
 
     @Override
     protected void onStart()
@@ -45,6 +48,14 @@ public class ListaDePratosActivity extends AppCompatActivity
 
         _pedidosDAO = new PedidosDAO(this);
         _produtosDAO = new ProdutosDAO(this);
+
+        swipe = (SwipeRefreshLayout) findViewById(R.id.swiperefresh_lista_pratos);
+        swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                obterPratos();
+            }
+        });
 
         configurarRecicleView();
         obterPratos();
@@ -71,6 +82,7 @@ public class ListaDePratosActivity extends AppCompatActivity
                     pratos = response.body();
                     configurarAdapter(pratos);
                 }
+                swipe.setRefreshing(false);
             }
 
             @Override
@@ -80,6 +92,7 @@ public class ListaDePratosActivity extends AppCompatActivity
                     pratos = _produtosDAO.obterTodosPratos();
                     configurarAdapter(pratos);
                 }
+                swipe.setRefreshing(false);
             }
         });
     }
