@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
 import android.view.Menu;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity
     private MesasDAO _mesasDao;
     private ProdutosDAO _produtosDao;
     private RecyclerView recyclerViewPedidos;
+    private SwipeRefreshLayout swipe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -46,6 +48,14 @@ public class MainActivity extends AppCompatActivity
         _mesasDao = new MesasDAO(this);
         _produtosDao = new ProdutosDAO(this);
 
+        swipe = (SwipeRefreshLayout) findViewById(R.id.swiperefresh_lista_pedidos);
+        swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                obterTodosPedidosSemPagamentoEfetuado();
+            }
+        });
+
         obterTodosPedidosSemPagamentoEfetuado();
         configurarRecicleViewPedidos();
         gerarEventoCadastroPedido();
@@ -57,22 +67,25 @@ public class MainActivity extends AppCompatActivity
         callPedidos.enqueue(new Callback<List<Pedido>>() {
             @Override
             public void onResponse(Call<List<Pedido>> call, Response<List<Pedido>> response) {
-                Log.i("Pedidos Aberto", "Requisição com sucesso em obter pedidos não pagos: ");
+                Log.i("LOG_ANDROID_LANCHES", "Requisição com sucesso em obter pedidos não pagos: ");
                 if (response.isSuccessful()){
                     pedidos = response.body();
                     configurarAdapter(pedidos, recyclerViewPedidos);
+                    swipe.setRefreshing(false);
                 } else{
-                    Log.e("Pedidos Aberto", "Algo deu errado ao obter pedidos na API");
+                    Log.e("LOG_ANDROID_LANCHES", "Algo deu errado ao tentar obter os pedidos  em abertos na API: " + response.message());
                     pedidos = _pedidosDao.obterTodosPedidosSemPagamentoEfetuado();
                     configurarAdapter(pedidos, recyclerViewPedidos);
+                    swipe.setRefreshing(false);
                 }
             }
 
             @Override
             public void onFailure(Call call, Throwable t) {
-                Log.e("Pedidos Aberto","Falhou na requisição de pedidos");
+                Log.e("LOG_ANDROID_LANCHES","Falhou na requisição de pedidos " + t.getMessage());
                 pedidos = _pedidosDao.obterTodosPedidosSemPagamentoEfetuado();
                 configurarAdapter(pedidos, recyclerViewPedidos);
+                swipe.setRefreshing(false);
             }
         });
     }
@@ -89,6 +102,7 @@ public class MainActivity extends AppCompatActivity
     {
         PedidosAdapter adapter = new PedidosAdapter(this, pedidos);
         recyclerView.setAdapter(adapter);
+
         adapter.setOnItemClickVerPedidoListener(new IOnItemClickBtnVerPedidoListener() {
             @Override
             public void onItemClick(Pedido pedido) {
@@ -97,6 +111,7 @@ public class MainActivity extends AppCompatActivity
                 startActivityForResult(irParaDetalhesPedido, 1);
             }
         });
+
         adapter.setOnItemClickBtnPagarListener(new IOnItemClickBtnPagarPedidoListener() {
             @Override
             public void onItemClick(Pedido pedido) {

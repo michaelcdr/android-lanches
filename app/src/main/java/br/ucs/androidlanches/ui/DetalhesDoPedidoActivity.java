@@ -64,13 +64,13 @@ public class DetalhesDoPedidoActivity extends AppCompatActivity
                     configurarAdapter(pedido);
                 } else {
                     Toast.makeText(DetalhesDoPedidoActivity.this, "Não foi possível obter os dados devido a um erro na API de destino, tente novamente mais tarde. " , Toast.LENGTH_LONG).show();
-                    Log.e("PEDIDO_DETALHES","não foi possivel obter o pedido.");
+                    Log.e("LOG_ANDROID_LANCHES","não foi possivel obter o pedido.");
                 }
             }
 
             @Override
             public void onFailure(Call<Pedido> call, Throwable t) {
-                Log.e("PEDIDO_DETALHES","não foi possivel obter o pedido na api. " + t.getMessage());
+                Log.e("LOG_ANDROID_LANCHES","não foi possivel obter o pedido na api. " + t.getMessage());
                 pedido = _pedidoDAO.obterPedido(numeroPedido);
                 configurarReciclerView();
                 configurarAdapter(pedido);
@@ -96,7 +96,7 @@ public class DetalhesDoPedidoActivity extends AppCompatActivity
         adapter.setOnItemClickBtnIncrementarQtdItemPedido(new IOnItemClickBtnIncrementarQtdItemPedidoListener() {
             @Override
             public void onItemClick(PedidoItem pedidoItem) {
-                pedidoItem.incrementarQtd();
+
 
                 Call<Void> callIncrementarItemPedido = RetrofitApiClient.getPedidoService().incrementarQtdProduto(pedidoItem.getPedidoItemId());
                 callIncrementarItemPedido.enqueue(new Callback<Void>() {
@@ -106,14 +106,16 @@ public class DetalhesDoPedidoActivity extends AppCompatActivity
                             finish();
                             startActivityForResult(getIntent(), 1);
                         } else {
+                            Log.e("LOG_ANDROID_LANCHES","Não foi possível obter os dados devido a um erro na API de destino, tente novamente mais tarde. " );
                             Toast.makeText(DetalhesDoPedidoActivity.this, "Não foi possível obter os dados devido a um erro na API de destino, tente novamente mais tarde. " , Toast.LENGTH_LONG).show();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<Void> call, Throwable t) {
+                        Log.e("LOG_ANDROID_LANCHES","Não foi possível acessar API. " + t.getMessage() );
+                        pedidoItem.incrementarQtd();
                         _pedidoDAO.atualizarPedidoItem(pedidoItem);
-
                     }
                 });
             }
@@ -122,14 +124,35 @@ public class DetalhesDoPedidoActivity extends AppCompatActivity
         adapter.setOnItemClickBtnDecrementarQtdItemPedido(new IOnItemClickBtnDecrementarQtdItemPedidoListener() {
             @Override
             public void onItemClick(PedidoItem pedidoItem) {
-                pedidoItem.decrementarQtd();
-                if (pedidoItem.getQuantidade() == 0)
-                    _pedidoDAO.deletarPedidoItem(pedidoItem);
-                else
-                    _pedidoDAO.atualizarPedidoItem(pedidoItem);
+                Call<Void> callDecrementarItemPedido = RetrofitApiClient.getPedidoService().decrementarQtdProduto(pedidoItem.getPedidoItemId());
+                callDecrementarItemPedido.enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        if (response.isSuccessful()){
+                            finish();
+                            startActivityForResult(getIntent(), 1);
+                        } else {
+                            Log.e("LOG_ANDROID_LANCHES","Não foi possível obter os dados devido a um erro na API de destino, tente novamente mais tarde. " );
+                            Toast.makeText(DetalhesDoPedidoActivity.this, "Não foi possível obter os dados devido a um erro na API de destino, tente novamente mais tarde. " , Toast.LENGTH_LONG).show();
+                        }
+                    }
 
-                finish();
-                startActivityForResult(getIntent(), 1);
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Log.i("LOG_ANDROID_LANCHES","decrementando no banco local");
+                        Log.e("LOG_ANDROID_LANCHES","Não foi possível acessar API. " + t.getMessage() );
+
+                        pedidoItem.decrementarQtd();
+
+                        if (pedidoItem.getQuantidade() == 0)
+                            _pedidoDAO.deletarPedidoItem(pedidoItem);
+                        else
+                            _pedidoDAO.atualizarPedidoItem(pedidoItem);
+
+                        finish();
+                        startActivityForResult(getIntent(), 1);
+                    }
+                });
             }
         });
     }

@@ -4,6 +4,7 @@ import java.util.List;
 import br.ucs.androidlanches.models.Pedido;
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface IPedidoService
@@ -14,9 +15,9 @@ public interface IPedidoService
     @GET("/v1/pedidos/ObterPorNumero/{numeroPedido}")
     Call<Pedido> obter(@Path("numeroPedido") int numeroPedido);
 
-    @GET("/v1/pedidos/IncrementarQuantidadeProduto/{pedidoItemId}")
+    @PUT("/v1/pedidos/IncrementarQuantidadeProduto/{pedidoItemId}")
     Call<Void> incrementarQtdProduto(@Path("pedidoItemId") int pedidoItemId);
 
-    @GET("/v1/pedidos/DecrementarQuantidadeProduto/{pedidoItemId}")
+    @PUT("/v1/pedidos/DecrementarQuantidadeProduto/{pedidoItemId}")
     Call<Void> decrementarQtdProduto(@Path("pedidoItemId") int pedidoItemId);
 }
