@@ -11,4 +11,6 @@ public interface IMesaDAO
     void adicionarMesa(Mesa mesa);
     ArrayList<Mesa> obterTodasMesasDesocupadas();
     List<Mesa> obterTodasMesas();
+
+    void deletarTodas();
 }

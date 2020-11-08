@@ -127,4 +127,10 @@ public class ProdutosDAO implements IProdutosDAO
         }
         return pratos;
     }
+
+    @Override
+    public void deletarTodos() {
+        db.delete("Produtos", null, null);
+        db.close();
+    }
 }

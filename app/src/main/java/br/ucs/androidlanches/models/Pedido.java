@@ -1,22 +1,46 @@
 package br.ucs.androidlanches.models;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.util.List;
 
 public class Pedido implements Serializable
 {
+    @SerializedName("numero")
+    @Expose
     private int numero;
+
+    @SerializedName("pago")
+    @Expose
     private boolean pago;
+
+    @SerializedName("mesa")
+    @Expose
     private Mesa mesa;
+
+    @SerializedName("gorjeta")
+    @Expose
     private double gorjeta;
+
+    @SerializedName("itens")
+    @Expose
     private List<PedidoItem> itens;
 
-    public Pedido(int numero, boolean pago, Mesa mesa) {
+    public Pedido(int numero, boolean pago, Mesa mesa)
+    {
         this.numero = numero;
         this.pago = pago;
         this.mesa = mesa;
     }
 
+    public Pedido(int numero, boolean pago, int mesaId, int numeroMesa)
+    {
+        this.numero = numero;
+        this.pago = pago;
+        this.mesa = new Mesa(mesaId,numeroMesa);
+    }
     public boolean isPago() {
         return pago;
     }
@@ -47,6 +71,7 @@ public class Pedido implements Serializable
     {
         this.itens = itens;
     }
+
 
     public List<PedidoItem> getItens()
     {

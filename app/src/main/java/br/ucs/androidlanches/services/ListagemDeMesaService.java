@@ -26,9 +26,7 @@ public class ListagemDeMesaService
     public List<Mesa> obter()
     {
         //_mesas = _mesasDAO.obterTodasMesasDesocupadas();
-
-        Retrofit retrofit = RetrofitApiClient.getClient();
-        IMesaApiService mesaService = retrofit.create(IMesaApiService.class);
+        IMesaApiService mesaService = new RetrofitApiClient().getMesaService();
         Call<List<Mesa>> callMesas = mesaService.obterDesocupadas();
 
         callMesas.enqueue(new Callback<List<Mesa>>() {

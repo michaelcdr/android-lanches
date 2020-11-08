@@ -1,19 +1,24 @@
 package br.ucs.androidlanches.rest;
 
 import java.security.cert.CertificateException;
+import java.util.List;
+
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import br.ucs.androidlanches.rest.services.IMesaApiService;
+import br.ucs.androidlanches.rest.services.IPedidoService;
+import br.ucs.androidlanches.rest.services.IProdutoApiService;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitApiClient
 {
-    private static final String BASE_URL = "https://10.0.2.2:5001/";
+    private static final String BASE_URL = "https://10.0.2.2:5051/";
     private static Retrofit retrofit = null;
 
     public static Retrofit getClient()
@@ -27,6 +32,19 @@ public class RetrofitApiClient
                                    .build();
         }
         return retrofit;
+    }
+
+    public static IPedidoService getPedidoService() {
+        return getClient().create(IPedidoService.class);
+    }
+
+    public static IProdutoApiService getProdutoService(){
+        return getClient().create(IProdutoApiService.class);
+    }
+
+    public static IMesaApiService getMesaService(){
+
+        return getClient().create(IMesaApiService.class);
     }
 
     public static OkHttpClient.Builder getUnsafeOkHttpClient()

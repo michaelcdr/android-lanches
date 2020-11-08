@@ -59,10 +59,7 @@ public class ListaDeBebidasActivity extends AppCompatActivity
 
     private void obterBebidas()
     {
-        Retrofit retrofit = RetrofitApiClient.getClient();
-        IProdutoApiService produtosService = retrofit.create(IProdutoApiService.class);
-        Call<List<Bebida>> callBebidas = produtosService.obterBebidas();
-
+        Call<List<Bebida>> callBebidas = new RetrofitApiClient().getProdutoService().obterBebidas();
         callBebidas.enqueue(new Callback<List<Bebida>>() {
             @Override
             public void onResponse(Call<List<Bebida>> call, Response<List<Bebida>> response) {

@@ -3,8 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="br.ucs.androidlanches.ui.MainActivity">
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+        android:id="@+id/action_limpar_base"
+        android:title="Limpar base"
+        android:icon="@drawable/ic_baseline_restore_from_trash_24"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_atualizar_base"
+        android:title="Atualizar base"
+        android:icon="@drawable/ic_baseline_cached_24"
+        app:showAsAction="always" />
 </menu>

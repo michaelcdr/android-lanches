@@ -64,10 +64,7 @@ public class EscolherMesaActivity extends AppCompatActivity
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerViewMesas.setLayoutManager(layoutManager);
 
-        Retrofit retrofit = RetrofitApiClient.getClient();
-        IMesaApiService mesaService = retrofit.create(IMesaApiService.class);
-        Call<List<Mesa>> callMesas = mesaService.obterDesocupadas();
-
+        Call<List<Mesa>> callMesas = RetrofitApiClient.getMesaService().obterDesocupadas();
         callMesas.enqueue(new Callback<List<Mesa>>() {
             public void onResponse(Call<List<Mesa>> call, Response<List<Mesa>> response) {
                 if (response.isSuccessful()) {

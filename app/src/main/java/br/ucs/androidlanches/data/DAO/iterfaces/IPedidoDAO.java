@@ -15,4 +15,6 @@ public interface IPedidoDAO
     void adicionarPedidoItem(int numeroPedido, int produtoId);
     int criarPedido(int mesaId, Produto produto);
     int pagarPedido(Pedido pedido);
+
+    void deletarTodos();
 }

@@ -211,4 +211,11 @@ public class PedidosDAO implements IPedidoDAO
         db.close();
         return linhasAfetadas;
     }
+
+    @Override
+    public void deletarTodos() {
+        db.delete("PedidosItens", null, null);
+        db.delete("Pedidos", null, null);
+        db.close();
+    }
 }

@@ -82,4 +82,10 @@ public class MesasDAO implements IMesaDAO
         }
         return mesas;
     }
+
+    @Override
+    public void deletarTodas() {
+        db.delete("Mesas", null, null);
+        db.close();
+    }
 }

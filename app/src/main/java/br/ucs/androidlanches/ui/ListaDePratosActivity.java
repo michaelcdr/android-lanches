@@ -60,8 +60,7 @@ public class ListaDePratosActivity extends AppCompatActivity
 
     private void obterPratos()
     {
-        Retrofit retrofit = RetrofitApiClient.getClient();
-        IProdutoApiService produtosService = retrofit.create(IProdutoApiService.class);
+        IProdutoApiService produtosService = new RetrofitApiClient().getProdutoService();
         Call<List<Prato>> callPratos = produtosService.obterPratos();
 
         callPratos.enqueue(new Callback<List<Prato>>() {

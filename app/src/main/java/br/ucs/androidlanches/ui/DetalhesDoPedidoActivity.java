@@ -1,7 +1,10 @@
 package br.ucs.androidlanches.ui;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,6 +14,10 @@ import br.ucs.androidlanches.models.PedidoItem;
 import br.ucs.androidlanches.recycleview.adapter.listeners.IOnItemClickBtnDecrementarQtdItemPedidoListener;
 import br.ucs.androidlanches.recycleview.adapter.listeners.IOnItemClickBtnIncrementarQtdItemPedidoListener;
 import br.ucs.androidlanches.recycleview.adapter.PedidoItensAdapter;
+import br.ucs.androidlanches.rest.RetrofitApiClient;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class DetalhesDoPedidoActivity extends AppCompatActivity
 {
@@ -27,9 +34,8 @@ public class DetalhesDoPedidoActivity extends AppCompatActivity
         setTitle("Detalhes do pedido");
 
         _pedidoDAO = new PedidosDAO(this);
+
         pedido = obterPedidoAtual();
-        configurarReciclerView();
-        configurarAdapter(pedido);
 
         findViewById(R.id.btnAdicionarItemPedido).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,7 +53,29 @@ public class DetalhesDoPedidoActivity extends AppCompatActivity
     {
         Intent dadosActivityAnterior = getIntent();
         numeroPedido = dadosActivityAnterior.getIntExtra("numeroPedido",0);
-        Pedido pedido = _pedidoDAO.obterPedido(numeroPedido);
+        Call<Pedido> pedidoCall = RetrofitApiClient.getPedidoService().obter(numeroPedido);
+
+        pedidoCall.enqueue(new Callback<Pedido>() {
+            @Override
+            public void onResponse(Call<Pedido> call, Response<Pedido> response) {
+                if (response.isSuccessful()){
+                    pedido = response.body();
+                    configurarReciclerView();
+                    configurarAdapter(pedido);
+                } else {
+                    Toast.makeText(DetalhesDoPedidoActivity.this, "Não foi possível obter os dados devido a um erro na API de destino, tente novamente mais tarde. " , Toast.LENGTH_LONG).show();
+                    Log.e("PEDIDO_DETALHES","não foi possivel obter o pedido.");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Pedido> call, Throwable t) {
+                Log.e("PEDIDO_DETALHES","não foi possivel obter o pedido na api. " + t.getMessage());
+                pedido = _pedidoDAO.obterPedido(numeroPedido);
+                configurarReciclerView();
+                configurarAdapter(pedido);
+            }
+        });
         return pedido;
     }
 
@@ -68,20 +96,32 @@ public class DetalhesDoPedidoActivity extends AppCompatActivity
         adapter.setOnItemClickBtnIncrementarQtdItemPedido(new IOnItemClickBtnIncrementarQtdItemPedidoListener() {
             @Override
             public void onItemClick(PedidoItem pedidoItem) {
-                //Toast.makeText(DetalhesDoPedidoActivity.this, "incrementar " , Toast.LENGTH_SHORT).show();
-                Intent dadosActivityAnterior = getIntent();
                 pedidoItem.incrementarQtd();
-                _pedidoDAO.atualizarPedidoItem(pedidoItem);
-                finish();
-                startActivityForResult(getIntent(), 1);
+
+                Call<Void> callIncrementarItemPedido = RetrofitApiClient.getPedidoService().incrementarQtdProduto(pedidoItem.getPedidoItemId());
+                callIncrementarItemPedido.enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        if (response.isSuccessful()){
+                            finish();
+                            startActivityForResult(getIntent(), 1);
+                        } else {
+                            Toast.makeText(DetalhesDoPedidoActivity.this, "Não foi possível obter os dados devido a um erro na API de destino, tente novamente mais tarde. " , Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        _pedidoDAO.atualizarPedidoItem(pedidoItem);
+
+                    }
+                });
             }
         });
 
         adapter.setOnItemClickBtnDecrementarQtdItemPedido(new IOnItemClickBtnDecrementarQtdItemPedidoListener() {
             @Override
             public void onItemClick(PedidoItem pedidoItem) {
-                //Toast.makeText(DetalhesDoPedidoActivity.this, "decrementar " , Toast.LENGTH_SHORT).show();
-                Intent dadosActivityAnterior = getIntent();
                 pedidoItem.decrementarQtd();
                 if (pedidoItem.getQuantidade() == 0)
                     _pedidoDAO.deletarPedidoItem(pedidoItem);

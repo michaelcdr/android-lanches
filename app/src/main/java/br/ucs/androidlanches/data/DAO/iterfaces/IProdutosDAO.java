@@ -16,4 +16,6 @@ public interface IProdutosDAO
     int atualizarProduto(Produto produto);
     int deletarProduto(Produto produto);
     List<Prato> obterTodosPratos();
+
+    void deletarTodos();
 }
