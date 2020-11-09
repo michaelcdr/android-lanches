@@ -7,6 +7,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
 
 import java.net.ConnectException;
 import java.util.ArrayList;
@@ -109,20 +111,26 @@ public class ListaDePratosActivity extends AppCompatActivity
                 Intent dadosActivityAnterior = getIntent();
                 mesaId = dadosActivityAnterior.getIntExtra("mesaId",0);
                 numeroPedido = dadosActivityAnterior.getIntExtra("numeroPedido",0);
-
-                if (numeroPedido == 0)
-                {
-                    int numeroPedido = _pedidosDAO.criarPedido(mesaId, prato);
-                    Intent detalhesDoPedido = new Intent(ListaDePratosActivity.this, DetalhesDoPedidoActivity.class);
-                    detalhesDoPedido.putExtra("numeroPedido", numeroPedido);
-                    startActivityForResult(detalhesDoPedido, 1);
+                Log.i("LOG_ANDROID_LANCHES", "Clicou em escolher produto no pedido " + numeroPedido +".");
+                try {
+                    if (numeroPedido == 0)
+                    {
+                        int numeroPedido = _pedidosDAO.criarPedido(mesaId, prato);
+                        Intent detalhesDoPedido = new Intent(ListaDePratosActivity.this, DetalhesDoPedidoActivity.class);
+                        detalhesDoPedido.putExtra("numeroPedido", numeroPedido);
+                        startActivityForResult(detalhesDoPedido, 1);
+                    }
+                    else
+                    {
+                        Intent detalhesDoPedido = new Intent(ListaDePratosActivity.this, DetalhesDoPedidoActivity.class);
+                        detalhesDoPedido.putExtra("numeroPedido", numeroPedido);
+                        _pedidosDAO.adicionarPedidoItem(numeroPedido, prato.getProdutoId());
+                        startActivityForResult(detalhesDoPedido, 1);
+                    }
                 }
-                else
-                {
-                    Intent detalhesDoPedido = new Intent(ListaDePratosActivity.this, DetalhesDoPedidoActivity.class);
-                    detalhesDoPedido.putExtra("numeroPedido", numeroPedido);
-                    _pedidosDAO.adicionarPedidoItem(numeroPedido, prato.getProdutoId());
-                    startActivityForResult(detalhesDoPedido, 1);
+                catch (Exception e){
+                    Log.e("LOG_ANDROID_LANCHES", "Não foi possivel adicionar o item no pedido." +  e.getMessage());
+                    Toast.makeText(ListaDePratosActivity.this, "Não foi possivel adicionar o item no pedido.", Toast.LENGTH_LONG);
                 }
             }
         });

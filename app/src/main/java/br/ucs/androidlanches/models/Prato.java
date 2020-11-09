@@ -21,7 +21,7 @@ public class Prato extends Produto implements Serializable
 
     public Prato(){}
 
-    public Prato(String nome,String descricao, double preco, int serveQuantasPessoas,String foto)
+    public Prato(String nome, String descricao, double preco, int serveQuantasPessoas, String foto)
     {
         this.setTipo("prato");
         this.setNome(nome);

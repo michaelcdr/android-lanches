@@ -16,11 +16,22 @@ import br.ucs.androidlanches.models.Produto;
 public class PedidosDAO implements IPedidoDAO
 {
     private SQLiteDatabase db;
-
+    private Context context;
     public PedidosDAO(Context context)
     {
+        this.context = context;
         SqliteHelper helper = new SqliteHelper(context);
         db = helper.getWritableDatabase();
+    }
+
+    private SQLiteDatabase conexao()
+    {
+        if (this.db == null || !this.db.isOpen())
+        {
+            SqliteHelper helper = new SqliteHelper(this.context);
+            this.db = helper.getWritableDatabase();
+        }
+        return this.db;
     }
 
     public List<Pedido> obterTodosPedidosSemPagamentoEfetuado()
@@ -31,7 +42,7 @@ public class PedidosDAO implements IPedidoDAO
                        "INNER JOIN Mesas  ON Pedidos.mesaId = Mesas.mesaId " +
                        "WHERE Pedidos.pago = 0 ORDER BY  Pedidos.numero";
 
-        Cursor cursor = db.rawQuery(query, null);
+        Cursor cursor = conexao().rawQuery(query, null);
         if (cursor.moveToFirst())
         {
             do {
@@ -39,7 +50,7 @@ public class PedidosDAO implements IPedidoDAO
                 pedidos.add(pedido);
             } while (cursor.moveToNext());
         }
-
+        db.close();
         return pedidos;
     }
 
@@ -49,10 +60,12 @@ public class PedidosDAO implements IPedidoDAO
                 "INNER JOIN Mesas  ON Pedidos.mesaId = Mesas.mesaId " +
                 "WHERE Pedidos.numero = ? ";
 
-        Cursor cursor = db.rawQuery(query, new String[] { String.valueOf(numeroPedido) });
+        Cursor cursor = conexao().rawQuery(query, new String[] { String.valueOf(numeroPedido) });
 
-        if (cursor == null)
+        if (cursor == null) {
+            db.close();
             return null;
+        }
         else
         {
             cursor.moveToFirst();
@@ -60,6 +73,7 @@ public class PedidosDAO implements IPedidoDAO
 
             List<PedidoItem> pedidoItems = obterItensPedido(numeroPedido);
             pedido.setItens(pedidoItems);
+            db.close();
             return pedido;
         }
     }
@@ -74,7 +88,7 @@ public class PedidosDAO implements IPedidoDAO
                         " INNER JOIN produtos ON produtos.produtoId  = pedidositens.produtoId "+
                         " WHERE pedidositens.numero = ?";
 
-        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(numeroPedido)});
+        Cursor cursor = conexao().rawQuery(query, new String[]{String.valueOf(numeroPedido)});
 
         if (cursor.moveToFirst())
         {
@@ -83,6 +97,7 @@ public class PedidosDAO implements IPedidoDAO
                 itens.add(pedidoItem);
             } while (cursor.moveToNext());
         }
+        db.close();
         return itens;
     }
 
@@ -91,7 +106,7 @@ public class PedidosDAO implements IPedidoDAO
         ContentValues values = new ContentValues();
         values.put("Quantidade", pedidoItem.getQuantidade());
 
-        int linhasAfetadas = db.update(
+        int linhasAfetadas = conexao().update(
             "pedidositens", values,
             "pedidoItemId = ? ",  new String[] { String.valueOf(pedidoItem.getPedidoItemId()) }
         );
@@ -101,7 +116,7 @@ public class PedidosDAO implements IPedidoDAO
 
     public void deletarPedidoItem(PedidoItem pedidoItem)
     {
-        db.delete("pedidositens", " pedidoItemId = ? ", new String[] { String.valueOf(pedidoItem.getPedidoItemId()) });
+        conexao().delete("pedidositens", " pedidoItemId = ? ", new String[] { String.valueOf(pedidoItem.getPedidoItemId()) });
         db.close();
     }
 
@@ -111,7 +126,7 @@ public class PedidosDAO implements IPedidoDAO
 
         values.put("mesaId", mesaId);
         values.put("pago", 0);
-        db.insert("Pedidos", null, values);
+        conexao().insert("Pedidos", null, values);
 
         int numeroPedido = obterUltimoNumeroPedidoDaMesa(mesaId);
         adicionarPedidoItem(numeroPedido, produto.getProdutoId());
@@ -131,7 +146,7 @@ public class PedidosDAO implements IPedidoDAO
             values.put("numero", numeroPedido);
             values.put("quantidade", 1);
             values.put("produtoId", produtoId);
-            db.insert("pedidositens", null, values);
+            conexao().insert("pedidositens", null, values);
             db.close();
         }
     }
@@ -139,15 +154,17 @@ public class PedidosDAO implements IPedidoDAO
     private void incrementarQuantidadeProdutoItem(int numeroPedido, int produtoId)
     {
         String query = "SELECT quantidade FROM pedidositens WHERE numero = ? AND produtoId = ? ";
-        Cursor cursor = db.rawQuery(query, new String[] { String.valueOf(numeroPedido), String.valueOf(produtoId) });
-
+        Cursor cursor = conexao().rawQuery(query, new String[] { String.valueOf(numeroPedido), String.valueOf(produtoId) });
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 int qtd = Integer.parseInt(cursor.getString(0));
                 qtd = qtd + 1;
+                db.close();
                 atualizarQuantidadePedidoItem(numeroPedido,produtoId, qtd);
             }
-        }
+            db.close();
+        } else
+            db.close();
     }
 
     private int atualizarQuantidadePedidoItem(int numeroPedido, int produtoId, int qtd)
@@ -155,10 +172,10 @@ public class PedidosDAO implements IPedidoDAO
         ContentValues values = new ContentValues();
         values.put("quantidade", qtd);
 
-        int linhasAfetadas = db.update(
-                "pedidositens",
-                values,
-                 " numero = ? and produtoId  = ? ",  new String[] { String.valueOf(numeroPedido), String.valueOf(produtoId) }
+        int linhasAfetadas = conexao().update(
+            "pedidositens",
+            values,
+            " numero = ? and produtoId  = ? ",  new String[] { String.valueOf(numeroPedido), String.valueOf(produtoId) }
         );
 
         db.close();
@@ -168,17 +185,19 @@ public class PedidosDAO implements IPedidoDAO
     private boolean temPedidoItem(int numeroPedido, int produtoId)
     {
         String query = "SELECT quantidade FROM pedidositens WHERE numero = ? AND produtoId = ? ";
-        Cursor cursor = db.rawQuery(query, new String[] { String.valueOf(numeroPedido), String.valueOf(produtoId) });
+        Cursor cursor = conexao().rawQuery(query, new String[] { String.valueOf(numeroPedido), String.valueOf(produtoId) });
 
-        if (cursor == null )
+
+        if (cursor == null) {
+            db.close();
             return false;
-        else {
-            if(cursor.moveToFirst()){
-
+        }else {
+            if (cursor.moveToFirst()){
                 int qtd = cursor.getInt(0);
+                db.close();
                 return true;
             }
-
+            db.close();
             return false;
         }
     }
@@ -186,13 +205,13 @@ public class PedidosDAO implements IPedidoDAO
     private int obterUltimoNumeroPedidoDaMesa(int mesaId)
     {
         String query = "SELECT numero FROM pedidos WHERE mesaId = ? ORDER BY numero desc";
-        Cursor cursor = db.rawQuery(query, new String[] { String.valueOf(mesaId) });
+        Cursor cursor = conexao().rawQuery(query, new String[] { String.valueOf(mesaId) });
 
         int numero = 0;
         if (cursor.moveToFirst())
-        {
             numero = cursor.getInt(0);
-        }
+
+        db.close();
         return numero;
     }
 
@@ -202,20 +221,19 @@ public class PedidosDAO implements IPedidoDAO
         values.put("gorjeta", pedido.getGorjeta());
         values.put("pago", 1);
 
-        int linhasAfetadas = db.update(
+        int linhasAfetadas = conexao().update(
                 "pedidos",
                 values,
                  " numero = ? ",  new String[] { String.valueOf(pedido.getNumero()) }
         );
-
         db.close();
         return linhasAfetadas;
     }
 
-    @Override
-    public void deletarTodos() {
-        db.delete("PedidosItens", null, null);
-        db.delete("Pedidos", null, null);
+    public void deletarTodos()
+    {
+        conexao().delete("PedidosItens", null, null);
+        conexao().delete("Pedidos", null, null);
         db.close();
     }
 }

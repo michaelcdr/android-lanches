@@ -91,7 +91,12 @@ public class ListaDeBebidasActivity extends AppCompatActivity
                 if (exception instanceof ConnectException) {
                     bebidas = _produtosDAO.obterTodasBebidas();
                     configurarAdapter(bebidas);
-                    Log.w("LOG_ANDROID_LANCHES","Não foi possivel obter a lista de bebidas na API devido a problemas de internet, resgatamos os dados locais. ");
+
+                    Log.w(
+                        "LOG_ANDROID_LANCHES",
+                        "Não foi possivel obter a lista de bebidas na API devido a problemas de internet, " +
+                            "resgatamos os dados locais, " + bebidas.size() + " bebidas encontradas."
+                    );
                 } else
                     Log.e("LOG_ANDROID_LANCHES","Não foi possivel obter a lista de bebidas. ");
 

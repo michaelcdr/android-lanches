@@ -75,11 +75,14 @@ public class EscolherMesaActivity extends AppCompatActivity
             }
 
             public void onFailure(Call<List<Mesa>> call, Throwable exception) {
-                if (exception instanceof ConnectException)
+                if (exception instanceof ConnectException) {
                     mesas = _mesasDAO.obterTodasMesasDesocupadas();
-
-                Log.i("LOG_ANDROID_LANCHES","Não foi possível carregar as mesas pela API " + exception.getMessage());
-                exception.printStackTrace();
+                    configurarAdapter(mesas, recyclerViewMesas);
+                    Log.i("LOG_ANDROID_LANCHES","Mesas no banco local: " + mesas.size());
+                } else{
+                    Log.e("LOG_ANDROID_LANCHES","Não foi possível carregar as mesas pela API " + exception.getMessage());
+                    exception.printStackTrace();
+                }
                 swipe.setRefreshing(false);
             }
         });

@@ -16,11 +16,23 @@ import br.ucs.androidlanches.models.Produto;
 public class ProdutosDAO implements IProdutosDAO
 {
     private SQLiteDatabase db;
+    private Context context;
 
     public ProdutosDAO(Context context)
     {
+        this.context = context;
         SqliteHelper helper = new SqliteHelper(context);
         db = helper.getWritableDatabase();
+    }
+
+    private SQLiteDatabase conexao()
+    {
+        if (this.db == null || !this.db.isOpen())
+        {
+            SqliteHelper helper = new SqliteHelper(this.context);
+            this.db = helper.getWritableDatabase();
+        }
+        return this.db;
     }
 
     public void adicionarBebida(Bebida produto)
@@ -34,7 +46,7 @@ public class ProdutosDAO implements IProdutosDAO
         values.put("tipo", "bebida");
         values.put("embalagem", produto.getEmbalagem());
 
-        db.insert("Produtos", null, values);
+        conexao().insert("Produtos", null, values);
         db.close();
     }
 
@@ -49,14 +61,14 @@ public class ProdutosDAO implements IProdutosDAO
         values.put("tipo", "prato");
         values.put("serveQuantasPessoas", produto.getServeQuantasPessoas());
 
-        db.insert("Produtos", null, values);
+        conexao().insert("Produtos", null, values);
         db.close();
     }
 
     public Produto obterProduto(int id)
     {
         String[] colunas = new String[] {"produtoId", "nome", "descricao", "preco", "foto", "embalagem", "serveQuantasPessoas", "tipo"};
-        Cursor cursor = db.query(
+        Cursor cursor = conexao().query(
             "Produtos", colunas, " produtoId = ?",  new String[] { String.valueOf(id) },
             null,
             null,
@@ -64,12 +76,15 @@ public class ProdutosDAO implements IProdutosDAO
             null
         );
 
-        if (cursor == null)
+        if (cursor == null) {
+            db.close();
             return null;
+        }
         else
         {
             cursor.moveToFirst();
             Produto produto = CursorHelper.cursorToProduto(cursor);
+            db.close();
             return produto;
         }
     }
@@ -78,7 +93,7 @@ public class ProdutosDAO implements IProdutosDAO
     {
         ArrayList<Bebida> bebidas = new ArrayList<>();
         String query = "SELECT produtoId,nome,descricao,preco,foto,embalagem,serveQuantasPessoas,tipo FROM Produtos WHERE tipo = 'bebida' ORDER BY nome";
-        Cursor cursor = db.rawQuery(query, null);
+        Cursor cursor = conexao().rawQuery(query, null);
 
         if (cursor.moveToFirst())
         {
@@ -87,6 +102,7 @@ public class ProdutosDAO implements IProdutosDAO
                 bebidas.add(bebida);
             } while (cursor.moveToNext());
         }
+        db.close();
         return bebidas;
     }
 
@@ -98,7 +114,7 @@ public class ProdutosDAO implements IProdutosDAO
         values.put("foto", produto.getFoto());
         values.put("preco", new Double(produto.getPreco()));
 
-        int linhasAfetadas = db.update("produtos", values,  "produtoId = ?",  new String[] { String.valueOf(produto.getProdutoId()) } );
+        int linhasAfetadas = conexao().update("produtos", values,  "produtoId = ?",  new String[] { String.valueOf(produto.getProdutoId()) } );
         db.close();
 
         return linhasAfetadas;
@@ -106,7 +122,7 @@ public class ProdutosDAO implements IProdutosDAO
 
     public int deletarProduto(Produto produto)
     {
-        int linhasAfetadas = db.delete("produtos", " produtoId = ?", new String[] { String.valueOf(produto.getProdutoId()) } );
+        int linhasAfetadas = conexao().delete("produtos", " produtoId = ?", new String[] { String.valueOf(produto.getProdutoId()) } );
         db.close();
         return linhasAfetadas;
     }
@@ -115,7 +131,7 @@ public class ProdutosDAO implements IProdutosDAO
     {
         ArrayList<Prato> pratos = new ArrayList<>();
         String query = "SELECT produtoId, nome, descricao, preco, foto, embalagem, serveQuantasPessoas, tipo  FROM produtos WHERE tipo = 'prato' ORDER BY nome";
-        Cursor cursor = db.rawQuery(query, null);
+        Cursor cursor = conexao().rawQuery(query, null);
 
         if (cursor.moveToFirst())
         {
@@ -124,12 +140,13 @@ public class ProdutosDAO implements IProdutosDAO
                 pratos.add(prato);
             } while (cursor.moveToNext());
         }
+        db.close();
         return pratos;
     }
 
-    @Override
-    public void deletarTodos() {
-        db.delete("Produtos", null, null);
+    public void deletarTodos()
+    {
+        conexao().delete("Produtos", null, null);
         db.close();
     }
 }

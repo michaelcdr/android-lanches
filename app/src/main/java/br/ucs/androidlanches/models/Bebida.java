@@ -39,6 +39,5 @@ public class Bebida extends Produto implements Serializable
         this.setDescricao(descricao);
         this.setPreco(preco);
         this.embalagem = embalagem;
-
     }
 }

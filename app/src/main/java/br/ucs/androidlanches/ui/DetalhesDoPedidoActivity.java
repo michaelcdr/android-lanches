@@ -53,8 +53,8 @@ public class DetalhesDoPedidoActivity extends AppCompatActivity
     {
         Intent dadosActivityAnterior = getIntent();
         numeroPedido = dadosActivityAnterior.getIntExtra("numeroPedido",0);
-        Call<Pedido> pedidoCall = RetrofitApiClient.getPedidoService().obter(numeroPedido);
 
+        Call<Pedido> pedidoCall = RetrofitApiClient.getPedidoService().obter(numeroPedido);
         pedidoCall.enqueue(new Callback<Pedido>() {
             @Override
             public void onResponse(Call<Pedido> call, Response<Pedido> response) {
@@ -96,8 +96,6 @@ public class DetalhesDoPedidoActivity extends AppCompatActivity
         adapter.setOnItemClickBtnIncrementarQtdItemPedido(new IOnItemClickBtnIncrementarQtdItemPedidoListener() {
             @Override
             public void onItemClick(PedidoItem pedidoItem) {
-
-
                 Call<Void> callIncrementarItemPedido = RetrofitApiClient.getPedidoService().incrementarQtdProduto(pedidoItem.getPedidoItemId());
                 callIncrementarItemPedido.enqueue(new Callback<Void>() {
                     @Override
@@ -106,16 +104,20 @@ public class DetalhesDoPedidoActivity extends AppCompatActivity
                             finish();
                             startActivityForResult(getIntent(), 1);
                         } else {
-                            Log.e("LOG_ANDROID_LANCHES","Não foi possível obter os dados devido a um erro na API de destino, tente novamente mais tarde. " );
-                            Toast.makeText(DetalhesDoPedidoActivity.this, "Não foi possível obter os dados devido a um erro na API de destino, tente novamente mais tarde. " , Toast.LENGTH_LONG).show();
+                            Log.e("LOG_ANDROID_LANCHES","Não foi possível obter os dados devido a um erro na API de destino, tente novamente mais tarde.");
+                            Toast.makeText(
+                            DetalhesDoPedidoActivity.this,
+                            "Não foi possível obter os dados devido a um erro na API de destino, tente novamente mais tarde. " , Toast.LENGTH_LONG).show();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<Void> call, Throwable t) {
-                        Log.e("LOG_ANDROID_LANCHES","Não foi possível acessar API. " + t.getMessage() );
+                        Log.e("LOG_ANDROID_LANCHES","Incrementando no banco local." + t.getMessage() );
                         pedidoItem.incrementarQtd();
                         _pedidoDAO.atualizarPedidoItem(pedidoItem);
+                        finish();
+                        startActivityForResult(getIntent(), 1);
                     }
                 });
             }
@@ -140,8 +142,6 @@ public class DetalhesDoPedidoActivity extends AppCompatActivity
                     @Override
                     public void onFailure(Call<Void> call, Throwable t) {
                         Log.i("LOG_ANDROID_LANCHES","decrementando no banco local");
-                        Log.e("LOG_ANDROID_LANCHES","Não foi possível acessar API. " + t.getMessage() );
-
                         pedidoItem.decrementarQtd();
 
                         if (pedidoItem.getQuantidade() == 0)

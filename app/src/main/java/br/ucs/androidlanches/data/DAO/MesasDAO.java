@@ -4,10 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import br.ucs.androidlanches.data.DAO.iterfaces.IMesaDAO;
 import br.ucs.androidlanches.data.Helpers.CursorHelper;
 import br.ucs.androidlanches.data.Helpers.SqliteHelper;
@@ -16,11 +14,23 @@ import br.ucs.androidlanches.models.Mesa;
 public class MesasDAO implements IMesaDAO
 {
     private SQLiteDatabase db;
+    private Context context;
 
     public MesasDAO(Context context)
     {
+        this.context = context;
         SqliteHelper helper = new SqliteHelper(context);
         db = helper.getWritableDatabase();
+    }
+
+    private SQLiteDatabase conexao()
+    {
+        if (this.db == null || !this.db.isOpen())
+        {
+            SqliteHelper helper = new SqliteHelper(this.context);
+            this.db = helper.getWritableDatabase();
+        }
+        return this.db;
     }
 
     public void adicionarMesa(Mesa mesa)
@@ -28,13 +38,13 @@ public class MesasDAO implements IMesaDAO
         ContentValues values = new ContentValues();
 
         values.put("numero", mesa.getNumero());
-        db.insert("Mesas", null, values);
+        conexao().insert("Mesas", null, values);
         db.close();
     }
 
     public Mesa obterMesa(int id)
     {
-        Cursor cursor = db.query(
+        Cursor cursor = conexao().query(
                 "Mesas", new String[]{"mesaId","numero"}, " mesaId  = ?",  new String[] { String.valueOf(id) },
                 null, // e. group by
                 null, // f. having
@@ -42,12 +52,13 @@ public class MesasDAO implements IMesaDAO
                 null // h. limit
         );
 
-        if (cursor == null)
+        if (cursor == null) {
+            db.close();
             return null;
-        else
-        {
+        } else {
             cursor.moveToFirst();
             Mesa mesa = CursorHelper.cursorToMesa(cursor);
+            db.close();
             return mesa;
         }
     }
@@ -58,7 +69,7 @@ public class MesasDAO implements IMesaDAO
         String query = " SELECT * FROM Mesas WHERE mesaId "+
                        " NOT IN (SELECT mesaId From Pedidos WHERE PAGO = 0 GROUP BY mesaId) ORDER BY numero";
 
-        Cursor cursor = db.rawQuery(query, null);
+        Cursor cursor = conexao().rawQuery(query, null);
         if (cursor.moveToFirst())
         {
             do {
@@ -66,13 +77,14 @@ public class MesasDAO implements IMesaDAO
                 mesas.add(mesa);
             } while (cursor.moveToNext());
         }
+        db.close();
         return mesas;
     }
 
     public List<Mesa> obterTodasMesas()
     {
         List<Mesa> mesas = new ArrayList<>();
-        Cursor cursor = db.rawQuery("SELECT * FROM Mesas", null);
+        Cursor cursor = conexao().rawQuery("SELECT * FROM Mesas", null);
         if (cursor.moveToFirst())
         {
             do {
@@ -80,12 +92,13 @@ public class MesasDAO implements IMesaDAO
                 mesas.add(mesa);
             } while (cursor.moveToNext());
         }
+        db.close();
         return mesas;
     }
 
-    @Override
-    public void deletarTodas() {
-        db.delete("Mesas", null, null);
+    public void deletarTodas()
+    {
+        conexao().delete("Mesas", null, null);
         db.close();
     }
 }
