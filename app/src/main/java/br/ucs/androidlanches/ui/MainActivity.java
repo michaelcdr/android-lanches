@@ -1,35 +1,33 @@
 package br.ucs.androidlanches.ui;
+
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import br.ucs.androidlanches.data.DAO.*;
 import br.ucs.androidlanches.models.*;
 import br.ucs.androidlanches.recycleview.adapter.listeners.*;
 import br.ucs.androidlanches.recycleview.adapter.PedidosAdapter;
 import br.ucs.androidlanches.rest.RetrofitApiClient;
-import br.ucs.androidlanches.rest.services.IMesaApiService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -225,9 +223,11 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private void gerarCallBebidas() {
+    private void gerarCallBebidas()
+    {
         Log.i("LOG_ANDROID_LANCHES","Entrou na call de bebidas");
-        Call<List<Bebida>> bebidasCall = RetrofitApiClient.getProdutoService().obterBebidas();
+        Map<String,String> filtros = new HashMap<>();
+        Call<List<Bebida>> bebidasCall = RetrofitApiClient.getProdutoService().obterBebidas(filtros);
         bebidasCall.enqueue(new Callback<List<Bebida>>() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
@@ -249,9 +249,11 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private void gerarCallPratos() {
+    private void gerarCallPratos()
+    {
         Log.i("LOG_ANDROID_LANCHES","Entrou na call de pratos");
-        Call<List<Prato>> pratosCall = RetrofitApiClient.getProdutoService().obterPratos();
+        Map<String,String> filtros = new HashMap<>();
+        Call<List<Prato>> pratosCall = RetrofitApiClient.getProdutoService().obterPratos(filtros);
         pratosCall.enqueue(new Callback<List<Prato>>() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
@@ -346,7 +348,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private void atualizarBebidasBancoLocal(Response<List<Bebida>> response){
+    private void atualizarBebidasBancoLocal(Response<List<Bebida>> response)
+    {
         List<Bebida> bebidasLocais = _produtosDao.obterTodasBebidas();
         List<Bebida> bebidasNaApi = response.body();
 
