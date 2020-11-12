@@ -1,7 +1,10 @@
 package br.ucs.androidlanches.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
+<<<<<<< HEAD
 
+=======
+>>>>>>> efa72b5e768a053d4f05f6c0560cc3cd7be935eb
 import android.os.Bundle;
 
 public class PagarPedidoComGorjeta extends AppCompatActivity {

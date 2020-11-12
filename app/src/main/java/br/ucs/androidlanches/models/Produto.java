@@ -1,14 +1,34 @@
 package br.ucs.androidlanches.models;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 
 public class Produto implements Serializable
 {
+    @SerializedName("produtoId")
+    @Expose
     private int produtoId;
+
+    @SerializedName("nome")
+    @Expose
     private String nome;
+
+    @SerializedName("descricao")
+    @Expose
     private String descricao;
+
+    @SerializedName("preco")
+    @Expose
     private double preco;
+
+    @SerializedName("foto")
+    @Expose
     private String foto;
+
+    @SerializedName("tipo")
+    @Expose
     private String tipo;
 
     public Produto(){}

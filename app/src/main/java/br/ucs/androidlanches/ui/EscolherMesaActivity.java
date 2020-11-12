@@ -3,23 +3,32 @@ package br.ucs.androidlanches.ui;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
+import java.net.ConnectException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-
-import br.ucs.androidlanches.data.DataAccessHelper;
+import br.ucs.androidlanches.data.DAO.MesasDAO;
 import br.ucs.androidlanches.models.Mesa;
-import br.ucs.androidlanches.recycleview.adapter.IOnItemClickMesaListener;
+import br.ucs.androidlanches.recycleview.adapter.listeners.IOnItemClickMesaListener;
 import br.ucs.androidlanches.recycleview.adapter.MesaAdapter;
+import br.ucs.androidlanches.rest.RetrofitApiClient;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class EscolherMesaActivity extends AppCompatActivity
 {
     private List<Mesa> mesas = new ArrayList<>();
-    private DataAccessHelper db = new DataAccessHelper(this);
+    private MesasDAO _mesasDAO;
     private RecyclerView recyclerViewMesas;
+    private SwipeRefreshLayout swipe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -27,6 +36,17 @@ public class EscolherMesaActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_escolher_mesa);
         setTitle("Escolha uma mesa");
+
+        _mesasDAO = new MesasDAO(this);
+
+        swipe = (SwipeRefreshLayout) findViewById(R.id.swiperefresh_lista_mesas);
+        swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                carregarMesas();
+            }
+        });
+
         carregarMesas();
     }
 
@@ -39,13 +59,41 @@ public class EscolherMesaActivity extends AppCompatActivity
 
     private void carregarMesas()
     {
+        configurarReciclerViewMesas();
+        Call<List<Mesa>> callMesas = RetrofitApiClient.getMesaService().obterDesocupadas();
+        callMesas.enqueue(new Callback<List<Mesa>>() {
+            public void onResponse(Call<List<Mesa>> call, Response<List<Mesa>> response) {
+                if (response.isSuccessful()) {
+                    mesas = response.body();
+                    configurarAdapter(mesas, recyclerViewMesas);
+                    swipe.setRefreshing(false);
+                    Log.i("LOG_ANDROID_LANCHES","Numero de mesas "+ mesas.size());
+                } else {
+                    swipe.setRefreshing(false);
+                    Log.i("LOG_ANDROID_LANCHES","Não foi possível carregar as mesas pela API " + response.message());
+                }
+            }
+
+            public void onFailure(Call<List<Mesa>> call, Throwable exception) {
+                if (exception instanceof ConnectException) {
+                    mesas = _mesasDAO.obterTodasMesasDesocupadas();
+                    configurarAdapter(mesas, recyclerViewMesas);
+                    Log.i("LOG_ANDROID_LANCHES","Mesas no banco local: " + mesas.size());
+                } else{
+                    Log.e("LOG_ANDROID_LANCHES","Não foi possível carregar as mesas pela API " + exception.getMessage());
+                    exception.printStackTrace();
+                }
+                swipe.setRefreshing(false);
+            }
+        });
+    }
+
+    private void configurarReciclerViewMesas()
+    {
         recyclerViewMesas = findViewById(R.id.recycleViewMesas);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerViewMesas.setLayoutManager(layoutManager);
-
-        mesas = db.obterTodasMesasDesocupadas();
-        configurarAdapter(mesas,recyclerViewMesas);
     }
 
     private void configurarAdapter(List<Mesa> mesas, RecyclerView recyclerView)
@@ -62,6 +110,17 @@ public class EscolherMesaActivity extends AppCompatActivity
                 startActivityForResult(abrirSelecaoPedidoComMesaSelecionada,1);
             }
         });
-        adapter.notifyDataSetChanged();
+        //adapter.notifyDataSetChanged();
+    }
+
+    public boolean isInternetAvailable()
+    {
+        try {
+            InetAddress address = InetAddress.getByName("www.google.com");
+            return !address.equals("");
+        } catch (UnknownHostException e) {
+            // Log error
+        }
+        return false;
     }
 }

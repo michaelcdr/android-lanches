@@ -1,4 +1,4 @@
-package br.ucs.androidlanches.recycleview.adapter;
+package br.ucs.androidlanches.recycleview.adapter.listeners;
 
 import br.ucs.androidlanches.models.Pedido;
 

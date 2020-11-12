@@ -1,11 +1,23 @@
 package br.ucs.androidlanches.models;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 
 public class PedidoItem implements Serializable {
+    @SerializedName("pedidoItemId")
+    @Expose
     private int pedidoItemId;
+
+    @SerializedName("pedidoId")
+    @Expose
     private int pedidoId;
+
+    @SerializedName("quantidade")
+    @Expose
     private int quantidade;
+
     private Produto produto;
 
     public PedidoItem(){}
@@ -29,12 +41,15 @@ public class PedidoItem implements Serializable {
     public void setQuantidade(int quantidade) {
         this.quantidade = quantidade;
     }
+
     public void setProduto(Produto produto){
         this.produto = produto;
     }
+
     public Produto getProduto(){
         return this.produto;
     }
+
     public void setPedidoItemId(int pedidoItemId){
         this.pedidoItemId =  pedidoItemId;
     }

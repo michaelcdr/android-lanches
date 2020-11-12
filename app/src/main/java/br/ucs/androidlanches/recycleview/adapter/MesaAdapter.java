@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 import br.ucs.androidlanches.models.Mesa;
+import br.ucs.androidlanches.recycleview.adapter.listeners.IOnItemClickMesaListener;
 import br.ucs.androidlanches.ui.R;
 
 public class MesaAdapter extends RecyclerView.Adapter<MesaAdapter.MesaViewHolder>
