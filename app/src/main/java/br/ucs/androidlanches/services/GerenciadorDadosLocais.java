@@ -25,7 +25,100 @@ public class GerenciadorDadosLocais
     private PedidosDAO _pedidosDao;
     private MesasDAO _mesasDao;
     private ProdutosDAO _produtosDao;
+<<<<<<< HEAD:app/src/main/java/br/ucs/androidlanches/services/GerenciadorDadosLocais.java
     private Context _context;
+=======
+    private RecyclerView recyclerViewPedidos;
+    private SwipeRefreshLayout swipe;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        setTitle("Pedidos");
+
+        _pedidosDao =  new PedidosDAO(this);
+        _mesasDao = new MesasDAO(this);
+        _produtosDao = new ProdutosDAO(this);
+
+        swipe = (SwipeRefreshLayout) findViewById(R.id.swiperefresh_lista_pedidos);
+        swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                obterTodosPedidosSemPagamentoEfetuado();
+            }
+        });
+
+        obterTodosPedidosSemPagamentoEfetuado();
+        configurarRecicleViewPedidos();
+        gerarEventoCadastroPedido();
+    }
+
+    private void obterTodosPedidosSemPagamentoEfetuado()
+    {
+<<<<<<< HEAD
+        List<Mesa> mesas = db.obterTodasMesas();
+
+        if (mesas.size() == 0)
+        {
+            for (int i = 1; i <= 100; i++)
+            {
+                db.adicionarMesa(new Mesa(i));
+            }
+
+            //adicionando bebidas
+            db.adicionarBebida(new Bebida("Coca cola", "Zero", 8.0, "2 litros", "cocacola_zero_2l"));
+            db.adicionarBebida(new Bebida("Coca cola", "Zero", 5.0, "600 ml", "cocacola_zero_600ml"));
+            db.adicionarBebida(new Bebida("Coca cola", "Zero Lata", 3.5, "350 ml", "cocacola_zero_350ml"));
+
+            db.adicionarBebida(new Bebida("Coca cola", "Normal", 8.0, "2 litros", "cocacola_2l"));
+            db.adicionarBebida(new Bebida("Coca cola", "Normal", 5.0, "600 ml", "cocacola_600ml"));
+            db.adicionarBebida(new Bebida("Coca cola", "Normal Lata", 3.5, "350 ml", "cocacola_350ml"));
+
+            //db.adicionarBebida(new Bebida("Pepsi", "Coca cola é melhor mas quebra um galho.",5.0,"600 ml"));
+            //db.adicionarBebida(new Bebida("Cachaça 51", "cachaça da boa!",3.50,"1 lt"));
+
+            //adicionando pratos
+            db.adicionarPrato(new Prato("Xis salada", "Hamburguer, alface, queijo, presunto, tomate, milho, erviolha, salada, acompanha fritas ", 20.0, 1, "xis_salada"));
+            db.adicionarPrato(new Prato("Xis Calabresa", "Calabresa, alface, queijo, presunto, tomate, milho, erviolha, salada, acompanha fritas ", 20.0, 1, "xis_calabresa"));
+            db.adicionarPrato(new Prato("Pizza Calabresa", "Calabresa, alface, queijo, presunto, tomate, milho, erviolha, salada, acompanha fritas ", 50.0, 3, "pizza_calabresa"));
+            db.adicionarPrato(new Prato("Pizza Palmito", "Calabresa, alface, queijo, presunto, tomate, milho, erviolha, salada, acompanha fritas ", 50.0, 3, "pizza_calabresa"));
+            db.adicionarPrato(new Prato("Pizza Bacon", "Calabresa, alface, queijo, presunto, tomate, milho, erviolha, salada, acompanha fritas ", 50.0, 3, "pizza_calabresa"));
+            db.adicionarPrato(new Prato("Pizza 4 Queijos", "Calabresa, alface, queijo, presunto, tomate, milho, erviolha, salada, acompanha fritas ", 50.0, 3, "pizza_calabresa"));
+            db.adicionarPrato(new Prato("Pizza 5 Queijos", "Calabresa, alface, queijo, presunto, tomate, milho, erviolha, salada, acompanha fritas ", 50.0, 3, "pizza_calabresa"));
+            db.adicionarPrato(new Prato("Pizza 8 Queijos", "Calabresa, alface, queijo, presunto, tomate, milho, erviolha, salada, acompanha fritas ", 50.0, 3, "pizza_calabresa"));
+        }
+=======
+        Call<List<Pedido>> callPedidos = RetrofitApiClient.getPedidoService().obterTodosSemPagamentoEfetuado();
+        callPedidos.enqueue(new Callback<List<Pedido>>() {
+            @Override
+            public void onResponse(Call<List<Pedido>> call, Response<List<Pedido>> response) {
+                if (response.isSuccessful()){
+                    Log.i("LOG_ANDROID_LANCHES", "Requisição com sucesso em obter pedidos não pagos: ");
+                    pedidos = response.body();
+                    configurarAdapter(pedidos, recyclerViewPedidos);
+                    swipe.setRefreshing(false);
+                } else {
+                    Log.e("LOG_ANDROID_LANCHES", "Algo deu errado ao tentar obter os pedidos em abertos na API: " + response.message());
+                    Toast.makeText(MainActivity.this,"Algo deu errado ao tentar obter os pedidos em abertos no servidor.",Toast.LENGTH_LONG).show();
+                    configurarAdapter(pedidos, recyclerViewPedidos);
+                    swipe.setRefreshing(false);
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, Throwable t) {
+                Log.e("LOG_ANDROID_LANCHES","Falhou na requisição de pedidos, erro ocorrido: " + t.getMessage());
+                pedidos = _pedidosDao.obterTodosPedidosSemPagamentoEfetuado();
+                Log.i("LOG_ANDROID_LANCHES","Pedidos obtidos no banco local, total de " + pedidos.size() + " pedidos.");
+                configurarAdapter(pedidos, recyclerViewPedidos);
+                swipe.setRefreshing(false);
+            }
+        });
+>>>>>>> efa72b5e768a053d4f05f6c0560cc3cd7be935eb
+    }
+>>>>>>> 3ab8db2d48275d29391054538063e2a9c19555f8:app/src/main/java/br/ucs/androidlanches/ui/MainActivity.java
 
     public GerenciadorDadosLocais(Context context)
     {

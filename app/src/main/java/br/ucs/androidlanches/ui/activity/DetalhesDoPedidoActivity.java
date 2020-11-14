@@ -97,6 +97,14 @@ public class DetalhesDoPedidoActivity extends AppCompatActivity
         adapter.setOnItemClickBtnIncrementarQtdItemPedido(new IOnItemClickBtnIncrementarQtdItemPedidoListener() {
             @Override
             public void onItemClick(PedidoItem pedidoItem) {
+<<<<<<< HEAD
+                //Toast.makeText(DetalhesDoPedidoActivity.this, "incrementar " , Toast.LENGTH_SHORT).show();
+                Intent dadosActivityAnterior = getIntent();
+                pedidoItem.incrementarQtd();
+                db.atualizarPedidoItem(pedidoItem);
+                finish();
+                startActivityForResult(getIntent(), 1);
+=======
                 Call<Void> callIncrementarItemPedido = RetrofitApiClient.getPedidoService().incrementarQtdProduto(pedidoItem.getPedidoItemId());
                 callIncrementarItemPedido.enqueue(new Callback<Void>() {
                     @Override
@@ -121,12 +129,21 @@ public class DetalhesDoPedidoActivity extends AppCompatActivity
                         startActivityForResult(getIntent(), 1);
                     }
                 });
+>>>>>>> efa72b5e768a053d4f05f6c0560cc3cd7be935eb
             }
         });
 
         adapter.setOnItemClickBtnDecrementarQtdItemPedido(new IOnItemClickBtnDecrementarQtdItemPedidoListener() {
             @Override
             public void onItemClick(PedidoItem pedidoItem) {
+<<<<<<< HEAD
+                //Toast.makeText(DetalhesDoPedidoActivity.this, "decrementar " , Toast.LENGTH_SHORT).show();
+                Intent dadosActivityAnterior = getIntent();
+                pedidoItem.decrementarQtd();
+                db.atualizarPedidoItem(pedidoItem);
+                finish();
+                startActivityForResult(getIntent(), 1);
+=======
                 Call<Void> callDecrementarItemPedido = RetrofitApiClient.getPedidoService().decrementarQtdProduto(pedidoItem.getPedidoItemId());
                 callDecrementarItemPedido.enqueue(new Callback<Void>() {
                     @Override
@@ -154,6 +171,7 @@ public class DetalhesDoPedidoActivity extends AppCompatActivity
                         startActivityForResult(getIntent(), 1);
                     }
                 });
+>>>>>>> efa72b5e768a053d4f05f6c0560cc3cd7be935eb
             }
         });
     }

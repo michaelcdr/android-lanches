@@ -143,6 +143,20 @@ public class ListaDeBebidasActivity extends AppCompatActivity
                             }
                         }
 
+<<<<<<< HEAD
+                if (numeroPedido == 0){
+                    //Toast.makeText(ListaDePratosActivity.this, "clico botom,vai cria pedido mesa " + mesaId, Toast.LENGTH_SHORT).show();
+                    int numeroPedido = db.criarPedido(mesaId, bebida);
+                    Intent detalhesDoPedido = new Intent(ListaDeBebidasActivity.this, DetalhesDoPedidoActivity.class);
+                    detalhesDoPedido.putExtra("numeroPedido", numeroPedido);
+                    startActivityForResult(detalhesDoPedido, 1);
+                } else {
+                    //Toast.makeText(ListaDeBebidasActivity.this, "clico botom, ja tem  pedido mesa " + mesaId, Toast.LENGTH_SHORT).show();
+                    Intent detalhesDoPedido = new Intent(ListaDeBebidasActivity.this, DetalhesDoPedidoActivity.class);
+                    detalhesDoPedido.putExtra("numeroPedido", numeroPedido);
+                    db.adicionarPedidoItem(numeroPedido, bebida.getProdutoId());
+                    startActivityForResult(detalhesDoPedido, 1);
+=======
                         @Override
                         public void onFailure(Call<Integer> call, Throwable t) {
                             Log.e("LOG_ANDROID_LANCHES", "Obtendo dados locais devido ao erro ocorrido: " + t.getMessage());
@@ -181,6 +195,7 @@ public class ListaDeBebidasActivity extends AppCompatActivity
                             startActivityForResult(detalhesDoPedido, 1);
                         }
                     });
+>>>>>>> efa72b5e768a053d4f05f6c0560cc3cd7be935eb
                 }
             }
         });

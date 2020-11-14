@@ -74,6 +74,13 @@ public class ListaDePratosActivity extends AppCompatActivity
 
     private void obterPratos()
     {
+<<<<<<< HEAD
+        pratos = db.obterTodosPratos();
+        configurarAdpter(pratos);
+    }
+
+    private void configurarAdpter(List<Prato> pratos)
+=======
         Map<String,String> filtros = new HashMap<>();
         filtros.put("descricao","");
         Call<List<Prato>> callPratos = new RetrofitApiClient().getProdutoService().obterPratos(filtros);
@@ -112,6 +119,7 @@ public class ListaDePratosActivity extends AppCompatActivity
     }
 
     private void configurarAdapter(List<Prato> pratos)
+>>>>>>> efa72b5e768a053d4f05f6c0560cc3cd7be935eb
     {
         PratoAdapter adapter = new PratoAdapter(this, pratos);
         recycleViewListaDePratos.setAdapter(adapter);
@@ -123,6 +131,22 @@ public class ListaDePratosActivity extends AppCompatActivity
                 Intent dadosActivityAnterior = getIntent();
                 mesaId = dadosActivityAnterior.getIntExtra("mesaId",0);
                 numeroPedido = dadosActivityAnterior.getIntExtra("numeroPedido",0);
+<<<<<<< HEAD
+                //Toast.makeText(ListaDePratosActivity.this, "clico botom, mesa " + mesaId, Toast.LENGTH_SHORT).show();
+
+                if (numeroPedido == 0){
+                    //Toast.makeText(ListaDePratosActivity.this, "clico botom,vai cria pedido mesa " + mesaId, Toast.LENGTH_SHORT).show();
+                    int numeroPedido = db.criarPedido(mesaId, prato);
+                    Intent detalhesDoPedido = new Intent(ListaDePratosActivity.this, DetalhesDoPedidoActivity.class);
+                    detalhesDoPedido.putExtra("numeroPedido", numeroPedido);
+                    startActivityForResult(detalhesDoPedido, 1);
+                } else {
+                    //Toast.makeText(ListaDePratosActivity.this, "clico botom, ja tem  pedido mesa " + mesaId, Toast.LENGTH_SHORT).show();
+                    Intent detalhesDoPedido = new Intent(ListaDePratosActivity.this, DetalhesDoPedidoActivity.class);
+                    detalhesDoPedido.putExtra("numeroPedido", numeroPedido);
+                    db.adicionarPedidoItem(numeroPedido, prato.getProdutoId());
+                    startActivityForResult(detalhesDoPedido, 1);
+=======
                 Log.i("LOG_ANDROID_LANCHES", "Clicou em escolher produto no pedido " + numeroPedido +".");
 
                 try {
@@ -196,6 +220,7 @@ public class ListaDePratosActivity extends AppCompatActivity
                 catch (Exception e){
                     Log.e("LOG_ANDROID_LANCHES", "Não foi possivel adicionar o item no pedido." +  e.getMessage());
                     Toast.makeText(ListaDePratosActivity.this, "Não foi possivel adicionar o item no pedido.", Toast.LENGTH_LONG);
+>>>>>>> efa72b5e768a053d4f05f6c0560cc3cd7be935eb
                 }
             }
         });
