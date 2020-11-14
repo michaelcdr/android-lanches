@@ -21,6 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
+            android:layout_marginBottom="3dp"
             android:orientation="horizontal">
 
             <TextView
@@ -31,10 +32,9 @@
                 android:text="Titulo Produto Qtd (1)"
                 android:textSize="20sp"></TextView>
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:layout_gravity="end">
+                android:layout_height="30dp" >
 
                 <Button
                     android:id="@+id/btnIncrementarQtd"
@@ -43,19 +43,23 @@
                     android:background="@color/VerdeOutro"
                     android:text="+"
                     android:textSize="18sp"
-                    android:textColor="#fff"></Button>
+                    android:textColor="#fff"
+                    android:layout_marginRight="35dp"
+                    android:layout_alignParentRight="true"></Button>
 
                 <Button
                     android:id="@+id/btnDecrementarQtd"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:layout_marginLeft="5dp"
-                    android:textSize="18sp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
                     android:background="@color/VerdeOutro"
                     android:text="-"
-                    android:textColor="#fff"></Button>
+                    android:textColor="#fff"
+                    android:textSize="18sp"
+                    android:layout_alignParentRight="true"></Button>
 
-            </LinearLayout>
+            </RelativeLayout>
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

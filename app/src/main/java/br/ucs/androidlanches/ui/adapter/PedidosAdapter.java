@@ -1,4 +1,4 @@
-package br.ucs.androidlanches.recycleview.adapter;
+package br.ucs.androidlanches.ui.adapter;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,8 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 import br.ucs.androidlanches.models.Pedido;
-import br.ucs.androidlanches.recycleview.adapter.listeners.IOnItemClickBtnPagarPedidoListener;
-import br.ucs.androidlanches.recycleview.adapter.listeners.IOnItemClickBtnVerPedidoListener;
+import br.ucs.androidlanches.ui.adapter.listeners.IOnItemClickBtnPagarPedidoListener;
+import br.ucs.androidlanches.ui.adapter.listeners.IOnItemClickBtnVerPedidoListener;
 import br.ucs.androidlanches.ui.R;
 
 public class PedidosAdapter extends RecyclerView.Adapter<PedidosAdapter.ViewHolderPedidos>
@@ -63,6 +63,7 @@ public class PedidosAdapter extends RecyclerView.Adapter<PedidosAdapter.ViewHold
     {
         private TextView txtNumeroMesa;
         private TextView txtNumeroPedido;
+        private TextView txtValor;
         private Pedido pedido;
 
         public ViewHolderPedidos(@NonNull View itemView)
@@ -70,7 +71,7 @@ public class PedidosAdapter extends RecyclerView.Adapter<PedidosAdapter.ViewHold
             super(itemView);
             txtNumeroMesa =  itemView.findViewById(R.id.txtNumeroMesaCard);
             txtNumeroPedido = itemView.findViewById(R.id.txtNumeroPedidoCard);
-
+            txtValor = itemView.findViewById(R.id.txtPrecoPedido);
             itemView.findViewById(R.id.btnVerPedidoCard).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -91,6 +92,7 @@ public class PedidosAdapter extends RecyclerView.Adapter<PedidosAdapter.ViewHold
             this.pedido = pedido;
             txtNumeroMesa.setText("Mesa " + new Integer(pedido.getMesa().getNumero()).toString());
             txtNumeroPedido.setText("Nº " + new Integer(pedido.getNumero()).toString());
+            txtValor.setText(pedido.obterTotalFormatado());
         }
     }
 }

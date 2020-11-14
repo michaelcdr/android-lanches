@@ -93,4 +93,15 @@ public class Pedido implements Serializable
         retorno += "Total = " + total;
         return retorno;
     }
+
+    public String obterTotalFormatado() {
+        double total =0;
+/*
+        for (int i = 0; i < this.getItens().size(); i++)
+        {
+            PedidoItem item = this.getItens().get(i);
+            total += item.getQuantidade() * item.getProduto().getPreco();
+        }*/
+        return "Total de R$ " + total;
+    }
 }

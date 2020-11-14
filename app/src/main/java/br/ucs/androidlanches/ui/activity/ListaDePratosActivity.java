@@ -1,4 +1,4 @@
-package br.ucs.androidlanches.ui;
+package br.ucs.androidlanches.ui.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,18 +17,14 @@ import java.util.List;
 import java.util.Map;
 
 import br.ucs.androidlanches.data.DAO.*;
-import br.ucs.androidlanches.models.Bebida;
-import br.ucs.androidlanches.models.Pedido;
 import br.ucs.androidlanches.models.Prato;
-import br.ucs.androidlanches.recycleview.adapter.listeners.IOnItemClickPratoListener;
-import br.ucs.androidlanches.recycleview.adapter.PratoAdapter;
+import br.ucs.androidlanches.ui.adapter.listeners.IOnItemClickPratoListener;
+import br.ucs.androidlanches.ui.adapter.PratoAdapter;
 import br.ucs.androidlanches.rest.RetrofitApiClient;
-import br.ucs.androidlanches.rest.filtros.FiltroBebidas;
-import br.ucs.androidlanches.rest.services.IProdutoApiService;
+import br.ucs.androidlanches.ui.R;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class ListaDePratosActivity extends AppCompatActivity
 {

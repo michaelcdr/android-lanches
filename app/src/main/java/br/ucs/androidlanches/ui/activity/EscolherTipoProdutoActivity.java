@@ -1,12 +1,11 @@
-package br.ucs.androidlanches.ui;
+package br.ucs.androidlanches.ui.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-
-import br.ucs.androidlanches.models.Mesa;
+import br.ucs.androidlanches.ui.R;
 
 public class EscolherTipoProdutoActivity extends AppCompatActivity
 {

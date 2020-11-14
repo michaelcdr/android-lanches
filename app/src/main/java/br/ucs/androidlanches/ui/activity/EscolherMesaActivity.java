@@ -1,4 +1,4 @@
-package br.ucs.androidlanches.ui;
+package br.ucs.androidlanches.ui.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -16,9 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 import br.ucs.androidlanches.data.DAO.MesasDAO;
 import br.ucs.androidlanches.models.Mesa;
-import br.ucs.androidlanches.recycleview.adapter.listeners.IOnItemClickMesaListener;
-import br.ucs.androidlanches.recycleview.adapter.MesaAdapter;
+import br.ucs.androidlanches.ui.adapter.listeners.IOnItemClickMesaListener;
+import br.ucs.androidlanches.ui.adapter.MesaAdapter;
 import br.ucs.androidlanches.rest.RetrofitApiClient;
+import br.ucs.androidlanches.ui.R;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

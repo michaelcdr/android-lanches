@@ -1,7 +1,9 @@
-package br.ucs.androidlanches.ui;
+package br.ucs.androidlanches.ui.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+
+import br.ucs.androidlanches.ui.R;
 
 public class CriarPedidoActivity extends AppCompatActivity
 {

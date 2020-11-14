@@ -1,4 +1,4 @@
-package br.ucs.androidlanches.recycleview.adapter;
+package br.ucs.androidlanches.ui.adapter;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -15,7 +15,7 @@ import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 import br.ucs.androidlanches.models.Bebida;
-import br.ucs.androidlanches.recycleview.adapter.listeners.IOnItemClickBebidaListener;
+import br.ucs.androidlanches.ui.adapter.listeners.IOnItemClickBebidaListener;
 import br.ucs.androidlanches.ui.R;
 
 

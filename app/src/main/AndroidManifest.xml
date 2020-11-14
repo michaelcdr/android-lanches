@@ -12,15 +12,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".PagarPedidoComGorjeta"></activity>
-        <activity android:name=".ResumoPedidoActivity" />
-        <activity android:name=".DetalhesDoPedidoActivity" />
-        <activity android:name=".ListaDePratosActivity" />
-        <activity android:name=".ListaDeBebidasActivity" />
-        <activity android:name=".EscolherTipoProdutoActivity" />
-        <activity android:name=".EscolherMesaActivity" />
-        <activity android:name=".CriarPedidoActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".activity.PagarPedidoComGorjeta"></activity>
+        <activity android:name=".activity.ResumoPedidoActivity" />
+        <activity android:name=".activity.DetalhesDoPedidoActivity" />
+        <activity android:name=".activity.ListaDePratosActivity" />
+        <activity android:name=".activity.ListaDeBebidasActivity" />
+        <activity android:name=".activity.EscolherTipoProdutoActivity" />
+        <activity android:name=".activity.EscolherMesaActivity" />
+        <activity android:name=".activity.CriarPedidoActivity" />
+        <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

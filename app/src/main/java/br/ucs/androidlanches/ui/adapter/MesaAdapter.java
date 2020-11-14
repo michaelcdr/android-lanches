@@ -1,4 +1,4 @@
-package br.ucs.androidlanches.recycleview.adapter;
+package br.ucs.androidlanches.ui.adapter;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 import br.ucs.androidlanches.models.Mesa;
-import br.ucs.androidlanches.recycleview.adapter.listeners.IOnItemClickMesaListener;
+import br.ucs.androidlanches.ui.adapter.listeners.IOnItemClickMesaListener;
 import br.ucs.androidlanches.ui.R;
 
 public class MesaAdapter extends RecyclerView.Adapter<MesaAdapter.MesaViewHolder>

@@ -1,4 +1,4 @@
-package br.ucs.androidlanches.ui;
+package br.ucs.androidlanches.ui.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -19,15 +19,13 @@ import java.util.Map;
 import br.ucs.androidlanches.data.DAO.PedidosDAO;
 import br.ucs.androidlanches.data.DAO.ProdutosDAO;
 import br.ucs.androidlanches.models.Bebida;
-import br.ucs.androidlanches.recycleview.adapter.BebidasAdapter;
-import br.ucs.androidlanches.recycleview.adapter.listeners.IOnItemClickBebidaListener;
+import br.ucs.androidlanches.ui.adapter.BebidasAdapter;
+import br.ucs.androidlanches.ui.adapter.listeners.IOnItemClickBebidaListener;
 import br.ucs.androidlanches.rest.RetrofitApiClient;
-import br.ucs.androidlanches.rest.filtros.FiltroBebidas;
-import br.ucs.androidlanches.rest.services.IProdutoApiService;
+import br.ucs.androidlanches.ui.R;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class ListaDeBebidasActivity extends AppCompatActivity
 {

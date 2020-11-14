@@ -1,18 +1,16 @@
-package br.ucs.androidlanches.ui;
+package br.ucs.androidlanches.ui.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import br.ucs.androidlanches.data.DAO.PedidosDAO;
-import br.ucs.androidlanches.data.DAO.ProdutosDAO;
+import br.ucs.androidlanches.data.DAO.*;
 import br.ucs.androidlanches.models.Pedido;
 import br.ucs.androidlanches.rest.RetrofitApiClient;
+import br.ucs.androidlanches.ui.R;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

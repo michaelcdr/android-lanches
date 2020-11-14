@@ -1,180 +1,41 @@
-package br.ucs.androidlanches.ui;
+package br.ucs.androidlanches.services;
 
-import android.content.Intent;
+import android.content.Context;
 import android.os.Build;
-import android.os.Bundle;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
+import androidx.annotation.RequiresApi;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import br.ucs.androidlanches.data.DAO.*;
-import br.ucs.androidlanches.models.*;
-import br.ucs.androidlanches.recycleview.adapter.listeners.*;
-import br.ucs.androidlanches.recycleview.adapter.PedidosAdapter;
+import br.ucs.androidlanches.data.DAO.MesasDAO;
+import br.ucs.androidlanches.data.DAO.PedidosDAO;
+import br.ucs.androidlanches.data.DAO.ProdutosDAO;
+import br.ucs.androidlanches.models.Bebida;
+import br.ucs.androidlanches.models.Mesa;
+import br.ucs.androidlanches.models.Prato;
 import br.ucs.androidlanches.rest.RetrofitApiClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity
+public class GerenciadorDadosLocais
 {
-    private List<Pedido> pedidos = new ArrayList<>();
     private PedidosDAO _pedidosDao;
     private MesasDAO _mesasDao;
     private ProdutosDAO _produtosDao;
-    private RecyclerView recyclerViewPedidos;
-    private SwipeRefreshLayout swipe;
+    private Context _context;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState)
+    public GerenciadorDadosLocais(Context context)
     {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        setTitle("Pedidos");
-
-        _pedidosDao =  new PedidosDAO(this);
-        _mesasDao = new MesasDAO(this);
-        _produtosDao = new ProdutosDAO(this);
-
-        swipe = (SwipeRefreshLayout) findViewById(R.id.swiperefresh_lista_pedidos);
-        swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                obterTodosPedidosSemPagamentoEfetuado();
-            }
-        });
-
-        obterTodosPedidosSemPagamentoEfetuado();
-        configurarRecicleViewPedidos();
-        gerarEventoCadastroPedido();
+        _context = context;
+        _pedidosDao =  new PedidosDAO(context);
+        _mesasDao = new MesasDAO(context);
+        _produtosDao = new ProdutosDAO(context);
     }
 
-    private void obterTodosPedidosSemPagamentoEfetuado()
-    {
-        Call<List<Pedido>> callPedidos = RetrofitApiClient.getPedidoService().obterTodosSemPagamentoEfetuado();
-        callPedidos.enqueue(new Callback<List<Pedido>>() {
-            @Override
-            public void onResponse(Call<List<Pedido>> call, Response<List<Pedido>> response) {
-                if (response.isSuccessful()){
-                    Log.i("LOG_ANDROID_LANCHES", "Requisição com sucesso em obter pedidos não pagos: ");
-                    pedidos = response.body();
-                    configurarAdapter(pedidos, recyclerViewPedidos);
-                    swipe.setRefreshing(false);
-                } else {
-                    Log.e("LOG_ANDROID_LANCHES", "Algo deu errado ao tentar obter os pedidos em abertos na API: " + response.message());
-                    Toast.makeText(MainActivity.this,"Algo deu errado ao tentar obter os pedidos em abertos no servidor.",Toast.LENGTH_LONG).show();
-                    configurarAdapter(pedidos, recyclerViewPedidos);
-                    swipe.setRefreshing(false);
-                }
-            }
-
-            @Override
-            public void onFailure(Call call, Throwable t) {
-                Log.e("LOG_ANDROID_LANCHES","Falhou na requisição de pedidos, erro ocorrido: " + t.getMessage());
-                pedidos = _pedidosDao.obterTodosPedidosSemPagamentoEfetuado();
-                Log.i("LOG_ANDROID_LANCHES","Pedidos obtidos no banco local, total de " + pedidos.size() + " pedidos.");
-                configurarAdapter(pedidos, recyclerViewPedidos);
-                swipe.setRefreshing(false);
-            }
-        });
-    }
-
-    private void configurarRecicleViewPedidos()
-    {
-        recyclerViewPedidos = findViewById(R.id.recycleViewPedidos);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        recyclerViewPedidos.setLayoutManager(layoutManager);
-    }
-
-    private void configurarAdapter(List<Pedido> pedidos, RecyclerView recyclerView)
-    {
-        PedidosAdapter adapter = new PedidosAdapter(this, pedidos);
-        recyclerView.setAdapter(adapter);
-
-        adapter.setOnItemClickVerPedidoListener(new IOnItemClickBtnVerPedidoListener() {
-            @Override
-            public void onItemClick(Pedido pedido) {
-                Intent irParaDetalhesPedido = new Intent(MainActivity.this, DetalhesDoPedidoActivity.class);
-                irParaDetalhesPedido.putExtra("numeroPedido",pedido.getNumero());
-                startActivityForResult(irParaDetalhesPedido, 1);
-            }
-        });
-
-        adapter.setOnItemClickBtnPagarListener(new IOnItemClickBtnPagarPedidoListener() {
-            @Override
-            public void onItemClick(Pedido pedido) {
-                Intent irParaResumoPedido = new Intent(MainActivity.this, ResumoPedidoActivity.class);
-                irParaResumoPedido.putExtra("numeroPedido",pedido.getNumero());
-                startActivityForResult(irParaResumoPedido, 1);
-            }
-        });
-
-        adapter.notifyDataSetChanged();
-    }
-
-    @Override
-    protected void onStart()
-    {
-        super.onStart();
-        obterTodosPedidosSemPagamentoEfetuado();
-    }
-
-    private void gerarEventoCadastroPedido()
-    {
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getBaseContext(), EscolherMesaActivity.class);
-                startActivity(intent);
-            }
-        });
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_main, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item)
-    {
-        boolean retorno = false;
-        switch (item.getItemId())
-        {
-            case R.id.action_atualizar_base:
-            {
-                atualizarBaseLocal();
-                break;
-            }
-
-            case R.id.action_limpar_base:
-            {
-                limparBaseLocal();
-                break;
-            }
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void limparBaseLocal()
+    public void limpar()
     {
         Log.i("LOG_ANDROID_LANCHES","Limpando base local.");
         try {
@@ -183,14 +44,17 @@ public class MainActivity extends AppCompatActivity
             _mesasDao.deletarTodas();
 
             Log.i("LOG_ANDROID_LANCHES","Dados locais removidos com sucesso.");
-            Toast.makeText(this,"Dados locais removidos com sucesso.", Toast.LENGTH_LONG).show();
-        } catch (Exception e){
+            Toast.makeText(_context,"Dados locais removidos com sucesso.", Toast.LENGTH_LONG).show();
+        }
+        catch (Exception e)
+        {
             Log.e("LOG_ANDROID_LANCHES","Ocorreu um erro limpando a base local: " + e.getMessage());
-            Toast.makeText(this,"Não foi possível limpar a base local.", Toast.LENGTH_LONG).show();
+            Toast.makeText(_context,"Não foi possível limpar a base local.", Toast.LENGTH_LONG).show();
         }
     }
 
-    private void atualizarBaseLocal() {
+    public void atualizar()
+    {
         Log.i("LOG_ANDROID_LANCHES","Iniciando atualização base local.");
 
         gerarCallMesas();
@@ -198,7 +62,8 @@ public class MainActivity extends AppCompatActivity
         gerarCallPratos();
     }
 
-    private void gerarCallMesas() {
+    private void gerarCallMesas()
+    {
         Log.i("LOG_ANDROID_LANCHES","Entrou na call de mesa");
         Call<List<Mesa>> mesasCall = RetrofitApiClient.getMesaService().obterDesocupadas();
         mesasCall.enqueue(new Callback<List<Mesa>>() {
@@ -208,17 +73,17 @@ public class MainActivity extends AppCompatActivity
             public void onResponse(Call<List<Mesa>> call, Response<List<Mesa>> response) {
                 if (response.isSuccessful()){
                     atualizarMesasBancoLocal(response);
-                    Toast.makeText(MainActivity.this,"Dados atualizados com sucesso.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(_context,"Dados atualizados com sucesso.", Toast.LENGTH_LONG).show();
                 } else {
                     Log.e("LOG_ANDROID_LANCHES","Ocorreu um erro durante a atualização dos dados" + response.message());
-                    Toast.makeText(MainActivity.this,"Ocorreu um erro durante a atualização dos dados.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(_context,"Ocorreu um erro durante a atualização dos dados.", Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<Mesa>> call, Throwable t) {
                 Log.e("LOG_ANDROID_LANCHES","Erro ocorrido " + t.getMessage());
-                Toast.makeText(MainActivity.this,"Não foi possivel atualizar a base local.", Toast.LENGTH_LONG).show();
+                Toast.makeText(_context,"Não foi possivel atualizar a base local.", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -234,17 +99,17 @@ public class MainActivity extends AppCompatActivity
             public void onResponse(Call<List<Bebida>> call, Response<List<Bebida>> response) {
                 if (response.isSuccessful()){
                     atualizarBebidasBancoLocal(response);
-                    Toast.makeText(MainActivity.this,"Dados atualizados com sucesso.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(_context,"Dados atualizados com sucesso.", Toast.LENGTH_LONG).show();
                 } else {
                     Log.e("LOG_ANDROID_LANCHES","Ocorreu um erro durante a atualização dos dados" + response.message());
-                    Toast.makeText(MainActivity.this,"Ocorreu um erro durante a atualização dos dados.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(_context,"Ocorreu um erro durante a atualização dos dados.", Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<Bebida>> call, Throwable t) {
                 Log.e("LOG_ANDROID_LANCHES","Erro ocorrido " + t.getMessage());
-                Toast.makeText(MainActivity.this,"Não foi possivel atualizar a base local.", Toast.LENGTH_LONG).show();
+                Toast.makeText(_context,"Não foi possivel atualizar a base local.", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -260,17 +125,17 @@ public class MainActivity extends AppCompatActivity
             public void onResponse(Call<List<Prato>> call, Response<List<Prato>> response) {
                 if (response.isSuccessful()){
                     atualizarPratosBancoLocal(response);
-                    Toast.makeText(MainActivity.this,"Dados atualizados com sucesso.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(_context,"Dados atualizados com sucesso.", Toast.LENGTH_LONG).show();
                 } else {
                     Log.e("LOG_ANDROID_LANCHES","Ocorreu um erro durante a atualização dos dados" + response.message());
-                    Toast.makeText(MainActivity.this,"Ocorreu um erro durante a atualização dos dados.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(_context,"Ocorreu um erro durante a atualização dos dados.", Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<Prato>> call, Throwable t) {
                 Log.e("LOG_ANDROID_LANCHES","Erro ocorrido " + t.getMessage());
-                Toast.makeText(MainActivity.this,"Não foi possivel atualizar a base local.", Toast.LENGTH_LONG).show();
+                Toast.makeText(_context,"Não foi possivel atualizar a base local.", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -311,7 +176,7 @@ public class MainActivity extends AppCompatActivity
         if (pratosNovos.size() > 0){
             pratosNovos.forEach(bebida -> {
                 _produtosDao.adicionarPrato(
-                    new Prato(bebida.getNome(), bebida.getDescricao(), bebida.getPreco(), bebida.getServeQuantasPessoas(), bebida.getFoto())
+                        new Prato(bebida.getNome(), bebida.getDescricao(), bebida.getPreco(), bebida.getServeQuantasPessoas(), bebida.getFoto())
                 );
             });
         }
@@ -361,7 +226,7 @@ public class MainActivity extends AppCompatActivity
         if (bebidasNovas.size() > 0){
             bebidasNovas.forEach(bebida -> {
                 _produtosDao.adicionarBebida(
-                    new Bebida(bebida.getNome(), bebida.getDescricao(), bebida.getPreco(), bebida.getEmbalagem(), bebida.getFoto())
+                        new Bebida(bebida.getNome(), bebida.getDescricao(), bebida.getPreco(), bebida.getEmbalagem(), bebida.getFoto())
                 );
             });
         }

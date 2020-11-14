@@ -48,6 +48,9 @@ public class PedidosDAO implements IPedidoDAO
             do {
                 Pedido pedido = CursorHelper.cursorToPedido(cursor);
                 pedidos.add(pedido);
+
+                List<PedidoItem> pedidoItems = obterItensPedido(pedido.getNumero());
+                pedido.setItens(pedidoItems);
             } while (cursor.moveToNext());
         }
         db.close();

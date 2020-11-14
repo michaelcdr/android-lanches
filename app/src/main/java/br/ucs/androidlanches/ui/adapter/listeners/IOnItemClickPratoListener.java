@@ -1,4 +1,4 @@
-package br.ucs.androidlanches.recycleview.adapter.listeners;
+package br.ucs.androidlanches.ui.adapter.listeners;
 
 import br.ucs.androidlanches.models.Prato;
 

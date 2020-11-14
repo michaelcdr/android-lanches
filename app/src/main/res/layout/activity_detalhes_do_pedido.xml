@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="br.ucs.androidlanches.ui.DetalhesDoPedidoActivity">
+    tools:context="br.ucs.androidlanches.ui.activity.DetalhesDoPedidoActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycleDetalhesDoPedido"

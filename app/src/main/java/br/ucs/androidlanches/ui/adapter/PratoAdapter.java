@@ -1,4 +1,4 @@
-package br.ucs.androidlanches.recycleview.adapter;
+package br.ucs.androidlanches.ui.adapter;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -14,7 +14,7 @@ import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 import br.ucs.androidlanches.models.Prato;
-import br.ucs.androidlanches.recycleview.adapter.listeners.IOnItemClickPratoListener;
+import br.ucs.androidlanches.ui.adapter.listeners.IOnItemClickPratoListener;
 import br.ucs.androidlanches.ui.R;
 
 public class PratoAdapter extends RecyclerView.Adapter<PratoAdapter.PratoViewHolder>

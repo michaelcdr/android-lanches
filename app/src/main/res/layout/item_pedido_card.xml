@@ -21,11 +21,11 @@
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Título" />
+            tools:text="Pedido nº 20" />
 
         <TextView
             android:id="@+id/txtNumeroMesaCard"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
@@ -36,25 +36,25 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/txtNumeroPedidoCard"
             app:layout_constraintTop_toBottomOf="@id/txtNumeroPedidoCard"
-            tools:text="Descrição" />
+            tools:text="Mesa 06" />
 
         <Button
             android:id="@+id/btnPagarPedidoCard"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="30dp"
             android:layout_marginTop="6dp"
             android:layout_marginEnd="6dp"
             android:layout_marginRight="16dp"
             android:background="@color/VerdeOutro"
-            android:textColor="#fff"
             android:text="Pagar"
+            android:textColor="#fff"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/btnVerPedidoCard"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="30dp"
             android:layout_marginEnd="6dp"
             android:layout_marginRight="10dp"
             android:background="@color/VerdeOutro"
@@ -63,6 +63,23 @@
             app:layout_constraintBottom_toBottomOf="@+id/btnPagarPedidoCard"
             app:layout_constraintEnd_toStartOf="@+id/btnPagarPedidoCard"
             app:layout_constraintTop_toTopOf="@+id/btnPagarPedidoCard" />
+
+        <TextView
+            android:id="@+id/txtPrecoPedido"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="136dp"
+            android:layout_marginLeft="136dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginRight="10dp"
+            android:textColor="@color/VerdeOutro"
+            android:textSize="28sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.851"
+            app:layout_constraintStart_toEndOf="@+id/txtNumeroMesaCard"
+            app:layout_constraintTop_toBottomOf="@+id/btnPagarPedidoCard"
+            tools:ignore="MissingConstraints"
+            tools:text="R$ 1999,99" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
