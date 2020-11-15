@@ -9,12 +9,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import br.ucs.androidlanches.data.DAO.MesasDAO;
-import br.ucs.androidlanches.data.DAO.PedidosDAO;
-import br.ucs.androidlanches.data.DAO.ProdutosDAO;
-import br.ucs.androidlanches.models.Bebida;
-import br.ucs.androidlanches.models.Mesa;
-import br.ucs.androidlanches.models.Prato;
+import br.ucs.androidlanches.data.DAO.*;
+import br.ucs.androidlanches.models.*;
 import br.ucs.androidlanches.rest.RetrofitApiClient;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -25,100 +21,8 @@ public class GerenciadorDadosLocais
     private PedidosDAO _pedidosDao;
     private MesasDAO _mesasDao;
     private ProdutosDAO _produtosDao;
-<<<<<<< HEAD:app/src/main/java/br/ucs/androidlanches/services/GerenciadorDadosLocais.java
     private Context _context;
-=======
-    private RecyclerView recyclerViewPedidos;
-    private SwipeRefreshLayout swipe;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        setTitle("Pedidos");
-
-        _pedidosDao =  new PedidosDAO(this);
-        _mesasDao = new MesasDAO(this);
-        _produtosDao = new ProdutosDAO(this);
-
-        swipe = (SwipeRefreshLayout) findViewById(R.id.swiperefresh_lista_pedidos);
-        swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                obterTodosPedidosSemPagamentoEfetuado();
-            }
-        });
-
-        obterTodosPedidosSemPagamentoEfetuado();
-        configurarRecicleViewPedidos();
-        gerarEventoCadastroPedido();
-    }
-
-    private void obterTodosPedidosSemPagamentoEfetuado()
-    {
-<<<<<<< HEAD
-        List<Mesa> mesas = db.obterTodasMesas();
-
-        if (mesas.size() == 0)
-        {
-            for (int i = 1; i <= 100; i++)
-            {
-                db.adicionarMesa(new Mesa(i));
-            }
-
-            //adicionando bebidas
-            db.adicionarBebida(new Bebida("Coca cola", "Zero", 8.0, "2 litros", "cocacola_zero_2l"));
-            db.adicionarBebida(new Bebida("Coca cola", "Zero", 5.0, "600 ml", "cocacola_zero_600ml"));
-            db.adicionarBebida(new Bebida("Coca cola", "Zero Lata", 3.5, "350 ml", "cocacola_zero_350ml"));
-
-            db.adicionarBebida(new Bebida("Coca cola", "Normal", 8.0, "2 litros", "cocacola_2l"));
-            db.adicionarBebida(new Bebida("Coca cola", "Normal", 5.0, "600 ml", "cocacola_600ml"));
-            db.adicionarBebida(new Bebida("Coca cola", "Normal Lata", 3.5, "350 ml", "cocacola_350ml"));
-
-            //db.adicionarBebida(new Bebida("Pepsi", "Coca cola é melhor mas quebra um galho.",5.0,"600 ml"));
-            //db.adicionarBebida(new Bebida("Cachaça 51", "cachaça da boa!",3.50,"1 lt"));
-
-            //adicionando pratos
-            db.adicionarPrato(new Prato("Xis salada", "Hamburguer, alface, queijo, presunto, tomate, milho, erviolha, salada, acompanha fritas ", 20.0, 1, "xis_salada"));
-            db.adicionarPrato(new Prato("Xis Calabresa", "Calabresa, alface, queijo, presunto, tomate, milho, erviolha, salada, acompanha fritas ", 20.0, 1, "xis_calabresa"));
-            db.adicionarPrato(new Prato("Pizza Calabresa", "Calabresa, alface, queijo, presunto, tomate, milho, erviolha, salada, acompanha fritas ", 50.0, 3, "pizza_calabresa"));
-            db.adicionarPrato(new Prato("Pizza Palmito", "Calabresa, alface, queijo, presunto, tomate, milho, erviolha, salada, acompanha fritas ", 50.0, 3, "pizza_calabresa"));
-            db.adicionarPrato(new Prato("Pizza Bacon", "Calabresa, alface, queijo, presunto, tomate, milho, erviolha, salada, acompanha fritas ", 50.0, 3, "pizza_calabresa"));
-            db.adicionarPrato(new Prato("Pizza 4 Queijos", "Calabresa, alface, queijo, presunto, tomate, milho, erviolha, salada, acompanha fritas ", 50.0, 3, "pizza_calabresa"));
-            db.adicionarPrato(new Prato("Pizza 5 Queijos", "Calabresa, alface, queijo, presunto, tomate, milho, erviolha, salada, acompanha fritas ", 50.0, 3, "pizza_calabresa"));
-            db.adicionarPrato(new Prato("Pizza 8 Queijos", "Calabresa, alface, queijo, presunto, tomate, milho, erviolha, salada, acompanha fritas ", 50.0, 3, "pizza_calabresa"));
-        }
-=======
-        Call<List<Pedido>> callPedidos = RetrofitApiClient.getPedidoService().obterTodosSemPagamentoEfetuado();
-        callPedidos.enqueue(new Callback<List<Pedido>>() {
-            @Override
-            public void onResponse(Call<List<Pedido>> call, Response<List<Pedido>> response) {
-                if (response.isSuccessful()){
-                    Log.i("LOG_ANDROID_LANCHES", "Requisição com sucesso em obter pedidos não pagos: ");
-                    pedidos = response.body();
-                    configurarAdapter(pedidos, recyclerViewPedidos);
-                    swipe.setRefreshing(false);
-                } else {
-                    Log.e("LOG_ANDROID_LANCHES", "Algo deu errado ao tentar obter os pedidos em abertos na API: " + response.message());
-                    Toast.makeText(MainActivity.this,"Algo deu errado ao tentar obter os pedidos em abertos no servidor.",Toast.LENGTH_LONG).show();
-                    configurarAdapter(pedidos, recyclerViewPedidos);
-                    swipe.setRefreshing(false);
-                }
-            }
-
-            @Override
-            public void onFailure(Call call, Throwable t) {
-                Log.e("LOG_ANDROID_LANCHES","Falhou na requisição de pedidos, erro ocorrido: " + t.getMessage());
-                pedidos = _pedidosDao.obterTodosPedidosSemPagamentoEfetuado();
-                Log.i("LOG_ANDROID_LANCHES","Pedidos obtidos no banco local, total de " + pedidos.size() + " pedidos.");
-                configurarAdapter(pedidos, recyclerViewPedidos);
-                swipe.setRefreshing(false);
-            }
-        });
->>>>>>> efa72b5e768a053d4f05f6c0560cc3cd7be935eb
-    }
->>>>>>> 3ab8db2d48275d29391054538063e2a9c19555f8:app/src/main/java/br/ucs/androidlanches/ui/MainActivity.java
+    private String TAG_LOG ="LOG_ANDROID_LANCHES";
 
     public GerenciadorDadosLocais(Context context)
     {
@@ -136,28 +40,73 @@ public class GerenciadorDadosLocais
             _produtosDao.deletarTodos();
             _mesasDao.deletarTodas();
 
-            Log.i("LOG_ANDROID_LANCHES","Dados locais removidos com sucesso.");
+            Log.i(TAG_LOG,"Dados locais removidos com sucesso.");
             Toast.makeText(_context,"Dados locais removidos com sucesso.", Toast.LENGTH_LONG).show();
         }
         catch (Exception e)
         {
-            Log.e("LOG_ANDROID_LANCHES","Ocorreu um erro limpando a base local: " + e.getMessage());
+            Log.e(TAG_LOG,"Ocorreu um erro limpando a base local: " + e.getMessage());
             Toast.makeText(_context,"Não foi possível limpar a base local.", Toast.LENGTH_LONG).show();
         }
     }
 
     public void atualizar()
     {
-        Log.i("LOG_ANDROID_LANCHES","Iniciando atualização base local.");
-
+        Log.i(TAG_LOG,"Iniciando atualização base local.");
         gerarCallMesas();
         gerarCallBebidas();
         gerarCallPratos();
+        gerarCallPedidos();
+    }
+
+    private void gerarCallPedidos()
+    {
+        Log.i(TAG_LOG,"Entrou na call de pedidos" );
+        Call<List<Pedido>> pedidosCall = RetrofitApiClient.getPedidoService().obterTodos();
+        pedidosCall.enqueue(new Callback<List<Pedido>>() {
+
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void onResponse(Call<List<Pedido>> call, Response<List<Pedido>> response) {
+                if (response.isSuccessful()){
+                    List<Pedido> pedidosDaApi = response.body();
+
+                    List<Pedido> pedidosNaoSincronizados = _pedidosDao.obterTodosSemHash();
+                    Log.i(TAG_LOG,"Obteve lista de pedidos na api, " + pedidosDaApi.size() + " pedidos encontrados.");
+                    pedidosNaoSincronizados.forEach(pedido -> {
+                        Call<Integer> callNumeroPedido = RetrofitApiClient.getPedidoService().criar(pedido);
+                        callNumeroPedido.enqueue(new Callback<Integer>() {
+                            @Override
+                            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                                Integer numeroPedidoCriado = response.body();
+                                Log.i(TAG_LOG,"Pedido criado, numero " + numeroPedidoCriado);
+                            }
+
+                            @Override
+                            public void onFailure(Call<Integer> call, Throwable t) {
+                                Log.e(TAG_LOG,"Erro ocorrido " + t.getMessage());
+                            }
+                        });
+                    });
+
+
+
+                } else {
+                    Log.e(TAG_LOG,"Ocorreu um erro durante a atualização dos dados" + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Pedido>> call, Throwable t) {
+                Log.e(TAG_LOG,"Erro ocorrido " + t.getMessage());
+                //Toast.makeText(_context,"Não foi possivel atualizar a base local.", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void gerarCallMesas()
     {
-        Log.i("LOG_ANDROID_LANCHES","Entrou na call de mesa");
+        Log.i(TAG_LOG,"Entrou na call de mesa");
         Call<List<Mesa>> mesasCall = RetrofitApiClient.getMesaService().obterDesocupadas();
         mesasCall.enqueue(new Callback<List<Mesa>>() {
 
@@ -168,14 +117,14 @@ public class GerenciadorDadosLocais
                     atualizarMesasBancoLocal(response);
                     Toast.makeText(_context,"Dados atualizados com sucesso.", Toast.LENGTH_LONG).show();
                 } else {
-                    Log.e("LOG_ANDROID_LANCHES","Ocorreu um erro durante a atualização dos dados" + response.message());
+                    Log.e(TAG_LOG,"Ocorreu um erro durante a atualização dos dados" + response.message());
                     Toast.makeText(_context,"Ocorreu um erro durante a atualização dos dados.", Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<Mesa>> call, Throwable t) {
-                Log.e("LOG_ANDROID_LANCHES","Erro ocorrido " + t.getMessage());
+                Log.e(TAG_LOG,"Erro ocorrido " + t.getMessage());
                 Toast.makeText(_context,"Não foi possivel atualizar a base local.", Toast.LENGTH_LONG).show();
             }
         });
@@ -183,7 +132,7 @@ public class GerenciadorDadosLocais
 
     private void gerarCallBebidas()
     {
-        Log.i("LOG_ANDROID_LANCHES","Entrou na call de bebidas");
+        Log.i(TAG_LOG,"Entrou na call de bebidas");
         Map<String,String> filtros = new HashMap<>();
         Call<List<Bebida>> bebidasCall = RetrofitApiClient.getProdutoService().obterBebidas(filtros);
         bebidasCall.enqueue(new Callback<List<Bebida>>() {
@@ -194,14 +143,14 @@ public class GerenciadorDadosLocais
                     atualizarBebidasBancoLocal(response);
                     Toast.makeText(_context,"Dados atualizados com sucesso.", Toast.LENGTH_LONG).show();
                 } else {
-                    Log.e("LOG_ANDROID_LANCHES","Ocorreu um erro durante a atualização dos dados" + response.message());
+                    Log.e(TAG_LOG,"Ocorreu um erro durante a atualização dos dados" + response.message());
                     Toast.makeText(_context,"Ocorreu um erro durante a atualização dos dados.", Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<Bebida>> call, Throwable t) {
-                Log.e("LOG_ANDROID_LANCHES","Erro ocorrido " + t.getMessage());
+                Log.e(TAG_LOG,"Erro ocorrido " + t.getMessage());
                 Toast.makeText(_context,"Não foi possivel atualizar a base local.", Toast.LENGTH_LONG).show();
             }
         });
@@ -209,7 +158,7 @@ public class GerenciadorDadosLocais
 
     private void gerarCallPratos()
     {
-        Log.i("LOG_ANDROID_LANCHES","Entrou na call de pratos");
+        Log.i(TAG_LOG,"Entrou na call de pratos");
         Map<String,String> filtros = new HashMap<>();
         Call<List<Prato>> pratosCall = RetrofitApiClient.getProdutoService().obterPratos(filtros);
         pratosCall.enqueue(new Callback<List<Prato>>() {
@@ -220,14 +169,14 @@ public class GerenciadorDadosLocais
                     atualizarPratosBancoLocal(response);
                     Toast.makeText(_context,"Dados atualizados com sucesso.", Toast.LENGTH_LONG).show();
                 } else {
-                    Log.e("LOG_ANDROID_LANCHES","Ocorreu um erro durante a atualização dos dados" + response.message());
+                    Log.e(TAG_LOG,"Ocorreu um erro durante a atualização dos dados" + response.message());
                     Toast.makeText(_context,"Ocorreu um erro durante a atualização dos dados.", Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<Prato>> call, Throwable t) {
-                Log.e("LOG_ANDROID_LANCHES","Erro ocorrido " + t.getMessage());
+                Log.e(TAG_LOG,"Erro ocorrido " + t.getMessage());
                 Toast.makeText(_context,"Não foi possivel atualizar a base local.", Toast.LENGTH_LONG).show();
             }
         });
@@ -237,28 +186,28 @@ public class GerenciadorDadosLocais
     private List<Bebida> obterDistincaoDaListaDeBebidas(List<Bebida> listaComparacao, List<Bebida> listaAlvo)
     {
         List<Bebida> bebidas = new ArrayList<>();
-        // indentificando quais bebidas nao estao no banco local
-        if (listaComparacao.size() > 0){
+        if (listaComparacao.size() > 0)
+        {
             listaAlvo.forEach(bebida -> {
-                Log.i("LOG_ANDROID_LANCHES","Bebida: " +bebida.getNome());
                 if (listaComparacao.stream()
-                        .filter(bebidaLocal -> bebida.getNome() == bebidaLocal.getNome() &&
-                                bebida.getEmbalagem() == bebidaLocal.getEmbalagem() &&
-                                bebida.getDescricao() == bebidaLocal.getDescricao())
-                        .findAny().orElse(null) == null)
+                                   .filter(bebidaLocal -> bebida.getNome().equals(bebidaLocal.getNome()) &&
+                                                          bebida.getEmbalagem().equals(bebidaLocal.getEmbalagem()) &&
+                                                          bebida.getDescricao().equals(bebidaLocal.getDescricao()))
+                                   .findAny().orElse(null) == null)
                 {
-                    Log.i("LOG_ANDROID_LANCHES","Não encontrou a bebida: " + bebida.getNome());
                     bebidas.add(bebida);
                 }
             });
-        } else
+        }
+        else
             bebidas.addAll(listaAlvo);
 
         return bebidas;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private void atualizarPratosBancoLocal(Response<List<Prato>> response){
+    private void atualizarPratosBancoLocal(Response<List<Prato>> response)
+    {
         List<Prato> pratosLocais = _produtosDao.obterTodosPratos();
         List<Prato> pratosNaApi = response.body();
 
@@ -267,15 +216,23 @@ public class GerenciadorDadosLocais
         List<Prato> pratosExcluidos = obterDistincaoDaListaDePratos(pratosNaApi, pratosLocais);
 
         if (pratosNovos.size() > 0){
-            pratosNovos.forEach(bebida -> {
+            Log.i(TAG_LOG,"Adicionando " + pratosExcluidos.size() + " pratos");
+            pratosNovos.forEach(prato -> {
                 _produtosDao.adicionarPrato(
-                        new Prato(bebida.getNome(), bebida.getDescricao(), bebida.getPreco(), bebida.getServeQuantasPessoas(), bebida.getFoto())
+                    new Prato(
+                        prato.getNome(),
+                        prato.getDescricao(),
+                        prato.getPreco(),
+                        prato.getServeQuantasPessoas(),
+                        prato.getFoto()
+                    )
                 );
             });
         }
 
         // removendo bebidas que nao estao na api
         if (pratosExcluidos.size() > 0){
+            Log.i(TAG_LOG,"Removendo " + pratosExcluidos.size() + " pratos");
             pratosExcluidos.forEach(prato -> {
                 _produtosDao.deletarProduto(prato);
             });
@@ -283,19 +240,17 @@ public class GerenciadorDadosLocais
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private List<Prato> obterDistincaoDaListaDePratos(List<Prato> listaComparacao, List<Prato> listaAlvo) {
+    private List<Prato> obterDistincaoDaListaDePratos(List<Prato> listaComparacao, List<Prato> listaAlvo)
+    {
         List<Prato> pratos = new ArrayList<>();
-        // indentificando quais bebidas nao estao no banco local
         if (listaComparacao.size() > 0){
             listaAlvo.forEach(prato -> {
-                Log.i("LOG_ANDROID_LANCHES","Bebida: " +prato.getNome());
                 if (listaComparacao.stream()
-                        .filter(pratoLocal -> prato.getNome() == pratoLocal.getNome() &&
-                                prato.getServeQuantasPessoas() == pratoLocal.getServeQuantasPessoas() &&
-                                prato.getDescricao() == pratoLocal.getDescricao())
-                        .findAny().orElse(null) == null)
+                                   .filter(pratoLocal -> prato.getNome().equals(pratoLocal.getNome()) &&
+                                                         prato.getServeQuantasPessoas() == pratoLocal.getServeQuantasPessoas() &&
+                                                         prato.getDescricao().equals(pratoLocal.getDescricao()))
+                                   .findAny().orElse(null) == null)
                 {
-                    Log.i("LOG_ANDROID_LANCHES","Não encontrou o prato: " + prato.getNome());
                     pratos.add(prato);
                 }
             });
@@ -317,15 +272,23 @@ public class GerenciadorDadosLocais
 
         // adicionando bebidas novas...
         if (bebidasNovas.size() > 0){
+            Log.i(TAG_LOG,"Adicionando " + bebidasNovas.size() + " bebidas no banco local");
             bebidasNovas.forEach(bebida -> {
                 _produtosDao.adicionarBebida(
-                        new Bebida(bebida.getNome(), bebida.getDescricao(), bebida.getPreco(), bebida.getEmbalagem(), bebida.getFoto())
+                    new Bebida(
+                        bebida.getNome(),
+                        bebida.getDescricao(),
+                        bebida.getPreco(),
+                        bebida.getEmbalagem(),
+                        bebida.getFoto()
+                    )
                 );
             });
         }
 
         // removendo bebidas que nao estao na api
         if (bebidasExcluidas.size() > 0){
+            Log.i(TAG_LOG,"Removendo " + bebidasNovas.size() + " bebidas");
             bebidasExcluidas.forEach(bebida -> {
                 _produtosDao.deletarProduto(bebida);
             });
@@ -333,7 +296,8 @@ public class GerenciadorDadosLocais
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private void atualizarMesasBancoLocal(Response<List<Mesa>> response) {
+    private void atualizarMesasBancoLocal(Response<List<Mesa>> response)
+    {
         List<Mesa> mesasLocais = _mesasDao.obterTodasMesas();
         List<Mesa> mesasNaApi = response.body();
 
@@ -341,21 +305,19 @@ public class GerenciadorDadosLocais
         List<Mesa> mesasNovas = new ArrayList<>() ;
         if (mesasLocais.size() > 0){
             mesasNaApi.forEach(mesa -> {
-                Log.i("LOG_ANDROID_LANCHES","Mesa: " +mesa.getNumero());
                 if (mesasLocais.stream()
                         .filter(mesaLocal -> mesa.getNumero() == mesaLocal.getNumero())
                         .findAny().orElse(null) == null)
                 {
-                    Log.i("LOG_ANDROID_LANCHES","Não encontrou a mesa: " + mesa.getNumero());
                     mesasNovas.add(mesa);
                 }
             });
-        } else {
+        } else
             mesasNovas.addAll(mesasNaApi);
-        }
 
         //adicionando mesas no banco local
         if (mesasNovas.size() > 0){
+            Log.i(TAG_LOG,"Adicionando " + mesasNovas.size() + " mesas no banco local");
             mesasNovas.forEach(mesa -> {
                 _mesasDao.adicionarMesa(new Mesa(mesa.getNumero()));
             });

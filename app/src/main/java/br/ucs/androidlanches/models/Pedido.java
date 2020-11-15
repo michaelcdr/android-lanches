@@ -4,7 +4,9 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class Pedido implements Serializable
 {
@@ -90,18 +92,22 @@ public class Pedido implements Serializable
             retorno += item.getQuantidade() + " x " + item.getProduto().getPreco()+ " »" + item.getProduto().getNome() + "\n";
             retorno += "sub total » " + item.getQuantidade() * item.getProduto().getPreco() + "\n\n";
         }
-        retorno += "Total = " + total;
+        String valor = NumberFormat.getCurrencyInstance(new Locale("pt-BR", "BR")).format(total);
+        retorno += "Total de " +valor.replace(".",",");
         return retorno;
     }
 
-    public String obterTotalFormatado() {
-        double total =0;
-/*
+    public String obterTotalFormatado()
+    {
+        double total = 0;
+
         for (int i = 0; i < this.getItens().size(); i++)
         {
             PedidoItem item = this.getItens().get(i);
             total += item.getQuantidade() * item.getProduto().getPreco();
-        }*/
-        return "Total de R$ " + total;
+        }
+
+        String valor = NumberFormat.getCurrencyInstance(new Locale("pt-BR", "BR")).format(total);
+        return valor.replace(".",",");
     }
 }

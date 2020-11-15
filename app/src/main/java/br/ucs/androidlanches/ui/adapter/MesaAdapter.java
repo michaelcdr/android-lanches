@@ -1,9 +1,4 @@
-<<<<<<< HEAD:app/src/main/java/br/ucs/androidlanches/ui/adapter/MesaAdapter.java
 package br.ucs.androidlanches.ui.adapter;
-=======
-package br.ucs.androidlanches.recycleview.adapter;
-
->>>>>>> 3ab8db2d48275d29391054538063e2a9c19555f8:app/src/main/java/br/ucs/androidlanches/recycleview/adapter/MesaAdapter.java
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;

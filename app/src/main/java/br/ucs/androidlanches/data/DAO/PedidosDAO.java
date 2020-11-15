@@ -34,6 +34,29 @@ public class PedidosDAO implements IPedidoDAO
         return this.db;
     }
 
+    @Override
+    public List<Pedido> obterTodosSemHash() {
+        List<Pedido> pedidos = new ArrayList<>();
+
+        String query = "SELECT Pedidos.numero, Pedidos.pago, Mesas.mesaId, Mesas.numero FROM Pedidos  "+
+                "INNER JOIN Mesas  ON Pedidos.mesaId = Mesas.mesaId " +
+                "WHERE Pedidos.hashIntegracao = null ORDER BY  Pedidos.numero";
+
+        Cursor cursor = conexao().rawQuery(query, null);
+        if (cursor.moveToFirst())
+        {
+            do {
+                Pedido pedido = CursorHelper.cursorToPedido(cursor);
+                pedidos.add(pedido);
+
+                List<PedidoItem> pedidoItems = obterItensPedido(pedido.getNumero());
+                pedido.setItens(pedidoItems);
+            } while (cursor.moveToNext());
+        }
+        db.close();
+        return pedidos;
+    }
+
     public List<Pedido> obterTodosPedidosSemPagamentoEfetuado()
     {
         List<Pedido> pedidos = new ArrayList<>();
@@ -239,4 +262,6 @@ public class PedidosDAO implements IPedidoDAO
         conexao().delete("Pedidos", null, null);
         db.close();
     }
+
+
 }

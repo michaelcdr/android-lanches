@@ -25,6 +25,7 @@ public class EscolherTipoProdutoActivity extends AppCompatActivity
         findViewById(R.id.btn_bebidas).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                finish();
                 Intent abrirSelecaoBebidas = new Intent(getBaseContext(), ListaDeBebidasActivity.class);
                 abrirSelecaoBebidas.putExtra("mesaId", mesaId);
                 abrirSelecaoBebidas.putExtra("numeroPedido", numeroPedido);
@@ -35,6 +36,7 @@ public class EscolherTipoProdutoActivity extends AppCompatActivity
         findViewById(R.id.btn_lanches).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                finish();
                 Intent abrirSelecaoPratos = new Intent(getBaseContext(), ListaDePratosActivity.class);
                 abrirSelecaoPratos.putExtra("mesaId",mesaId);
                 abrirSelecaoPratos.putExtra("numeroPedido", numeroPedido);

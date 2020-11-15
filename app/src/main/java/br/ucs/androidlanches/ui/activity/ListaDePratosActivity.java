@@ -35,6 +35,11 @@ public class ListaDePratosActivity extends AppCompatActivity
     private int mesaId;
     private int numeroPedido;
     private SwipeRefreshLayout swipe;
+    private String TAG_LOG ="LOG_ANDROID_LANCHES";
+    private String TAG_LOGI ="LOG_ANDROID_LANCHES_I";
+    private String ERRO_INTERNET = "Não foi possivel obter a lista de pratos na API devido a problemas de internet.";
+    private String ERRO_API = "Ocorreu um erro ao tentar obter a dados na API. ";
+    private String LOG_ADD_PEDIDO = "Pedido criado, e prato adicionado com sucesso pela API. ";
 
     @Override
     protected void onStart()
@@ -74,13 +79,6 @@ public class ListaDePratosActivity extends AppCompatActivity
 
     private void obterPratos()
     {
-<<<<<<< HEAD
-        pratos = db.obterTodosPratos();
-        configurarAdpter(pratos);
-    }
-
-    private void configurarAdpter(List<Prato> pratos)
-=======
         Map<String,String> filtros = new HashMap<>();
         filtros.put("descricao","");
         Call<List<Prato>> callPratos = new RetrofitApiClient().getProdutoService().obterPratos(filtros);
@@ -90,13 +88,10 @@ public class ListaDePratosActivity extends AppCompatActivity
                 if (response.isSuccessful()) {
                     pratos = response.body();
                     configurarAdapter(pratos);
-                    Log.i("LOG_ANDROID_LANCHES","Pratos obtidos com sucesso pela API. " );
-                } else {
-                    Log.e(
-                    "LOG_ANDROID_LANCHES",
-                    "Ocorreu um erro ao tentar obter a lista de pratos na API. " + response.message()
-                    );
-                }
+                    Log.i(TAG_LOG,"Pratos obtidos com sucesso pela API. " );
+                } else
+                    Log.e(TAG_LOG, ERRO_API + response.message());
+
                 swipe.setRefreshing(false);
             }
 
@@ -105,21 +100,19 @@ public class ListaDePratosActivity extends AppCompatActivity
                 if (exception instanceof ConnectException) {
                     pratos = _produtosDAO.obterTodosPratos();
                     configurarAdapter(pratos);
-                    Log.w(
-                    "LOG_ANDROID_LANCHES",
-                    "Não foi possivel obter a lista de pratos na API devido a problemas de internet, " +
-                        "resgatamos os dados locais, " + pratos.size() + " pratos encontradas."
-                    );
+                    Log.w(TAG_LOG, ERRO_INTERNET);
+                    Log.i(TAG_LOG,"resgatamos os dados locais, " + pratos.size() + " pratos encontradas.");
                 } else
-                    Log.e("LOG_ANDROID_LANCHES","Não foi possivel obter a lista de pratos. ");
+                    Log.e(TAG_LOG,"Não foi possivel obter a lista de pratos. ");
 
                 swipe.setRefreshing(false);
             }
         });
     }
 
+
+
     private void configurarAdapter(List<Prato> pratos)
->>>>>>> efa72b5e768a053d4f05f6c0560cc3cd7be935eb
     {
         PratoAdapter adapter = new PratoAdapter(this, pratos);
         recycleViewListaDePratos.setAdapter(adapter);
@@ -128,99 +121,67 @@ public class ListaDePratosActivity extends AppCompatActivity
         adapter.setOnItemClickListener(new IOnItemClickPratoListener() {
             @Override
             public void onItemClick(Prato prato) {
+
                 Intent dadosActivityAnterior = getIntent();
                 mesaId = dadosActivityAnterior.getIntExtra("mesaId",0);
                 numeroPedido = dadosActivityAnterior.getIntExtra("numeroPedido",0);
-<<<<<<< HEAD
-                //Toast.makeText(ListaDePratosActivity.this, "clico botom, mesa " + mesaId, Toast.LENGTH_SHORT).show();
+                Log.i(TAG_LOGI, "Clicou em escolher produto no pedido " + numeroPedido +".");
 
-                if (numeroPedido == 0){
-                    //Toast.makeText(ListaDePratosActivity.this, "clico botom,vai cria pedido mesa " + mesaId, Toast.LENGTH_SHORT).show();
-                    int numeroPedido = db.criarPedido(mesaId, prato);
-                    Intent detalhesDoPedido = new Intent(ListaDePratosActivity.this, DetalhesDoPedidoActivity.class);
-                    detalhesDoPedido.putExtra("numeroPedido", numeroPedido);
-                    startActivityForResult(detalhesDoPedido, 1);
-                } else {
-                    //Toast.makeText(ListaDePratosActivity.this, "clico botom, ja tem  pedido mesa " + mesaId, Toast.LENGTH_SHORT).show();
-                    Intent detalhesDoPedido = new Intent(ListaDePratosActivity.this, DetalhesDoPedidoActivity.class);
-                    detalhesDoPedido.putExtra("numeroPedido", numeroPedido);
-                    db.adicionarPedidoItem(numeroPedido, prato.getProdutoId());
-                    startActivityForResult(detalhesDoPedido, 1);
-=======
-                Log.i("LOG_ANDROID_LANCHES", "Clicou em escolher produto no pedido " + numeroPedido +".");
+                if (numeroPedido == 0)
+                {
+                    Call<Integer> criarPedido = new RetrofitApiClient().getPedidoService().criar(mesaId, prato.getProdutoId());
 
-                try {
-                    if (numeroPedido == 0)
-                    {
-                        Call<Integer> callCriarPedido = new RetrofitApiClient().getPedidoService().criar(mesaId,prato.getProdutoId());
-                        callCriarPedido.enqueue(new Callback<Integer>() {
-                            @Override
-                            public void onResponse(Call<Integer> call, Response<Integer> response) {
-                                if (response.isSuccessful()) {
-                                    numeroPedido = response.body();
-                                    Intent detalhesDoPedido = new Intent(ListaDePratosActivity.this, DetalhesDoPedidoActivity.class);
-                                    detalhesDoPedido.putExtra("numeroPedido", numeroPedido);
-                                    startActivityForResult(detalhesDoPedido, 1);
-                                    Log.i("LOG_ANDROID_LANCHES","Pedido criado, e prato adicionado com sucesso pela API. " );
-                                } else {
-                                    Log.e("LOG_ANDROID_LANCHES","Ocorreu um erro ao tentar obter a lista de pratos na API. " + response.message());
-                                    Toast.makeText(ListaDePratosActivity.this,"Não foi possivel obter a lista de pratos na API. ", Toast.LENGTH_LONG).show();
-                                }
-                                swipe.setRefreshing(false);
+                    criarPedido.enqueue(new Callback<Integer>() {
+                        @Override
+                        public void onResponse(Call<Integer> call, Response<Integer> response) {
+                            if (response.isSuccessful()) {
+                                numeroPedido = response.body();
+                                finish();
+                                Log.i(TAG_LOG, LOG_ADD_PEDIDO);
+                            } else {
+                                Log.e(TAG_LOG,ERRO_API + " Erro: " + response.message());
+                                Toast.makeText(ListaDePratosActivity.this, ERRO_API, Toast.LENGTH_LONG).show();
                             }
 
-                            @Override
-                            public void onFailure(Call<Integer> call, Throwable exception) {
-                                if (exception instanceof ConnectException) {
-                                    numeroPedido = _pedidosDAO.criarPedido(mesaId, prato);
-                                    configurarAdapter(pratos);
-                                    Log.w("LOG_ANDROID_LANCHES", "Não foi possivel obter a lista de pratos na API devido a problemas de internet, " +"resgatamos os dados locais, " + pratos.size() + " pratos encontradas.");
-                                } else
-                                    Log.e("LOG_ANDROID_LANCHES","Não foi possivel obter a lista de pratos. ");
+                            swipe.setRefreshing(false);
+                        }
 
-                                swipe.setRefreshing(false);
-                            }
-                        });
-                    }
-                    else
-                    {
-                        Call<Void> callCriarPedido = new RetrofitApiClient().getPedidoService().adicionarItem(numeroPedido,prato.getProdutoId());
-                        callCriarPedido.enqueue(new Callback<Void>() {
-                            @Override
-                            public void onResponse(Call<Void> call, Response<Void> response) {
-                                if (response.isSuccessful()) {
-                                    finish();
-                                    Intent detalhesDoPedido = new Intent(ListaDePratosActivity.this, DetalhesDoPedidoActivity.class);
-                                    detalhesDoPedido.putExtra("numeroPedido", numeroPedido);
-                                    startActivityForResult(detalhesDoPedido, 1);
-                                    Log.i("LOG_ANDROID_LANCHES","Prato adicionado com sucesso pela API.");
-                                } else {
-                                    Log.e("LOG_ANDROID_LANCHES","Ocorreu um erro ao tentar adicionar pratos pela API. " + response.message());
-                                    Toast.makeText(ListaDePratosActivity.this,"Ocorreu um erro ao tentar adicionar o prato. ", Toast.LENGTH_LONG).show();
-                                }
-                                swipe.setRefreshing(false);
-                            }
+                        @Override
+                        public void onFailure(Call<Integer> call, Throwable exception) {
+                            Log.e(TAG_LOG,ERRO_API + exception.getMessage());
 
-                            @Override
-                            public void onFailure(Call<Void> call, Throwable exception) {
-                                if (exception instanceof ConnectException) {
-                                    Intent detalhesDoPedido = new Intent(ListaDePratosActivity.this, DetalhesDoPedidoActivity.class);
-                                    detalhesDoPedido.putExtra("numeroPedido", numeroPedido);
-                                    _pedidosDAO.adicionarPedidoItem(numeroPedido, prato.getProdutoId());
-                                    startActivityForResult(detalhesDoPedido, 1);
-                                    Log.w("LOG_ANDROID_LANCHES", "Não foi possivel obter a lista de pratos na API devido a problemas de internet, " +"resgatamos os dados locais, " + pratos.size() + " pratos encontradas.");
-                                } else
-                                    Log.e("LOG_ANDROID_LANCHES","Não foi possivel obter a lista de pratos. ");
+                            numeroPedido = _pedidosDAO.criarPedido(mesaId, prato);
+                            finish();
+                            Log.i(TAG_LOG, "Pedido criado no banco local.");
 
-                                swipe.setRefreshing(false);
-                            }
-                        });
-                    }
+                            swipe.setRefreshing(false);
+                        }
+                    });
                 }
-                catch (Exception e){
-                    Log.e("LOG_ANDROID_LANCHES", "Não foi possivel adicionar o item no pedido." +  e.getMessage());
-                    Toast.makeText(ListaDePratosActivity.this, "Não foi possivel adicionar o item no pedido.", Toast.LENGTH_LONG);
->>>>>>> efa72b5e768a053d4f05f6c0560cc3cd7be935eb
+                else
+                {
+                    Call<Void> callCriarPedido = new RetrofitApiClient().getPedidoService().adicionarItem(numeroPedido,prato.getProdutoId());
+                    callCriarPedido.enqueue(new Callback<Void>() {
+                        @Override
+                        public void onResponse(Call<Void> call, Response<Void> response) {
+                            if (response.isSuccessful()) {
+                                finish();
+                                Log.i(TAG_LOG,"Prato adicionado com sucesso pela API.");
+                            } else {
+                                Log.e(TAG_LOG,"Ocorreu um erro ao tentar adicionar pratos pela API. " + response.message());
+                                Toast.makeText(ListaDePratosActivity.this,"Ocorreu um erro ao tentar adicionar o prato. ", Toast.LENGTH_LONG).show();
+                            }
+                            swipe.setRefreshing(false);
+                        }
+
+                        @Override
+                        public void onFailure(Call<Void> call, Throwable exception) {
+                            _pedidosDAO.adicionarPedidoItem(numeroPedido, prato.getProdutoId());
+                            finish();
+                            Log.i(TAG_LOG, "Item adicionado no pedido, pelo banco local");
+                            swipe.setRefreshing(false);
+                        }
+                    });
                 }
             }
         });

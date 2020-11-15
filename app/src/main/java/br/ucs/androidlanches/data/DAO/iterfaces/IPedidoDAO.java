@@ -17,4 +17,6 @@ public interface IPedidoDAO
     int pagarPedido(Pedido pedido);
 
     void deletarTodos();
+
+    List<Pedido> obterTodosSemHash();
 }

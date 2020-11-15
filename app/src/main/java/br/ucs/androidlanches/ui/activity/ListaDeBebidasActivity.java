@@ -133,38 +133,20 @@ public class ListaDeBebidasActivity extends AppCompatActivity
                         public void onResponse(Call<Integer> call, Response<Integer> response) {
                             if (response.isSuccessful()){
                                 numeroPedido = response.body();
-                                Intent detalhesDoPedido = new Intent(ListaDeBebidasActivity.this, DetalhesDoPedidoActivity.class);
-                                detalhesDoPedido.putExtra("numeroPedido", numeroPedido);
+                                finish();
                                 Log.i("LOG_ANDROID_LANCHES","Criou pedido novo e adicionou bebida");
-                                startActivityForResult(detalhesDoPedido, 1);
                             } else {
                                 Log.e("LOG_ANDROID_LANCHES", "erro ocorrido: " + response.message());
                                 Toast.makeText(ListaDeBebidasActivity.this, response.message(), Toast.LENGTH_LONG);
                             }
                         }
 
-<<<<<<< HEAD
-                if (numeroPedido == 0){
-                    //Toast.makeText(ListaDePratosActivity.this, "clico botom,vai cria pedido mesa " + mesaId, Toast.LENGTH_SHORT).show();
-                    int numeroPedido = db.criarPedido(mesaId, bebida);
-                    Intent detalhesDoPedido = new Intent(ListaDeBebidasActivity.this, DetalhesDoPedidoActivity.class);
-                    detalhesDoPedido.putExtra("numeroPedido", numeroPedido);
-                    startActivityForResult(detalhesDoPedido, 1);
-                } else {
-                    //Toast.makeText(ListaDeBebidasActivity.this, "clico botom, ja tem  pedido mesa " + mesaId, Toast.LENGTH_SHORT).show();
-                    Intent detalhesDoPedido = new Intent(ListaDeBebidasActivity.this, DetalhesDoPedidoActivity.class);
-                    detalhesDoPedido.putExtra("numeroPedido", numeroPedido);
-                    db.adicionarPedidoItem(numeroPedido, bebida.getProdutoId());
-                    startActivityForResult(detalhesDoPedido, 1);
-=======
                         @Override
                         public void onFailure(Call<Integer> call, Throwable t) {
                             Log.e("LOG_ANDROID_LANCHES", "Obtendo dados locais devido ao erro ocorrido: " + t.getMessage());
                             numeroPedido = _pedidosDAO.criarPedido(mesaId, bebida);
                             Log.i("LOG_ANDROID_LANCHES","Pedido criado localmente com sucesso");
-                            Intent detalhesDoPedido = new Intent(ListaDeBebidasActivity.this, DetalhesDoPedidoActivity.class);
-                            detalhesDoPedido.putExtra("numeroPedido", numeroPedido);
-                            startActivityForResult(detalhesDoPedido, 1);
+                            finish();
                         }
                     });
                 }
@@ -175,10 +157,8 @@ public class ListaDeBebidasActivity extends AppCompatActivity
                         @Override
                         public void onResponse(Call<Void> call, Response<Void> response) {
                             if (response.isSuccessful()){
-                                Intent detalhesDoPedido = new Intent(ListaDeBebidasActivity.this, DetalhesDoPedidoActivity.class);
-                                detalhesDoPedido.putExtra("numeroPedido", numeroPedido);
                                 Log.i("LOG_ANDROID_LANCHES","adicionou bebida no pedido " + numeroPedido + " com sucesso.");
-                                startActivityForResult(detalhesDoPedido, 1);
+                                finish();
                             } else {
                                 Log.e("LOG_ANDROID_LANCHES", "erro ocorrido: " + response.message());
                                 Toast.makeText(ListaDeBebidasActivity.this, response.message(), Toast.LENGTH_LONG);
@@ -188,14 +168,10 @@ public class ListaDeBebidasActivity extends AppCompatActivity
                         @Override
                         public void onFailure(Call<Void> call, Throwable t) {
                             Log.e("LOG_ANDROID_LANCHES", "obtendo dados locais devido ao erro ocorrido: " + t.getMessage());
-
-                            Intent detalhesDoPedido = new Intent(ListaDeBebidasActivity.this, DetalhesDoPedidoActivity.class);
-                            detalhesDoPedido.putExtra("numeroPedido", numeroPedido);
                             _pedidosDAO.adicionarPedidoItem(numeroPedido, bebida.getProdutoId());
-                            startActivityForResult(detalhesDoPedido, 1);
+                            finish();
                         }
                     });
->>>>>>> efa72b5e768a053d4f05f6c0560cc3cd7be935eb
                 }
             }
         });

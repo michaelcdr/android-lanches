@@ -39,6 +39,8 @@ public class MainActivity extends AppCompatActivity
     private ProdutosDAO _produtosDao;
     private RecyclerView recyclerViewPedidos;
     private SwipeRefreshLayout swipe;
+    private String TAG_LOGI = "LOG_ANDROID_LANCHES_I";
+    private String TAG_LOG = "LOG_ANDROID_LANCHES";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -71,12 +73,13 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onResponse(Call<List<Pedido>> call, Response<List<Pedido>> response) {
                 if (response.isSuccessful()){
-                    Log.i("LOG_ANDROID_LANCHES", "Requisição com sucesso em obter pedidos não pagos: ");
+                    Log.i(TAG_LOGI, "Requisição com sucesso em obter pedidos não pagos: ");
                     pedidos = response.body();
                     configurarAdapter(pedidos, recyclerViewPedidos);
                     swipe.setRefreshing(false);
-                } else {
-                    Log.e("LOG_ANDROID_LANCHES", "Algo deu errado ao tentar obter os pedidos em abertos na API: " + response.message());
+                }
+                else {
+                    Log.e(TAG_LOG, "Algo deu errado ao tentar obter os pedidos em abertos na API: " + response.message());
                     Toast.makeText(MainActivity.this,"Algo deu errado ao tentar obter os pedidos em abertos no servidor.",Toast.LENGTH_LONG).show();
                     configurarAdapter(pedidos, recyclerViewPedidos);
                     swipe.setRefreshing(false);
@@ -85,9 +88,9 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onFailure(Call call, Throwable t) {
-                Log.e("LOG_ANDROID_LANCHES","Falhou na requisição de pedidos, erro ocorrido: " + t.getMessage());
+                Log.e(TAG_LOG,"Falhou na requisição de pedidos, erro ocorrido: " + t.getMessage());
                 pedidos = _pedidosDao.obterTodosPedidosSemPagamentoEfetuado();
-                Log.i("LOG_ANDROID_LANCHES","Pedidos obtidos no banco local, total de " + pedidos.size() + " pedidos.");
+                Log.i(TAG_LOGI,"Pedidos obtidos no banco local, total de " + pedidos.size() + " pedidos encontrados.");
                 configurarAdapter(pedidos, recyclerViewPedidos);
                 swipe.setRefreshing(false);
             }
@@ -128,12 +131,13 @@ public class MainActivity extends AppCompatActivity
         adapter.notifyDataSetChanged();
     }
 
+    /*
     @Override
     protected void onStart()
     {
         super.onStart();
         obterTodosPedidosSemPagamentoEfetuado();
-    }
+    }*/
 
     private void gerarEventoCadastroPedido()
     {

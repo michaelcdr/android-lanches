@@ -103,6 +103,7 @@ public class BebidasAdapter extends RecyclerView.Adapter<BebidasAdapter.ViewHold
             txtPrecoBebida.setText("R$ " + precoFormatado);
 
             String uri = "@drawable/" + bebida.getFoto();
+
             int imageResource = context.getResources().getIdentifier(uri, null, context.getPackageName());
 
             Drawable res = context.getResources().getDrawable(imageResource);

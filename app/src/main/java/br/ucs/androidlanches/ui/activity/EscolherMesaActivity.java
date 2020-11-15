@@ -30,7 +30,8 @@ public class EscolherMesaActivity extends AppCompatActivity
     private MesasDAO _mesasDAO;
     private RecyclerView recyclerViewMesas;
     private SwipeRefreshLayout swipe;
-
+    private String TAG_LOG ="LOG_ANDROID_LANCHES";
+    private String ERRO_API = "Não foi possivel carregar as mesas pela API, erro ocorrido: ";
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -51,16 +52,18 @@ public class EscolherMesaActivity extends AppCompatActivity
         carregarMesas();
     }
 
+    /*
     @Override
     protected void onStart()
     {
         super.onStart();
         carregarMesas();
-    }
+    }*/
 
     private void carregarMesas()
     {
         configurarReciclerViewMesas();
+
         Call<List<Mesa>> callMesas = RetrofitApiClient.getMesaService().obterDesocupadas();
         callMesas.enqueue(new Callback<List<Mesa>>() {
             public void onResponse(Call<List<Mesa>> call, Response<List<Mesa>> response) {
@@ -68,22 +71,19 @@ public class EscolherMesaActivity extends AppCompatActivity
                     mesas = response.body();
                     configurarAdapter(mesas, recyclerViewMesas);
                     swipe.setRefreshing(false);
-                    Log.i("LOG_ANDROID_LANCHES","Numero de mesas "+ mesas.size());
+                    Log.i(TAG_LOG,"Numero de mesas "+ mesas.size());
                 } else {
                     swipe.setRefreshing(false);
-                    Log.i("LOG_ANDROID_LANCHES","Não foi possível carregar as mesas pela API " + response.message());
+                    Log.i(TAG_LOG,ERRO_API + response.message());
                 }
             }
 
             public void onFailure(Call<List<Mesa>> call, Throwable exception) {
-                if (exception instanceof ConnectException) {
-                    mesas = _mesasDAO.obterTodasMesasDesocupadas();
-                    configurarAdapter(mesas, recyclerViewMesas);
-                    Log.i("LOG_ANDROID_LANCHES","Mesas no banco local: " + mesas.size());
-                } else{
-                    Log.e("LOG_ANDROID_LANCHES","Não foi possível carregar as mesas pela API " + exception.getMessage());
-                    exception.printStackTrace();
-                }
+                Log.e(TAG_LOG,ERRO_API + exception.getMessage());
+                mesas = _mesasDAO.obterTodasMesasDesocupadas();
+                configurarAdapter(mesas, recyclerViewMesas);
+                Log.i(TAG_LOG,"Mesas no banco local: " + mesas.size());
+
                 swipe.setRefreshing(false);
             }
         });

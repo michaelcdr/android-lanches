@@ -11,10 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-<<<<<<< HEAD
-=======
 
-<<<<<<< HEAD
         <activity android:name=".activity.PagarPedidoComGorjeta"></activity>
         <activity android:name=".activity.ResumoPedidoActivity" />
         <activity android:name=".activity.DetalhesDoPedidoActivity" />
@@ -24,21 +21,9 @@
         <activity android:name=".activity.EscolherMesaActivity" />
         <activity android:name=".activity.CriarPedidoActivity" />
         <activity android:name=".activity.MainActivity">
-=======
->>>>>>> efa72b5e768a053d4f05f6c0560cc3cd7be935eb
-        <activity android:name=".PagarPedidoComGorjeta"></activity>
-        <activity android:name=".ResumoPedidoActivity" />
-        <activity android:name=".DetalhesDoPedidoActivity" />
-        <activity android:name=".ListaDePratosActivity" />
-        <activity android:name=".ListaDeBebidasActivity" />
-        <activity android:name=".EscolherTipoProdutoActivity" />
-        <activity android:name=".EscolherMesaActivity" />
-        <activity android:name=".CriarPedidoActivity" />
-        <activity android:name=".MainActivity">
->>>>>>> 3ab8db2d48275d29391054538063e2a9c19555f8
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

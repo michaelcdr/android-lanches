@@ -9,7 +9,7 @@ import androidx.annotation.Nullable;
 
 public class SqliteHelper extends SQLiteOpenHelper
 {
-    private static final int DATABASE_VERSION = 20;
+    private static final int DATABASE_VERSION = 21;
     private static final String DATABASE_NAME = "AndroidLanchesDB";
 
     // PRODUTO ...
@@ -47,6 +47,7 @@ public class SqliteHelper extends SQLiteOpenHelper
     public SqliteHelper(@Nullable Context context)
     {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+
     }
 
     @Override
@@ -65,19 +66,21 @@ public class SqliteHelper extends SQLiteOpenHelper
                 PRODUTO_EMBALAGEM +  " TEXT)";
 
         String sqlCreatePedidos =       "CREATE TABLE " + PEDIDO_TABELA + " ("+
-                PEDIDO_NUMERO + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                PEDIDO_PAGO + " INTEGER, " +
-                PEDIDO_GORJETA + " DOUBLE, " +
-                PEDIDO_MESAID + " INTEGER )";
+            PEDIDO_NUMERO + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            PEDIDO_PAGO + " INTEGER, " +
+            PEDIDO_GORJETA + " DOUBLE, " +
+            "hashIntegracao TEXT, " +
+            PEDIDO_MESAID + " INTEGER )";
 
         String sqlCreatePedidosItens =  "CREATE TABLE " + PEDIDO_ITEM_TABELA + " ("+
-                PEDIDO_ITEM_PEDIDO_ITEM_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                PEDIDO_ITEM_NUMERO_PEDIDO  + " INTEGER NOT NULL, " +
-                PEDIDO_ITEM_QUANTIDADE + " INTEGER NOT NULL, " +
-                PEDIDO_ITEM_PRODUTO_ID + " INTEGER NOT NULL, " +
-                "FOREIGN KEY ("+ PEDIDO_ITEM_NUMERO_PEDIDO +") REFERENCES "+PEDIDO_TABELA+"("+PEDIDO_NUMERO+"), " +
-                "FOREIGN KEY ("+ PEDIDO_ITEM_PRODUTO_ID +") REFERENCES "+PRODUTO_TABELA+"("+PRODUTO_ID+")" +
-                ")";
+            PEDIDO_ITEM_PEDIDO_ITEM_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+            PEDIDO_ITEM_NUMERO_PEDIDO  + " INTEGER NOT NULL, " +
+            PEDIDO_ITEM_QUANTIDADE + " INTEGER NOT NULL, " +
+            PEDIDO_ITEM_PRODUTO_ID + " INTEGER NOT NULL, " +
+            "hashIntegracao TEXT, " +
+            "FOREIGN KEY ("+ PEDIDO_ITEM_NUMERO_PEDIDO +") REFERENCES "+PEDIDO_TABELA+"("+PEDIDO_NUMERO+"), " +
+            "FOREIGN KEY ("+ PEDIDO_ITEM_PRODUTO_ID +") REFERENCES "+PRODUTO_TABELA+"("+PRODUTO_ID+")" +
+        ")";
 
         try
         {
@@ -95,6 +98,7 @@ public class SqliteHelper extends SQLiteOpenHelper
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
     {
+        Log.i("LOG_ANDROID_LANCHES_I","Entrou no sqlite helper no metodo onUpgrade");
         db.execSQL("DROP TABLE IF EXISTS "+ PRODUTO_TABELA);
         db.execSQL("DROP TABLE IF EXISTS "+ MESA_TABELA);
         db.execSQL("DROP TABLE IF EXISTS "+ PEDIDO_ITEM_TABELA);
