@@ -16,12 +16,19 @@
         <activity android:name=".activity.ResumoPedidoActivity" />
         <activity android:name=".activity.DetalhesDoPedidoActivity" />
         <activity android:name=".activity.ListaDePratosActivity" />
-        <activity android:name=".activity.ListaDeBebidasActivity" />
+        <activity android:name=".activity.ListaDeBebidasActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
         <activity android:name=".activity.EscolherTipoProdutoActivity" />
         <activity android:name=".activity.EscolherMesaActivity" />
         <activity android:name=".activity.CriarPedidoActivity" />
-        <activity android:name=".activity.MainActivity">
 
+        <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

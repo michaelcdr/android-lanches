@@ -12,11 +12,11 @@ public class NetworkHelper
 
         if (connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected() || connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isConnected())
         {
-            Log.i("INTERNET", "CONECTADO ");
+            Log.i("LOG_INTERNET", "CONECTADO ");
             return true;
         }
         else{
-            Log.i("INTERNET", "NOM CONECTADO ");
+            Log.i("LOG_INTERNET", "NOM CONECTADO ");
             return false;
         }
     }

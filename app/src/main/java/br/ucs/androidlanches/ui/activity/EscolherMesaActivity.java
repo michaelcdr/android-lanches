@@ -91,6 +91,7 @@ public class EscolherMesaActivity extends AppCompatActivity
         {
             mesas = _mesasDAO.obterTodasMesasDesocupadas();
             configurarAdapter(mesas, recyclerViewMesas);
+            swipe.setRefreshing(false);
             Log.i(TAG_LOG,"Mesas no banco local: " + mesas.size());
         }
     }

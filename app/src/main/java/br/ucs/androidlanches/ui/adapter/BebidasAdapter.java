@@ -18,7 +18,6 @@ import br.ucs.androidlanches.models.Bebida;
 import br.ucs.androidlanches.ui.adapter.listeners.IOnItemClickBebidaListener;
 import br.ucs.androidlanches.ui.R;
 
-
 public class BebidasAdapter extends RecyclerView.Adapter<BebidasAdapter.ViewHolderBebidas>
 {
     private List<Bebida> bebidas;

@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,11 +25,13 @@ public class DetalhesDoPedidoActivity extends AppCompatActivity
     private RecyclerView recyclerViewItensDoPedido;
     private Pedido pedido;
     private PedidosDAO _pedidoDAO;
+    private String TAG_LOG = "LOG_ANDROID_LANCHES";
 
     @Override
-    protected void onResume() {
+    protected void onResume()
+    {
         super.onResume();
-        Log.i("LOG_ANDROID_LANCHES", "Entrou em onResume detalhes do pedido");
+        Log.i(TAG_LOG, "Entrou em onResume detalhes do pedido");
         pedido = obterPedidoAtual();
     }
 
@@ -72,13 +73,13 @@ public class DetalhesDoPedidoActivity extends AppCompatActivity
                     configurarAdapter(pedido);
                 } else {
                     Toast.makeText(DetalhesDoPedidoActivity.this, "Não foi possível obter os dados devido a um erro na API de destino, tente novamente mais tarde. " , Toast.LENGTH_LONG).show();
-                    Log.e("LOG_ANDROID_LANCHES","não foi possivel obter o pedido.");
+                    Log.e(TAG_LOG,"não foi possivel obter o pedido.");
                 }
             }
 
             @Override
             public void onFailure(Call<Pedido> call, Throwable t) {
-                Log.e("LOG_ANDROID_LANCHES","não foi possivel obter o pedido na api. " + t.getMessage());
+                Log.e(TAG_LOG,"não foi possivel obter o pedido na api. " + t.getMessage());
                 pedido = _pedidoDAO.obterPedido(numeroPedido);
                 configurarReciclerView();
                 configurarAdapter(pedido);
@@ -113,16 +114,14 @@ public class DetalhesDoPedidoActivity extends AppCompatActivity
                             finish();
                             startActivityForResult(getIntent(), 1);
                         } else {
-                            Log.e("LOG_ANDROID_LANCHES","Não foi possível obter os dados devido a um erro na API de destino, tente novamente mais tarde.");
-                            Toast.makeText(
-                            DetalhesDoPedidoActivity.this,
-                            "Não foi possível obter os dados devido a um erro na API de destino, tente novamente mais tarde. " , Toast.LENGTH_LONG).show();
+                            Log.e(TAG_LOG,"Não foi possível obter os dados devido a um erro na API de destino, tente novamente mais tarde.");
+                            Toast.makeText(DetalhesDoPedidoActivity.this,"Não foi possível obter os dados devido a um erro na API de destino, tente novamente mais tarde. " , Toast.LENGTH_LONG).show();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<Void> call, Throwable t) {
-                        Log.e("LOG_ANDROID_LANCHES","Incrementando no banco local." + t.getMessage() );
+                        Log.e(TAG_LOG,"Incrementando no banco local." + t.getMessage() );
                         pedidoItem.incrementarQtd();
                         _pedidoDAO.atualizarPedidoItem(pedidoItem);
                         finish();

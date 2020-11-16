@@ -84,35 +84,35 @@ public class ListaDePratosActivity extends AppCompatActivity
     {
         Map<String, String> filtros = new HashMap<>();
         filtros.put("descricao","");
-        Call<List<Prato>> callPratos = new RetrofitApiClient().getProdutoService()
-                                                              .obterPratos(filtros);
 
-        callPratos.enqueue(new Callback<List<Prato>>() {
-            @Override
-            public void onResponse(Call<List<Prato>> call, Response<List<Prato>> response) {
-                if (response.isSuccessful()) {
-                    pratos = response.body();
-                    configurarAdapter(pratos);
-                    Log.i(TAG_LOG,"Pratos obtidos com sucesso pela API. " );
-                } else
-                    Log.e(TAG_LOG, ERRO_API + response.message());
+        if (NetworkHelper.temInternet(getBaseContext()))
+        {
+            Call<List<Prato>> callPratos = new RetrofitApiClient().getProdutoService().obterPratos(filtros);
+            callPratos.enqueue(new Callback<List<Prato>>() {
+                @Override
+                public void onResponse(Call<List<Prato>> call, Response<List<Prato>> response) {
+                    if (response.isSuccessful()) {
+                        pratos = response.body();
+                        configurarAdapter(pratos);
+                        Log.i(TAG_LOG,"Pratos obtidos com sucesso pela API. " );
+                    } else
+                        Log.e(TAG_LOG, ERRO_API + response.message());
 
-                swipe.setRefreshing(false);
-            }
+                    swipe.setRefreshing(false);
+                }
 
-            @Override
-            public void onFailure(Call<List<Prato>> call, Throwable exception) {
-                if (exception instanceof ConnectException) {
-                    pratos = _produtosDAO.obterTodosPratos();
-                    configurarAdapter(pratos);
-                    Log.w(TAG_LOG, ERRO_INTERNET);
-                    Log.i(TAG_LOG,"resgatamos os dados locais, " + pratos.size() + " pratos encontradas.");
-                } else
-                    Log.e(TAG_LOG,"Não foi possivel obter a lista de pratos. ");
-
-                swipe.setRefreshing(false);
-            }
-        });
+                @Override
+                public void onFailure(Call<List<Prato>> call, Throwable exception) {
+                    Log.w(TAG_LOG,"Erro ao carregar pratos, erro: " + exception.getMessage());
+                    swipe.setRefreshing(false);
+                }
+            });
+        } else {
+            pratos = _produtosDAO.obterTodosPratos();
+            configurarAdapter(pratos);
+            swipe.setRefreshing(false);
+            Log.i(TAG_LOG,"Obtendo dados locais, " + pratos.size() + " pratos encontrados.");
+        }
     }
 
     private void configurarAdapter(List<Prato> pratos)
@@ -193,6 +193,7 @@ public class ListaDePratosActivity extends AppCompatActivity
                 public void onFailure(Call<Long> call, Throwable exception) {
                     Log.e(TAG_LOG,ERRO_API + exception.getMessage());
                     Toast.makeText(ListaDePratosActivity.this, ERRO_API, Toast.LENGTH_LONG).show();
+                    swipe.setRefreshing(false);
                 }
             });
         } else {
@@ -200,7 +201,6 @@ public class ListaDePratosActivity extends AppCompatActivity
             numeroPedido = _pedidosDAO.criar(mesaId, prato);
             irParaDetalhesPedido(numeroPedido);
             swipe.setRefreshing(false);
-
         }
     }
 

@@ -12,4 +12,5 @@
         android:title="Atualizar base"
         android:icon="@drawable/ic_baseline_cached_24"
         app:showAsAction="always" />
+
 </menu>
