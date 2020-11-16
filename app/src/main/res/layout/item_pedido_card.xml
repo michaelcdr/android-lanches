@@ -12,7 +12,7 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/txtNumeroPedidoCard"
+            android:id="@+id/txtNumeroMesaCard"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
@@ -21,10 +21,10 @@
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="Pedido nº 20" />
+            tools:text="Mesa 06" />
 
         <TextView
-            android:id="@+id/txtNumeroMesaCard"
+            android:id="@+id/txtNumeroPedidoCard"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -34,9 +34,9 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/txtNumeroPedidoCard"
-            app:layout_constraintTop_toBottomOf="@id/txtNumeroPedidoCard"
-            tools:text="Mesa 06" />
+            app:layout_constraintStart_toStartOf="@+id/txtNumeroMesaCard"
+            app:layout_constraintTop_toBottomOf="@id/txtNumeroMesaCard"
+            tools:text="Pedido nº 20" />
 
         <Button
             android:id="@+id/btnPagarPedidoCard"

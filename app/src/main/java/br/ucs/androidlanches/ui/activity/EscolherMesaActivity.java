@@ -4,17 +4,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-
-import java.net.ConnectException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import br.ucs.androidlanches.data.DAO.MesasDAO;
+import br.ucs.androidlanches.helpers.NetworkHelper;
 import br.ucs.androidlanches.models.Mesa;
 import br.ucs.androidlanches.ui.adapter.listeners.IOnItemClickMesaListener;
 import br.ucs.androidlanches.ui.adapter.MesaAdapter;
@@ -32,6 +28,7 @@ public class EscolherMesaActivity extends AppCompatActivity
     private SwipeRefreshLayout swipe;
     private String TAG_LOG ="LOG_ANDROID_LANCHES";
     private String ERRO_API = "Não foi possivel carregar as mesas pela API, erro ocorrido: ";
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -49,44 +46,53 @@ public class EscolherMesaActivity extends AppCompatActivity
             }
         });
 
+        configurarReciclerViewMesas();
         carregarMesas();
     }
 
-    /*
     @Override
-    protected void onStart()
+    protected void onResume()
     {
-        super.onStart();
-        carregarMesas();
-    }*/
+        super.onResume();
+        Log.i(TAG_LOG, "onResume da lista de mesas");
+        boolean fechar = getIntent().getBooleanExtra("fechar_activity",false);
+
+        if (fechar)
+        {
+            Log.i(TAG_LOG,"fecho");
+            finish();
+        }
+    }
 
     private void carregarMesas()
     {
-        configurarReciclerViewMesas();
+        if (NetworkHelper.temInternet(getBaseContext()))
+        {
+            Call<List<Mesa>> callMesas = RetrofitApiClient.getMesaService().obterDesocupadas();
+            callMesas.enqueue(new Callback<List<Mesa>>() {
+                public void onResponse(Call<List<Mesa>> call, Response<List<Mesa>> response) {
+                    if (response.isSuccessful()) {
+                        mesas = response.body();
+                        configurarAdapter(mesas, recyclerViewMesas);
+                        Log.i(TAG_LOG,"Numero de mesas "+ mesas.size());
+                    } else
+                        Log.i(TAG_LOG,ERRO_API + response.message());
 
-        Call<List<Mesa>> callMesas = RetrofitApiClient.getMesaService().obterDesocupadas();
-        callMesas.enqueue(new Callback<List<Mesa>>() {
-            public void onResponse(Call<List<Mesa>> call, Response<List<Mesa>> response) {
-                if (response.isSuccessful()) {
-                    mesas = response.body();
-                    configurarAdapter(mesas, recyclerViewMesas);
                     swipe.setRefreshing(false);
-                    Log.i(TAG_LOG,"Numero de mesas "+ mesas.size());
-                } else {
-                    swipe.setRefreshing(false);
-                    Log.i(TAG_LOG,ERRO_API + response.message());
                 }
-            }
 
-            public void onFailure(Call<List<Mesa>> call, Throwable exception) {
-                Log.e(TAG_LOG,ERRO_API + exception.getMessage());
-                mesas = _mesasDAO.obterTodasMesasDesocupadas();
-                configurarAdapter(mesas, recyclerViewMesas);
-                Log.i(TAG_LOG,"Mesas no banco local: " + mesas.size());
-
-                swipe.setRefreshing(false);
-            }
-        });
+                public void onFailure(Call<List<Mesa>> call, Throwable exception) {
+                    Log.e(TAG_LOG,ERRO_API + exception.getMessage());
+                    swipe.setRefreshing(false);
+                }
+            });
+        }
+        else
+        {
+            mesas = _mesasDAO.obterTodasMesasDesocupadas();
+            configurarAdapter(mesas, recyclerViewMesas);
+            Log.i(TAG_LOG,"Mesas no banco local: " + mesas.size());
+        }
     }
 
     private void configurarReciclerViewMesas()
@@ -111,17 +117,5 @@ public class EscolherMesaActivity extends AppCompatActivity
                 startActivityForResult(abrirSelecaoPedidoComMesaSelecionada,1);
             }
         });
-        //adapter.notifyDataSetChanged();
-    }
-
-    public boolean isInternetAvailable()
-    {
-        try {
-            InetAddress address = InetAddress.getByName("www.google.com");
-            return !address.equals("");
-        } catch (UnknownHostException e) {
-            // Log error
-        }
-        return false;
     }
 }

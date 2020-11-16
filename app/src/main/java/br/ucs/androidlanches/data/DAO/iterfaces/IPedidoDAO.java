@@ -9,14 +9,20 @@ import br.ucs.androidlanches.models.Produto;
 public interface IPedidoDAO
 {
     List<Pedido> obterTodosPedidosSemPagamentoEfetuado();
-    Pedido obterPedido(int numeroPedido);
+    Pedido obterPedido(Long numeroPedido);
     int atualizarPedidoItem(PedidoItem pedidoItem);
     void deletarPedidoItem(PedidoItem pedidoItem);
-    void adicionarPedidoItem(int numeroPedido, int produtoId);
-    int criarPedido(int mesaId, Produto produto);
+    void adicionarPedidoItem(Long numeroPedido, int produtoId);
+    Long criar(int mesaId, Produto produto);
     int pagarPedido(Pedido pedido);
-
+    int criarUsandoPedidoApi(Pedido pedido);
     void deletarTodos();
 
-    List<Pedido> obterTodosSemHash();
+    List<Pedido> obterTodosNaoIntegrados();
+
+    void pagarComGorjeta(Long numeroPedido);
+
+    void pagarSemGorjeta(Long numeroPedido);
+
+    List<Pedido> obterTodos();
 }

@@ -34,7 +34,7 @@ public class ListaDeBebidasActivity extends AppCompatActivity
     private RecyclerView recycleViewListaDeBebidas;
     private PedidosDAO _pedidosDAO;
     private int mesaId;
-    private int numeroPedido;
+    private Long numeroPedido;
     private SwipeRefreshLayout swipe;
 
     @Override
@@ -123,14 +123,14 @@ public class ListaDeBebidasActivity extends AppCompatActivity
             public void onItemClick(Bebida bebida) {
                 Intent dadosActivityAnterior = getIntent();
                 mesaId = dadosActivityAnterior.getIntExtra("mesaId",0);
-                numeroPedido = dadosActivityAnterior.getIntExtra("numeroPedido",0);
+                numeroPedido = dadosActivityAnterior.getLongExtra("numeroPedido",0);
 
                 if (numeroPedido == 0)
                 {
-                    Call<Integer> callPedido = new RetrofitApiClient().getPedidoService().criar(mesaId, bebida.getProdutoId());
-                    callPedido.enqueue(new Callback<Integer>() {
+                    Call<Long> callPedido = new RetrofitApiClient().getPedidoService().criar(mesaId, bebida.getProdutoId());
+                    callPedido.enqueue(new Callback<Long>() {
                         @Override
-                        public void onResponse(Call<Integer> call, Response<Integer> response) {
+                        public void onResponse(Call<Long> call, Response<Long> response) {
                             if (response.isSuccessful()){
                                 numeroPedido = response.body();
                                 finish();
@@ -142,9 +142,9 @@ public class ListaDeBebidasActivity extends AppCompatActivity
                         }
 
                         @Override
-                        public void onFailure(Call<Integer> call, Throwable t) {
+                        public void onFailure(Call<Long> call, Throwable t) {
                             Log.e("LOG_ANDROID_LANCHES", "Obtendo dados locais devido ao erro ocorrido: " + t.getMessage());
-                            numeroPedido = _pedidosDAO.criarPedido(mesaId, bebida);
+                            numeroPedido = _pedidosDAO.criar(mesaId, bebida);
                             Log.i("LOG_ANDROID_LANCHES","Pedido criado localmente com sucesso");
                             finish();
                         }

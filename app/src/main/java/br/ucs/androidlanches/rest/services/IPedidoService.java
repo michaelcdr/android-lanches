@@ -17,7 +17,7 @@ public interface IPedidoService
     Call<List<Pedido>> obterTodosSemPagamentoEfetuado();
 
     @GET("/v1/pedidos/ObterPorNumero/{numeroPedido}")
-    Call<Pedido> obter(@Path("numeroPedido") int numeroPedido);
+    Call<Pedido> obter(@Path("numeroPedido") Long numeroPedido);
 
     @PUT("/v1/pedidos/IncrementarQuantidadeProduto/{pedidoItemId}")
     Call<Void> incrementarQtdProduto(@Path("pedidoItemId") int pedidoItemId);
@@ -26,14 +26,20 @@ public interface IPedidoService
     Call<Void> decrementarQtdProduto(@Path("pedidoItemId") int pedidoItemId);
 
     @POST("/v1/pedidos/{mesaId}/{produtoId}")
-    Call<Integer> criar(@Path("mesaId") int mesaId, @Path("produtoId") int produtoId);
+    Call<Long> criar(@Path("mesaId") int mesaId, @Path("produtoId") int produtoId);
 
     @POST("/v1/pedidos/")
-    Call<Integer> criar(@Body Pedido pedido);
+    Call<Long> criar(@Body Pedido pedido);
 
     @POST("/v1/pedidos/AdicionarItem/{numeroPedido}/{produtoId}")
-    Call<Void> adicionarItem(@Path("numeroPedido") int mesaId, @Path("produtoId") int produtoId);
+    Call<Void> adicionarItem(@Path("numeroPedido") Long numeroPedido, @Path("produtoId") int produtoId);
 
     @GET("/v1/pedidos/")
     Call<List<Pedido>> obterTodos();
+
+    @PUT("/v1/pedidos/PagarComGorjeta/{numeroPedido}")
+    Call<Void> pagarComGorjeta(@Path("numeroPedido") Long numeroPedido);
+
+    @PUT("/v1/pedidos/Pagar/{numeroPedido}")
+    Call<Void> pagar(@Path("numeroPedido") Long numeroPedido);
 }

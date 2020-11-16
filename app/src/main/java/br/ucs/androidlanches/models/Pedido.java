@@ -12,7 +12,7 @@ public class Pedido implements Serializable
 {
     @SerializedName("numero")
     @Expose
-    private int numero;
+    private Long numero;
 
     @SerializedName("pago")
     @Expose
@@ -24,20 +24,28 @@ public class Pedido implements Serializable
 
     @SerializedName("gorjeta")
     @Expose
-    private double gorjeta;
+    private boolean gorjeta;
 
     @SerializedName("itens")
     @Expose
     private List<PedidoItem> itens;
 
-    public Pedido(int numero, boolean pago, Mesa mesa)
+    @SerializedName("pedidoId")
+    @Expose
+    private int pedidoId;
+
+    @SerializedName("pedidoIdApi")
+    @Expose
+    private int pedidoIdApi;
+
+    public Pedido(Long numero, boolean pago, Mesa mesa)
     {
         this.numero = numero;
         this.pago = pago;
         this.mesa = mesa;
     }
 
-    public Pedido(int numero, boolean pago, int mesaId, int numeroMesa)
+    public Pedido(Long numero, boolean pago, int mesaId, int numeroMesa)
     {
         this.numero = numero;
         this.pago = pago;
@@ -51,11 +59,14 @@ public class Pedido implements Serializable
         this.pago = pago;
     }
 
-    public int getNumero() {
+    public Long getNumero() {
         return numero;
     }
+    public int getPedidoIdApi() {
+        return pedidoIdApi;
+    }
 
-    public void setNumero(int numero) {
+    public void setNumero(Long numero) {
         this.numero = numero;
     }
 
@@ -66,8 +77,8 @@ public class Pedido implements Serializable
     public void setMesa(Mesa mesa) {
         this.mesa = mesa;
     }
-    public double getGorjeta(){ return this.gorjeta; }
-    public void setGorjeta(double gorjeta){  this.gorjeta = gorjeta; }
+    public boolean getGorjeta(){ return this.gorjeta; }
+    public void setGorjeta(boolean gorjeta){  this.gorjeta = gorjeta; }
 
     public void setItens(List<PedidoItem> itens)
     {
@@ -109,5 +120,13 @@ public class Pedido implements Serializable
 
         String valor = NumberFormat.getCurrencyInstance(new Locale("pt-BR", "BR")).format(total);
         return valor.replace(".",",");
+    }
+
+    public boolean getPago() {
+        return this.pago;
+    }
+
+    public int getId() {
+        return this.pedidoId;
     }
 }

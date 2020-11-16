@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
-import br.ucs.androidlanches.data.DataAccessHelper;
 import br.ucs.androidlanches.models.Pedido;
 import android.util.Log;
 import android.widget.Toast;
@@ -19,10 +18,10 @@ import retrofit2.Response;
 public class ResumoPedidoActivity extends AppCompatActivity
 {
     private Pedido pedido;
-    private DataAccessHelper db = new DataAccessHelper(this);
     private ProdutosDAO _produtosDAO;
     private PedidosDAO _pedidosDAO;
-
+    private String ERRO_PAGAMENTO = "Não foi possivel pagar o pedido";
+    private String TAGLOG = "LOG_ANDROID_LANCHES";
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -31,7 +30,7 @@ public class ResumoPedidoActivity extends AppCompatActivity
         setTitle("Resumo do pedido");
 
         Intent dadosActivityAnterior = getIntent();
-        int numeroPedido = dadosActivityAnterior.getIntExtra("numeroPedido",0);
+        Long numeroPedido = dadosActivityAnterior.getLongExtra("numeroPedido",0);
 
         _pedidosDAO = new PedidosDAO(this);
         _produtosDAO = new ProdutosDAO(this);
@@ -41,9 +40,27 @@ public class ResumoPedidoActivity extends AppCompatActivity
         findViewById(R.id.btnPagarPedidoComGorjeta).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent adicionarNovoProduto = new Intent(ResumoPedidoActivity.this, PagarPedidoComGorjeta.class);
-                adicionarNovoProduto.putExtra("numeroPedido", pedido.getNumero());
-                startActivityForResult(adicionarNovoProduto, 1);
+                Call<Void> callPagarPedidoComGorjeta = RetrofitApiClient.getPedidoService().pagarComGorjeta(numeroPedido);
+
+                callPagarPedidoComGorjeta.enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        if (response.isSuccessful()){
+                            finish();
+                            Toast.makeText(ResumoPedidoActivity.this, "Pedido pago com sucesso.", Toast.LENGTH_LONG).show();
+                        } else {
+                            Log.e(TAGLOG, ERRO_PAGAMENTO);
+                            Toast.makeText(ResumoPedidoActivity.this, ERRO_PAGAMENTO+ ", ERRO : " +response.message(), Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Log.e("LOG_ANDROID_LANCHES","não foi possivel obter o pedido na api. " + t.getMessage());
+                        _pedidosDAO.pagarComGorjeta(numeroPedido);
+                        finish();
+                    }
+                });
             }
         });
 
@@ -51,13 +68,33 @@ public class ResumoPedidoActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 _pedidosDAO.pagarPedido(pedido);
-                Intent irParaListaDePedidos = new Intent(ResumoPedidoActivity.this, MainActivity.class);
-                startActivityForResult(irParaListaDePedidos, 1);
+
+                Call<Void> callPagarPedido = RetrofitApiClient.getPedidoService().pagar(numeroPedido);
+
+                callPagarPedido.enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        if (response.isSuccessful()){
+                            finish();
+                            Toast.makeText(ResumoPedidoActivity.this, "Pedido pago com sucesso.", Toast.LENGTH_LONG).show();
+                        } else {
+                            Log.e(TAGLOG, ERRO_PAGAMENTO);
+                            Toast.makeText(ResumoPedidoActivity.this, ERRO_PAGAMENTO+ ", ERRO : " +response.message(), Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Log.e("LOG_ANDROID_LANCHES","não foi possivel obter o pedido na api. " + t.getMessage());
+                        _pedidosDAO.pagarSemGorjeta(numeroPedido);
+                        finish();
+                    }
+                });
             }
         });
     }
 
-    private Pedido obterPedido(int numero)
+    private Pedido obterPedido(Long numero)
     {
         Call<Pedido> pedidoCall = RetrofitApiClient.getPedidoService().obter(numero);
         pedidoCall.enqueue(new Callback<Pedido>() {
@@ -84,6 +121,7 @@ public class ResumoPedidoActivity extends AppCompatActivity
             @Override
             public void onFailure(Call<Pedido> call, Throwable t) {
                 Log.e("LOG_ANDROID_LANCHES","não foi possivel obter o pedido na api. " + t.getMessage());
+                Log.i("LOG_ANDROID_LANCHES","obtendo pedido localmente");
                 pedido = _pedidosDAO.obterPedido(numero);
             }
         });

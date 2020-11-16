@@ -79,7 +79,7 @@ public class CursorHelper
         mesa.setNumero(Integer.parseInt(cursor.getString(3)));
 
         Pedido pedido = new Pedido(
-                Integer.parseInt(cursor.getString(0)),
+                Long.parseLong(cursor.getString(0)),
                 Boolean.parseBoolean(cursor.getString(1)),
                 mesa
         );

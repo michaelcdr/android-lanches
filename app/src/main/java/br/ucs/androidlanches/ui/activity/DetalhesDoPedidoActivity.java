@@ -22,7 +22,7 @@ import retrofit2.Response;
 
 public class DetalhesDoPedidoActivity extends AppCompatActivity
 {
-    private int numeroPedido;
+    private Long numeroPedido;
     private RecyclerView recyclerViewItensDoPedido;
     private Pedido pedido;
     private PedidosDAO _pedidoDAO;
@@ -60,7 +60,7 @@ public class DetalhesDoPedidoActivity extends AppCompatActivity
     private Pedido obterPedidoAtual()
     {
         Intent dadosActivityAnterior = getIntent();
-        numeroPedido = dadosActivityAnterior.getIntExtra("numeroPedido",0);
+        numeroPedido = dadosActivityAnterior.getLongExtra("numeroPedido",0);
 
         Call<Pedido> pedidoCall = RetrofitApiClient.getPedidoService().obter(numeroPedido);
         pedidoCall.enqueue(new Callback<Pedido>() {

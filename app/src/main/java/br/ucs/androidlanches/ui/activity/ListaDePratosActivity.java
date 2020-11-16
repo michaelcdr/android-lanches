@@ -17,11 +17,13 @@ import java.util.List;
 import java.util.Map;
 
 import br.ucs.androidlanches.data.DAO.*;
+import br.ucs.androidlanches.helpers.NetworkHelper;
 import br.ucs.androidlanches.models.Prato;
 import br.ucs.androidlanches.ui.adapter.listeners.IOnItemClickPratoListener;
 import br.ucs.androidlanches.ui.adapter.PratoAdapter;
 import br.ucs.androidlanches.rest.RetrofitApiClient;
 import br.ucs.androidlanches.ui.R;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -33,13 +35,14 @@ public class ListaDePratosActivity extends AppCompatActivity
     private PedidosDAO _pedidosDAO;
     private RecyclerView recycleViewListaDePratos;
     private int mesaId;
-    private int numeroPedido;
+    private Long numeroPedido;
     private SwipeRefreshLayout swipe;
     private String TAG_LOG ="LOG_ANDROID_LANCHES";
     private String TAG_LOGI ="LOG_ANDROID_LANCHES_I";
     private String ERRO_INTERNET = "Não foi possivel obter a lista de pratos na API devido a problemas de internet.";
     private String ERRO_API = "Ocorreu um erro ao tentar obter a dados na API. ";
     private String LOG_ADD_PEDIDO = "Pedido criado, e prato adicionado com sucesso pela API. ";
+    private String ERRO_CRIAR_PEDIDO = "Ocorreu um erro ao tentar criar pedido com produto. ";
 
     @Override
     protected void onStart()
@@ -79,9 +82,11 @@ public class ListaDePratosActivity extends AppCompatActivity
 
     private void obterPratos()
     {
-        Map<String,String> filtros = new HashMap<>();
+        Map<String, String> filtros = new HashMap<>();
         filtros.put("descricao","");
-        Call<List<Prato>> callPratos = new RetrofitApiClient().getProdutoService().obterPratos(filtros);
+        Call<List<Prato>> callPratos = new RetrofitApiClient().getProdutoService()
+                                                              .obterPratos(filtros);
+
         callPratos.enqueue(new Callback<List<Prato>>() {
             @Override
             public void onResponse(Call<List<Prato>> call, Response<List<Prato>> response) {
@@ -110,8 +115,6 @@ public class ListaDePratosActivity extends AppCompatActivity
         });
     }
 
-
-
     private void configurarAdapter(List<Prato> pratos)
     {
         PratoAdapter adapter = new PratoAdapter(this, pratos);
@@ -121,69 +124,90 @@ public class ListaDePratosActivity extends AppCompatActivity
         adapter.setOnItemClickListener(new IOnItemClickPratoListener() {
             @Override
             public void onItemClick(Prato prato) {
-
                 Intent dadosActivityAnterior = getIntent();
                 mesaId = dadosActivityAnterior.getIntExtra("mesaId",0);
-                numeroPedido = dadosActivityAnterior.getIntExtra("numeroPedido",0);
+                numeroPedido = dadosActivityAnterior.getLongExtra("numeroPedido",0);
+
                 Log.i(TAG_LOGI, "Clicou em escolher produto no pedido " + numeroPedido +".");
 
                 if (numeroPedido == 0)
-                {
-                    Call<Integer> criarPedido = new RetrofitApiClient().getPedidoService().criar(mesaId, prato.getProdutoId());
-
-                    criarPedido.enqueue(new Callback<Integer>() {
-                        @Override
-                        public void onResponse(Call<Integer> call, Response<Integer> response) {
-                            if (response.isSuccessful()) {
-                                numeroPedido = response.body();
-                                finish();
-                                Log.i(TAG_LOG, LOG_ADD_PEDIDO);
-                            } else {
-                                Log.e(TAG_LOG,ERRO_API + " Erro: " + response.message());
-                                Toast.makeText(ListaDePratosActivity.this, ERRO_API, Toast.LENGTH_LONG).show();
-                            }
-
-                            swipe.setRefreshing(false);
-                        }
-
-                        @Override
-                        public void onFailure(Call<Integer> call, Throwable exception) {
-                            Log.e(TAG_LOG,ERRO_API + exception.getMessage());
-
-                            numeroPedido = _pedidosDAO.criarPedido(mesaId, prato);
-                            finish();
-                            Log.i(TAG_LOG, "Pedido criado no banco local.");
-
-                            swipe.setRefreshing(false);
-                        }
-                    });
-                }
+                    criarPedidoComProdutoSelecionado(prato);
                 else
-                {
-                    Call<Void> callCriarPedido = new RetrofitApiClient().getPedidoService().adicionarItem(numeroPedido,prato.getProdutoId());
-                    callCriarPedido.enqueue(new Callback<Void>() {
-                        @Override
-                        public void onResponse(Call<Void> call, Response<Void> response) {
-                            if (response.isSuccessful()) {
-                                finish();
-                                Log.i(TAG_LOG,"Prato adicionado com sucesso pela API.");
-                            } else {
-                                Log.e(TAG_LOG,"Ocorreu um erro ao tentar adicionar pratos pela API. " + response.message());
-                                Toast.makeText(ListaDePratosActivity.this,"Ocorreu um erro ao tentar adicionar o prato. ", Toast.LENGTH_LONG).show();
-                            }
-                            swipe.setRefreshing(false);
-                        }
-
-                        @Override
-                        public void onFailure(Call<Void> call, Throwable exception) {
-                            _pedidosDAO.adicionarPedidoItem(numeroPedido, prato.getProdutoId());
-                            finish();
-                            Log.i(TAG_LOG, "Item adicionado no pedido, pelo banco local");
-                            swipe.setRefreshing(false);
-                        }
-                    });
-                }
+                    adicionarItemNoPedidoAtual(prato);
             }
         });
+    }
+
+    private void adicionarItemNoPedidoAtual(Prato prato)
+    {
+        if (NetworkHelper.temInternet(getBaseContext()))
+        {
+            Call<Void> callCriarPedido = new RetrofitApiClient().getPedidoService().adicionarItem(numeroPedido, prato.getProdutoId());
+            callCriarPedido.enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        finish();
+                        Log.i(TAG_LOG,"Prato adicionado com sucesso pela API.");
+                    } else {
+                        Log.e(TAG_LOG,"Ocorreu um erro ao tentar adicionar pratos pela API. " + response.message());
+                        Toast.makeText(ListaDePratosActivity.this,"Ocorreu um erro ao tentar adicionar o prato. ", Toast.LENGTH_LONG).show();
+                    }
+                    swipe.setRefreshing(false);
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable exception) {
+                    Toast.makeText(ListaDePratosActivity.this,ERRO_CRIAR_PEDIDO, Toast.LENGTH_LONG).show();
+                    swipe.setRefreshing(false);
+                }
+            });
+        } else {
+            _pedidosDAO.adicionarPedidoItem(numeroPedido, prato.getProdutoId());
+            finish();
+            swipe.setRefreshing(false);
+            Log.i(TAG_LOG, "Item adicionado no pedido, pelo banco local");
+        }
+    }
+
+    private void criarPedidoComProdutoSelecionado(Prato prato)
+    {
+        if(NetworkHelper.temInternet(getBaseContext()))
+        {
+            Call<Long> criarPedido = new RetrofitApiClient().getPedidoService().criar(mesaId, prato.getProdutoId());
+            criarPedido.enqueue(new Callback<Long>() {
+                @Override
+                public void onResponse(Call<Long> call, Response<Long> response) {
+                    if (response.isSuccessful()) {
+                        numeroPedido = response.body();
+                        irParaDetalhesPedido(numeroPedido);
+                        Log.i(TAG_LOG, LOG_ADD_PEDIDO);
+                    } else {
+                        Log.e(TAG_LOG,ERRO_API + " Erro: " + response.message());
+                        Toast.makeText(ListaDePratosActivity.this, ERRO_API, Toast.LENGTH_LONG).show();
+                    }
+                    swipe.setRefreshing(false);
+                }
+
+                @Override
+                public void onFailure(Call<Long> call, Throwable exception) {
+                    Log.e(TAG_LOG,ERRO_API + exception.getMessage());
+                    Toast.makeText(ListaDePratosActivity.this, ERRO_API, Toast.LENGTH_LONG).show();
+                }
+            });
+        } else {
+            Log.i(TAG_LOG, "Pedido criado no banco local, e prato adicionado.");
+            numeroPedido = _pedidosDAO.criar(mesaId, prato);
+            irParaDetalhesPedido(numeroPedido);
+            swipe.setRefreshing(false);
+
+        }
+    }
+
+    private void irParaDetalhesPedido(Long numeroPedido) {
+        Intent intent = new Intent(ListaDePratosActivity.this, DetalhesDoPedidoActivity.class);
+        intent.putExtra("numeroPedido", numeroPedido);
+        finish();
+        startActivityForResult(intent, 1);
     }
 }

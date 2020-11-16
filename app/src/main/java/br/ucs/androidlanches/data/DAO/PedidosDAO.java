@@ -4,7 +4,13 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import br.ucs.androidlanches.data.DAO.iterfaces.IPedidoDAO;
 import br.ucs.androidlanches.data.Helpers.CursorHelper;
@@ -35,12 +41,13 @@ public class PedidosDAO implements IPedidoDAO
     }
 
     @Override
-    public List<Pedido> obterTodosSemHash() {
+    public List<Pedido> obterTodosNaoIntegrados()
+    {
         List<Pedido> pedidos = new ArrayList<>();
 
         String query = "SELECT Pedidos.numero, Pedidos.pago, Mesas.mesaId, Mesas.numero FROM Pedidos  "+
-                "INNER JOIN Mesas  ON Pedidos.mesaId = Mesas.mesaId " +
-                "WHERE Pedidos.hashIntegracao = null ORDER BY  Pedidos.numero";
+                        "INNER JOIN Mesas  ON Pedidos.mesaId = Mesas.mesaId " +
+                        "WHERE Pedidos.pedidoIdApi = null ORDER BY  Pedidos.numero";
 
         Cursor cursor = conexao().rawQuery(query, null);
         if (cursor.moveToFirst())
@@ -55,6 +62,55 @@ public class PedidosDAO implements IPedidoDAO
         }
         db.close();
         return pedidos;
+    }
+
+    public List<Pedido> obterTodos()
+    {
+        List<Pedido> pedidos = new ArrayList<>();
+
+        String query = "SELECT Pedidos.numero, Pedidos.pago, Mesas.mesaId, Mesas.numero FROM Pedidos  "+
+                "INNER JOIN Mesas  ON Pedidos.mesaId = Mesas.mesaId " +
+                " ORDER BY  Pedidos.numero";
+
+        Cursor cursor = conexao().rawQuery(query, null);
+        if (cursor.moveToFirst())
+        {
+            do {
+                Pedido pedido = CursorHelper.cursorToPedido(cursor);
+                pedidos.add(pedido);
+
+                List<PedidoItem> pedidoItems = obterItensPedido(pedido.getNumero());
+                pedido.setItens(pedidoItems);
+            } while (cursor.moveToNext());
+        }
+        db.close();
+        return pedidos;
+    }
+
+    @Override
+    public void pagarComGorjeta(Long numeroPedido) {
+        ContentValues values = new ContentValues();
+        values.put("pago", 1);
+        values.put("gorjeta", 1);
+
+        int linhasAfetadas = conexao().update(
+            "pedidos", values, " numero = ?  ",
+            new String[] { String.valueOf(numeroPedido) }
+        );
+        db.close();
+    }
+
+    @Override
+    public void pagarSemGorjeta(Long numeroPedido) {
+        ContentValues values = new ContentValues();
+        values.put("pago", 1);
+        values.put("gorjeta", 0);
+
+        int linhasAfetadas = conexao().update(
+                "pedidos", values, " numero = ?  ",
+                new String[] { String.valueOf(numeroPedido) }
+        );
+        db.close();
     }
 
     public List<Pedido> obterTodosPedidosSemPagamentoEfetuado()
@@ -80,7 +136,7 @@ public class PedidosDAO implements IPedidoDAO
         return pedidos;
     }
 
-    public Pedido obterPedido(int numeroPedido)
+    public Pedido obterPedido(Long numeroPedido)
     {
         String query = "SELECT Pedidos.numero, Pedidos.pago, Mesas.mesaId, Mesas.numero FROM Pedidos  "+
                 "INNER JOIN Mesas  ON Pedidos.mesaId = Mesas.mesaId " +
@@ -88,7 +144,8 @@ public class PedidosDAO implements IPedidoDAO
 
         Cursor cursor = conexao().rawQuery(query, new String[] { String.valueOf(numeroPedido) });
 
-        if (cursor == null) {
+        if (cursor == null)
+        {
             db.close();
             return null;
         }
@@ -104,7 +161,7 @@ public class PedidosDAO implements IPedidoDAO
         }
     }
 
-    private List<PedidoItem> obterItensPedido(int numeroPedido)
+    private List<PedidoItem> obterItensPedido(Long numeroPedido)
     {
         ArrayList<PedidoItem> itens = new ArrayList<>();
 
@@ -112,7 +169,8 @@ public class PedidosDAO implements IPedidoDAO
                         "produtos.Foto , produtos.Preco " +
                         " FROM pedidositens " +
                         " INNER JOIN produtos ON produtos.produtoId  = pedidositens.produtoId "+
-                        " WHERE pedidositens.numero = ?";
+                        " INNER JOIN pedidos on pedidositens.pedidoid = pedidos.pedidoid " +
+                        " WHERE pedidos.numero = ?";
 
         Cursor cursor = conexao().rawQuery(query, new String[]{String.valueOf(numeroPedido)});
 
@@ -142,34 +200,54 @@ public class PedidosDAO implements IPedidoDAO
 
     public void deletarPedidoItem(PedidoItem pedidoItem)
     {
-        conexao().delete("pedidositens", " pedidoItemId = ? ", new String[] { String.valueOf(pedidoItem.getPedidoItemId()) });
+        conexao().delete("pedidositens", " pedidoItemId = ? ", new String[] {
+            String.valueOf(pedidoItem.getPedidoItemId())
+        });
         db.close();
     }
 
-    public int criarPedido(int mesaId, Produto produto)
+    private Long gerarNumeroPedido()
     {
+        Date data = new Date();
+
+        SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+        String dataFormatada = df.format(data);
+        return Long.parseLong(dataFormatada);
+    }
+
+    public Long criar(int mesaId, Produto produto)
+    {
+        Long numeroPedido = gerarNumeroPedido();
         ContentValues values = new ContentValues();
 
         values.put("mesaId", mesaId);
         values.put("pago", 0);
-        conexao().insert("Pedidos", null, values);
+        values.put("gorjeta", 0);
+        values.put("numero", numeroPedido);
 
-        int numeroPedido = obterUltimoNumeroPedidoDaMesa(mesaId);
+        long pedidoId = conexao().insert("Pedidos", null, values);
+
         adicionarPedidoItem(numeroPedido, produto.getProdutoId());
-
         db.close();
+
         return numeroPedido;
     }
 
-    public void adicionarPedidoItem(int numeroPedido, int produtoId)
+    public void adicionarPedidoItem(Long numeroPedido, int produtoId)
     {
         ContentValues values = new ContentValues();
+        Cursor cursor = conexao().rawQuery(
+        "select pedidoId from pedidos where numero = ? ", new String[]{ String.valueOf(numeroPedido) }
+        );
+
+        cursor.moveToFirst();
+        int pedidoId = cursor.getInt(0);
 
         if (temPedidoItem(numeroPedido, produtoId))
-            incrementarQuantidadeProdutoItem(numeroPedido,produtoId);
+            incrementarQuantidadeProdutoItem(numeroPedido, produtoId);
         else
         {
-            values.put("numero", numeroPedido);
+            values.put("pedidoId", pedidoId);
             values.put("quantidade", 1);
             values.put("produtoId", produtoId);
             conexao().insert("pedidositens", null, values);
@@ -177,23 +255,71 @@ public class PedidosDAO implements IPedidoDAO
         }
     }
 
-    private void incrementarQuantidadeProdutoItem(int numeroPedido, int produtoId)
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public int criarUsandoPedidoApi(Pedido pedidoApi)
     {
-        String query = "SELECT quantidade FROM pedidositens WHERE numero = ? AND produtoId = ? ";
+        // deletando antigos...
+       /*
+        int linhasAfetadas = conexao().delete(
+              "pedidositens",
+        " pedidoId in (select pedidoId from pedidos where pedidoIdApi = ? ) ",
+                new String[] { String.valueOf(pedidoApi.getId())
+        });
+        conexao().delete("pedidos", " pedidoIdApi = ? ", new String[] { String.valueOf(pedidoApi.getId()) });
+        db.close();*/
+
+        ContentValues values = new ContentValues();
+        values.put("mesaId", pedidoApi.getMesaId());
+        values.put("pago", pedidoApi.getPago());
+        values.put("pedidoIdApi",pedidoApi.getId());
+        values.put("numero",pedidoApi.getNumero());
+
+        int pedidoId = (int)conexao().insert("Pedidos", null, values);
+
+        if (pedidoApi != null && pedidoApi.getItens() != null)
+        {
+            pedidoApi.getItens().forEach(pedidoItem -> {
+                pedidoItem.setPedidoId(pedidoId);
+                adicionarPedidoItem(pedidoItem);
+            });
+        }
+        return pedidoId;
+    }
+
+    private void adicionarPedidoItem(PedidoItem pedidoItem)
+    {
+        ContentValues values = new ContentValues();
+        values.put("pedidoId", pedidoItem.getPedidoId());
+        values.put("quantidade", pedidoItem.getQuantidade());
+        values.put("produtoId", pedidoItem.getProduto().getProdutoId());
+        conexao().insert("pedidositens", null, values);
+        db.close();
+    }
+
+    private void incrementarQuantidadeProdutoItem(Long numeroPedido, int produtoId)
+    {
+        String query = "SELECT quantidade, pedidositens.pedidoId FROM pedidositens " +
+                       "INNER JOIN pedidos on pedidositens.pedidoid = pedidos.pedidoid " +
+                       "WHERE pedidos.numero = ? AND pedidositens.produtoId = ? ";
+
         Cursor cursor = conexao().rawQuery(query, new String[] { String.valueOf(numeroPedido), String.valueOf(produtoId) });
-        if (cursor != null) {
-            if (cursor.moveToFirst()) {
+
+        if (cursor != null)
+        {
+            if (cursor.moveToFirst())
+            {
                 int qtd = Integer.parseInt(cursor.getString(0));
+                int pedidoId = cursor.getInt(1);
                 qtd = qtd + 1;
                 db.close();
-                atualizarQuantidadePedidoItem(numeroPedido,produtoId, qtd);
+                atualizarQuantidadePedidoItem(pedidoId, produtoId, qtd);
             }
             db.close();
         } else
             db.close();
     }
 
-    private int atualizarQuantidadePedidoItem(int numeroPedido, int produtoId, int qtd)
+    private int atualizarQuantidadePedidoItem(int pedidoId, int produtoId, int qtd)
     {
         ContentValues values = new ContentValues();
         values.put("quantidade", qtd);
@@ -201,23 +327,26 @@ public class PedidosDAO implements IPedidoDAO
         int linhasAfetadas = conexao().update(
             "pedidositens",
             values,
-            " numero = ? and produtoId  = ? ",  new String[] { String.valueOf(numeroPedido), String.valueOf(produtoId) }
+            " pedidoId = ? and produtoId  = ? ",  new String[] { String.valueOf(pedidoId), String.valueOf(produtoId) }
         );
-
         db.close();
+
         return linhasAfetadas;
     }
 
-    private boolean temPedidoItem(int numeroPedido, int produtoId)
+    private boolean temPedidoItem(Long numeroPedido, int produtoId)
     {
-        String query = "SELECT quantidade FROM pedidositens WHERE numero = ? AND produtoId = ? ";
+        String query = "SELECT quantidade FROM pedidositens " +
+                       "INNER JOIN pedidos on pedidositens.pedidoid = pedidos.pedidoid WHERE pedidos.numero = ? AND pedidositens.produtoId = ? ";
+
         Cursor cursor = conexao().rawQuery(query, new String[] { String.valueOf(numeroPedido), String.valueOf(produtoId) });
 
-
-        if (cursor == null) {
+        if (cursor == null)
+        {
             db.close();
             return false;
-        }else {
+        }
+        else {
             if (cursor.moveToFirst()){
                 int qtd = cursor.getInt(0);
                 db.close();
@@ -228,14 +357,14 @@ public class PedidosDAO implements IPedidoDAO
         }
     }
 
-    private int obterUltimoNumeroPedidoDaMesa(int mesaId)
+    private Long obterUltimoNumeroPedidoDaMesa(int mesaId)
     {
         String query = "SELECT numero FROM pedidos WHERE mesaId = ? ORDER BY numero desc";
         Cursor cursor = conexao().rawQuery(query, new String[] { String.valueOf(mesaId) });
 
-        int numero = 0;
+        Long numero = 0L;
         if (cursor.moveToFirst())
-            numero = cursor.getInt(0);
+            numero = cursor.getLong(0);
 
         db.close();
         return numero;
@@ -262,6 +391,4 @@ public class PedidosDAO implements IPedidoDAO
         conexao().delete("Pedidos", null, null);
         db.close();
     }
-
-
 }

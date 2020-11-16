@@ -91,7 +91,7 @@ public class PedidosAdapter extends RecyclerView.Adapter<PedidosAdapter.ViewHold
         {
             this.pedido = pedido;
             txtNumeroMesa.setText("Mesa " + new Integer(pedido.getMesa().getNumero()).toString());
-            txtNumeroPedido.setText("Nº " + new Integer(pedido.getNumero()).toString());
+            txtNumeroPedido.setText("Nº " + new Long(pedido.getNumero()).toString());
             txtValor.setText(pedido.obterTotalFormatado());
         }
     }

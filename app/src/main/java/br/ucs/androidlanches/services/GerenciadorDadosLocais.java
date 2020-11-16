@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import br.ucs.androidlanches.data.DAO.*;
+import br.ucs.androidlanches.helpers.NetworkHelper;
 import br.ucs.androidlanches.models.*;
 import br.ucs.androidlanches.rest.RetrofitApiClient;
 import retrofit2.Call;
@@ -23,7 +24,7 @@ public class GerenciadorDadosLocais
     private ProdutosDAO _produtosDao;
     private Context _context;
     private String TAG_LOG ="LOG_ANDROID_LANCHES";
-
+    private String SEM_INTENET = "Para atualizar a base local você deve estar conectado a internet";
     public GerenciadorDadosLocais(Context context)
     {
         _context = context;
@@ -52,16 +53,19 @@ public class GerenciadorDadosLocais
 
     public void atualizar()
     {
-        Log.i(TAG_LOG,"Iniciando atualização base local.");
-        gerarCallMesas();
-        gerarCallBebidas();
-        gerarCallPratos();
-        gerarCallPedidos();
+        if (NetworkHelper.temInternet(_context)){
+            gerarCallMesas();
+            gerarCallBebidas();
+            gerarCallPratos();
+            gerarCallPedidos();
+        } else {
+            Toast.makeText(_context, SEM_INTENET, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void gerarCallPedidos()
     {
-        Log.i(TAG_LOG,"Entrou na call de pedidos" );
+        Log.i(TAG_LOG,"Entrou na call de pedidos " );
         Call<List<Pedido>> pedidosCall = RetrofitApiClient.getPedidoService().obterTodos();
         pedidosCall.enqueue(new Callback<List<Pedido>>() {
 
@@ -69,8 +73,12 @@ public class GerenciadorDadosLocais
             @Override
             public void onResponse(Call<List<Pedido>> call, Response<List<Pedido>> response) {
                 if (response.isSuccessful()){
-                    List<Pedido> pedidosDaApi = response.body();
+                    List<Pedido> pedidosApi = response.body();
+                    pedidosApi.forEach(pedidoApi -> {
+                       _pedidosDao.criarUsandoPedidoApi(pedidoApi);
+                    });
 
+                    /*
                     List<Pedido> pedidosNaoSincronizados = _pedidosDao.obterTodosSemHash();
                     Log.i(TAG_LOG,"Obteve lista de pedidos na api, " + pedidosDaApi.size() + " pedidos encontrados.");
                     pedidosNaoSincronizados.forEach(pedido -> {
@@ -87,7 +95,7 @@ public class GerenciadorDadosLocais
                                 Log.e(TAG_LOG,"Erro ocorrido " + t.getMessage());
                             }
                         });
-                    });
+                    });*/
 
 
 

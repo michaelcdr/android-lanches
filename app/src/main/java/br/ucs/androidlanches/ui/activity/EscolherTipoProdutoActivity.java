@@ -10,7 +10,7 @@ import br.ucs.androidlanches.ui.R;
 public class EscolherTipoProdutoActivity extends AppCompatActivity
 {
     private int mesaId;
-    private int numeroPedido;
+    private Long numeroPedido;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -21,7 +21,7 @@ public class EscolherTipoProdutoActivity extends AppCompatActivity
 
         Intent dadosActivityAnterior = getIntent();
         mesaId = dadosActivityAnterior.getIntExtra("mesaId",0);
-        numeroPedido = dadosActivityAnterior.getIntExtra("numeroPedido",0);
+        numeroPedido = dadosActivityAnterior.getLongExtra("numeroPedido",0);
         findViewById(R.id.btn_bebidas).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

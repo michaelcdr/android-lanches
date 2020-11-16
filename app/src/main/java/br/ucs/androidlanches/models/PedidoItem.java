@@ -5,7 +5,8 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-public class PedidoItem implements Serializable {
+public class PedidoItem implements Serializable
+{
     @SerializedName("pedidoItemId")
     @Expose
     private int pedidoItemId;
@@ -22,7 +23,8 @@ public class PedidoItem implements Serializable {
 
     public PedidoItem(){}
 
-    public PedidoItem(int pedidoId, int quantidade){
+    public PedidoItem(int pedidoId, int quantidade)
+    {
         this.pedidoId = pedidoId;
         this.quantidade = quantidade;
     }
@@ -30,9 +32,7 @@ public class PedidoItem implements Serializable {
     public int getPedidoItemId() {
         return this.pedidoItemId;
     }
-    public int getPedidoId() {
-        return this.pedidoId;
-    }
+
 
     public int getQuantidade() {
         return this.quantidade;
@@ -68,5 +68,13 @@ public class PedidoItem implements Serializable {
         if (this.quantidade > 0){
             this.quantidade = this.quantidade -1;
         }
+    }
+
+    public int getPedidoId() {
+        return this.pedidoId;
+    }
+
+    public void setPedidoId(int pedidoId) {
+        this.pedidoId = pedidoId;
     }
 }

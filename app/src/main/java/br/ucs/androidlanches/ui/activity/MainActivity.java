@@ -1,11 +1,9 @@
 package br.ucs.androidlanches.ui.activity;
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,10 +15,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 import br.ucs.androidlanches.data.DAO.*;
+import br.ucs.androidlanches.helpers.NetworkHelper;
 import br.ucs.androidlanches.models.*;
 import br.ucs.androidlanches.services.GerenciadorDadosLocais;
 import br.ucs.androidlanches.ui.adapter.listeners.*;
@@ -35,12 +33,11 @@ public class MainActivity extends AppCompatActivity
 {
     private List<Pedido> pedidos = new ArrayList<>();
     private PedidosDAO _pedidosDao;
-    private MesasDAO _mesasDao;
-    private ProdutosDAO _produtosDao;
     private RecyclerView recyclerViewPedidos;
     private SwipeRefreshLayout swipe;
     private String TAG_LOGI = "LOG_ANDROID_LANCHES_I";
     private String TAG_LOG = "LOG_ANDROID_LANCHES";
+    private String ERRO_PEDIDOS = "Algo deu errado ao tentar obter os pedidos.";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -50,9 +47,14 @@ public class MainActivity extends AppCompatActivity
         setTitle("Pedidos");
 
         _pedidosDao =  new PedidosDAO(this);
-        _mesasDao = new MesasDAO(this);
-        _produtosDao = new ProdutosDAO(this);
 
+        configurarSwipeListaPedidos();
+        configurarRecicleViewPedidos();
+        obterTodosPedidosSemPagamentoEfetuado();
+        gerarEventoCadastroPedido();
+    }
+
+    private void configurarSwipeListaPedidos() {
         swipe = (SwipeRefreshLayout) findViewById(R.id.swiperefresh_lista_pedidos);
         swipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -60,41 +62,44 @@ public class MainActivity extends AppCompatActivity
                 obterTodosPedidosSemPagamentoEfetuado();
             }
         });
-
-        obterTodosPedidosSemPagamentoEfetuado();
-        configurarRecicleViewPedidos();
-        gerarEventoCadastroPedido();
     }
 
     private void obterTodosPedidosSemPagamentoEfetuado()
     {
-        Call<List<Pedido>> callPedidos = RetrofitApiClient.getPedidoService().obterTodosSemPagamentoEfetuado();
-        callPedidos.enqueue(new Callback<List<Pedido>>() {
-            @Override
-            public void onResponse(Call<List<Pedido>> call, Response<List<Pedido>> response) {
-                if (response.isSuccessful()){
-                    Log.i(TAG_LOGI, "Requisição com sucesso em obter pedidos não pagos: ");
-                    pedidos = response.body();
-                    configurarAdapter(pedidos, recyclerViewPedidos);
+        if (NetworkHelper.temInternet(getBaseContext()))
+        {
+            Call<List<Pedido>> callPedidos = RetrofitApiClient.getPedidoService().obterTodosSemPagamentoEfetuado();
+            callPedidos.enqueue(new Callback<List<Pedido>>() {
+                @Override
+                public void onResponse(Call<List<Pedido>> call, Response<List<Pedido>> response) {
+                    if (response.isSuccessful()){
+                        Log.i(TAG_LOGI, "Requisição com sucesso em obter pedidos não pagos: ");
+                        pedidos = response.body();
+                        configurarAdapter(pedidos, recyclerViewPedidos);
+                    }  else {
+                        Log.e(TAG_LOG, ERRO_PEDIDOS +", erro: " + response.message());
+                        Toast.makeText(MainActivity.this,ERRO_PEDIDOS,Toast.LENGTH_LONG).show();
+                        configurarAdapter(pedidos, recyclerViewPedidos);
+                    }
                     swipe.setRefreshing(false);
                 }
-                else {
-                    Log.e(TAG_LOG, "Algo deu errado ao tentar obter os pedidos em abertos na API: " + response.message());
-                    Toast.makeText(MainActivity.this,"Algo deu errado ao tentar obter os pedidos em abertos no servidor.",Toast.LENGTH_LONG).show();
-                    configurarAdapter(pedidos, recyclerViewPedidos);
-                    swipe.setRefreshing(false);
-                }
-            }
 
-            @Override
-            public void onFailure(Call call, Throwable t) {
-                Log.e(TAG_LOG,"Falhou na requisição de pedidos, erro ocorrido: " + t.getMessage());
-                pedidos = _pedidosDao.obterTodosPedidosSemPagamentoEfetuado();
-                Log.i(TAG_LOGI,"Pedidos obtidos no banco local, total de " + pedidos.size() + " pedidos encontrados.");
-                configurarAdapter(pedidos, recyclerViewPedidos);
-                swipe.setRefreshing(false);
-            }
-        });
+                @Override
+                public void onFailure(Call call, Throwable t) {
+                    Log.e(TAG_LOG,ERRO_PEDIDOS +", erro: " + t.getMessage());
+                    swipe.setRefreshing(false);
+                }
+            });
+        }
+        else
+        {
+            pedidos = _pedidosDao.obterTodosPedidosSemPagamentoEfetuado();
+            List<Pedido> todos = _pedidosDao.obterTodos();
+            Log.i(TAG_LOGI,"Pedidos obtidos no banco local, total de " + pedidos.size() + " pedidos encontrados.");
+            Log.i(TAG_LOGI,"Todos Pedidos obtidos no banco local, total de " + todos.size() + " pedidos encontrados.");
+            configurarAdapter(pedidos, recyclerViewPedidos);
+            swipe.setRefreshing(false);
+        }
     }
 
     private void configurarRecicleViewPedidos()
@@ -131,13 +136,14 @@ public class MainActivity extends AppCompatActivity
         adapter.notifyDataSetChanged();
     }
 
-    /*
     @Override
     protected void onStart()
     {
         super.onStart();
+
+        //garantindo que ao voltarmos para a lista de pedidos, ocorra uma atualização da lista.
         obterTodosPedidosSemPagamentoEfetuado();
-    }*/
+    }
 
     private void gerarEventoCadastroPedido()
     {
