@@ -11,3 +11,6 @@ enquanto o mesmo não estiver pago.
 - As quantidades dos itens deverão ser alteradas usando os botões + (mais) e –
 (menos) ao lado do ítem na listagem do pedido.
 - Possibilidade dos produtos conterem imagens.
+
+#### Observações
+- O pedido consome dados de um API, porem apos consumir os mesmos trabalha com eles de forma local utilizando **SQLite**, não é a forma ideal de se trabalhar mas para fins didaticos serve muito bem. A API usada tambem foi desenvolvida por mim, a mesma foi feita usando **.NET** e esta disponível no repositório https://github.com/michaelcdr/dotnet-android-lanches 
