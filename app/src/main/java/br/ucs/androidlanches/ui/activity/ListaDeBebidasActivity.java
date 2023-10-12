@@ -139,7 +139,8 @@ public class ListaDeBebidasActivity extends AppCompatActivity
     private void adicionarProdutoNoPedidoAtual(Bebida bebida) {
         if(NetworkHelper.temInternet(getBaseContext()))
         {
-            Call<Void> callPedido = new RetrofitApiClient().getPedidoService().adicionarItem(numeroPedido, bebida.getProdutoId());
+            Call<Void> callPedido = new RetrofitApiClient().getPedidoService()
+                    .adicionarItem(numeroPedido, bebida.getProdutoId());
             callPedido.enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {

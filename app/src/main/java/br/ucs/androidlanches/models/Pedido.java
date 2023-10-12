@@ -95,7 +95,7 @@ public class Pedido implements Serializable
     public String detalharPedido()
     {
         String retorno = "";
-        double total =0;
+        double total = 0;
         for (int i = 0; i < this.getItens().size(); i++)
         {
             PedidoItem item = this.getItens().get(i);
@@ -104,7 +104,7 @@ public class Pedido implements Serializable
             retorno += "sub total » " + item.getQuantidade() * item.getProduto().getPreco() + "\n\n";
         }
         String valor = NumberFormat.getCurrencyInstance(new Locale("pt-BR", "BR")).format(total);
-        retorno += "Total de " +valor.replace(".",",");
+        retorno += "Total de " + valor.replace(".",",");
         return retorno;
     }
 
